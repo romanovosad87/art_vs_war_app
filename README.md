@@ -1,1 +1,1 @@
-﻿# Art_vs_War
+﻿# Art vs War
