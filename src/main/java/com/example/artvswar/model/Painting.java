@@ -12,13 +12,13 @@ import javax.persistence.Table;
 @Entity
 @Getter
 @Setter
-@Table(name = "pictures")
-public class Picture {
+@Table(name = "paintings")
+public class Painting {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
     @ManyToOne
     private Author author;
-    private String pictureUrl;
+    private String imageFileName;
 }

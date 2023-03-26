@@ -1,7 +1,6 @@
 package com.example.artvswar.service.impl;
 
 import com.example.artvswar.model.Author;
-import com.example.artvswar.model.Picture;
 import com.example.artvswar.repository.AuthorRepository;
 import com.example.artvswar.service.AuthorService;
 import org.springframework.stereotype.Service;

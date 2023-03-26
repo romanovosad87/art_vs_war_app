@@ -1,7 +1,6 @@
 package com.example.artvswar.service;
 
 import com.example.artvswar.model.Author;
-import com.example.artvswar.model.Picture;
 import java.util.List;
 
 public interface AuthorService {
