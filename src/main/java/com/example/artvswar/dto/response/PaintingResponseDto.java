@@ -3,9 +3,9 @@ package com.example.artvswar.dto.response;
 import lombok.Data;
 
 @Data
-public class PictureResponseDto {
+public class PaintingResponseDto {
     private Long id;
-    private String pictureTitle;
-    private AuthorResponseDto authorResponseDto;
+    private String paintingTitle;
+    private AuthorResponseDto author;
     private String pictureUrl;
 }
