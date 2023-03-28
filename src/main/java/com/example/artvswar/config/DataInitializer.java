@@ -19,24 +19,24 @@ public class DataInitializer {
 
     @PostConstruct
     public void inject() {
-        Author bilokin = new Author();
-        bilokin.setName("Bilokin");
-        Author savedBilokin = authorService.save(bilokin);
+        Author bilokyr = new Author();
+        bilokyr.setName("Bilokyr");
+        Author savedBilokyr = authorService.save(bilokyr);
 
         Painting flowers = new Painting();
         flowers.setTitle("Flowers");
-        flowers.setAuthor(savedBilokin);
+        flowers.setAuthor(savedBilokyr);
         flowers.setImageFileName("Flowers.jpg");
         paintingService.save(flowers);
 
-//        Author marchuk = new Author();
-//        marchuk.setName("Marchuk");
-//        Author savedMarchuk = authorService.save(marchuk);
-//
-//        Picture sunrise = new Picture();
-//        sunrise.setTitle("Sunrise over the Dnipro");
-//        sunrise.setAuthor(savedMarchuk);
-//        sunrise.setPictureUrl("https://drive.google.com/file/d/1lHjMpynHEujXRh4kj3mDP9JeNu_p_MVY/view?usp=share_link");
-//        pictureService.save(sunrise);
+        Author marchuk = new Author();
+        marchuk.setName("Marchuk");
+        Author savedMarchuk = authorService.save(marchuk);
+
+        Painting sunrise = new Painting();
+        sunrise.setTitle("Sunrise over the Dnipro");
+        sunrise.setAuthor(savedMarchuk);
+        sunrise.setImageFileName("Sunrise.jpg");
+        paintingService.save(sunrise);
     }
 }

@@ -27,7 +27,7 @@ public class PaintingMapper {
         authorResponseDto.setId(painting.getAuthor().getId());
         authorResponseDto.setName(painting.getAuthor().getName());
         dto.setAuthor(authorResponseDto);
-        dto.setPictureUrl(imageService.generateGetUrl(painting.getImageFileName()));
+        dto.setImageUrl(imageService.generateGetUrl(painting.getImageFileName()));
         return dto;
     }
 

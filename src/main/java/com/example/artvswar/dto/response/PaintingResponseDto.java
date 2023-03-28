@@ -7,5 +7,5 @@ public class PaintingResponseDto {
     private Long id;
     private String paintingTitle;
     private AuthorResponseDto author;
-    private String pictureUrl;
+    private String imageUrl;
 }
