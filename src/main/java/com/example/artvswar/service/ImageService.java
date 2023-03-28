@@ -1,7 +1,9 @@
 package com.example.artvswar.service;
 
+import java.util.Map;
+
 public interface ImageService {
     String generateGetUrl(String fileName);
 
-    String generatePutUrl(String extension);
+    Map<String, String> generatePutUrl(String extension);
 }

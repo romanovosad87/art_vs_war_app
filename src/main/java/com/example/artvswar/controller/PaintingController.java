@@ -29,22 +29,22 @@ public class PaintingController {
         this.paintingMapper = paintingMapper;
     }
 
-    @GetMapping("/all")
-    public List<PaintingResponseDto> getAllPictures(){
+    @GetMapping
+    public List<PaintingResponseDto> getAll(){
         return paintingService.getAll().stream()
-                .map(paintingMapper::toPictureResponseDto)
+                .map(paintingMapper::toPaintingResponseDto)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
     public PaintingResponseDto getById(@PathVariable Long id) {
         Painting painting = paintingService.get(id);
-        return paintingMapper.toPictureResponseDto(painting);
+        return paintingMapper.toPaintingResponseDto(painting);
     }
 
     @PostMapping
     public PaintingResponseDto create(@RequestBody @Valid PaintingRequestDto dto) {
-        Painting painting = paintingMapper.toPictureModel(dto);
-        return paintingMapper.toPictureResponseDto(paintingService.save(painting));
+        Painting painting = paintingMapper.toPaintingModel(dto);
+        return paintingMapper.toPaintingResponseDto(paintingService.save(painting));
     }
 }

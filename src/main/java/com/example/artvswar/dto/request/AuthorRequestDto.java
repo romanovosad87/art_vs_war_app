@@ -7,4 +7,10 @@ import javax.validation.constraints.NotBlank;
 public class AuthorRequestDto {
     @NotBlank
     private String name;
+    @NotBlank
+    private String country;
+    @NotBlank
+    private String city;
+    @NotBlank
+    private String shortStory;
 }
