@@ -15,7 +15,7 @@ import javax.validation.constraints.Size;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/image")
+@RequestMapping("/images")
 public class ImageController {
     private final ImageService imageService;
     private final PaintingService paintingService;
@@ -25,12 +25,12 @@ public class ImageController {
         this.paintingService = paintingService;
     }
 
-    @GetMapping("/save")
-    public ResponseEntity<Object> saveImage(@RequestParam("extension") @Size(min = 3, max = 4) String extension) {
+    @GetMapping("/getUrl")
+    public ResponseEntity<Object> getUrlToSaveImage(@RequestParam("extension") @Size(min = 3, max = 4) String extension) {
         return new ResponseEntity<>(imageService.generatePutUrl(extension), HttpStatus.OK);
     }
 
-    @GetMapping("/get/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Object> getImage(@PathVariable Long id) {
         Painting painting = paintingService.get(id);
         return new ResponseEntity<>(imageService.generateGetUrl(painting.getImageFileName()),
