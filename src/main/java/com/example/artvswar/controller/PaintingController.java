@@ -5,6 +5,7 @@ import com.example.artvswar.dto.request.PaintingRequestDto;
 import com.example.artvswar.dto.response.PaintingResponseDto;
 import com.example.artvswar.model.Painting;
 import com.example.artvswar.service.PaintingService;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.validation.Valid;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/paintings")
 public class PaintingController {
@@ -40,7 +43,7 @@ public class PaintingController {
     }
 
     @PostMapping
-    public PaintingResponseDto create(@RequestBody PaintingRequestDto dto) {
+    public PaintingResponseDto create(@RequestBody @Valid PaintingRequestDto dto) {
         Painting painting = paintingMapper.toPictureModel(dto);
         return paintingMapper.toPictureResponseDto(paintingService.save(painting));
     }
