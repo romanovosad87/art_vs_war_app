@@ -5,16 +5,18 @@ import com.example.artvswar.dto.request.AuthorRequestDto;
 import com.example.artvswar.dto.response.AuthorResponseDto;
 import com.example.artvswar.model.Author;
 import com.example.artvswar.service.AuthorService;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.validation.Valid;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/authors")
 public class AuthorController {
@@ -41,7 +43,7 @@ public class AuthorController {
     }
 
     @PostMapping
-    private AuthorResponseDto create(@RequestBody AuthorRequestDto dto) {
+    private AuthorResponseDto create(@RequestBody @Valid AuthorRequestDto dto) {
         Author author = authorMapper.toAuthorModel(dto);
         return authorMapper.toAuthorResponseDto(authorService.save(author));
     }
