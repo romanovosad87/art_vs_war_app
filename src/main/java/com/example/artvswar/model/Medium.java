@@ -8,16 +8,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-@Entity
 @Getter
 @Setter
-@Table(name = "authors")
-public class Author {
+@Entity
+@Table(name = "mediums")
+public class Medium {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private String country;
-    private String city;
-    private String shortStory;
 }

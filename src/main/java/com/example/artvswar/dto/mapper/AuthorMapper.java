@@ -11,12 +11,18 @@ public class AuthorMapper {
         AuthorResponseDto dto = new AuthorResponseDto();
         dto.setId(author.getId());
         dto.setName(author.getName());
+        dto.setCountry(author.getCountry());
+        dto.setCity(author.getCity());
+        dto.setShortStory(author.getShortStory());
         return dto;
     }
 
     public Author toAuthorModel(AuthorRequestDto dto) {
         Author author = new Author();
         author.setName(dto.getName());
+        author.setCountry(dto.getCountry());
+        author.setCity(dto.getCity());
+        author.setShortStory(dto.getShortStory());
         return author;
     }
 }
