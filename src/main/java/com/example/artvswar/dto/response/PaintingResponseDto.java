@@ -7,12 +7,13 @@ import java.math.BigDecimal;
 public class PaintingResponseDto {
     private Long id;
     private String title;
-    private BigDecimal price;
-    private AuthorResponseDto author;
     private String description;
-    private StyleResponseDto style;
-    private MediumResponseDto medium;
+    private BigDecimal price;
     private int height;
     private int width;
+    private AuthorResponseDto author;
+    private StyleResponseDto style;
+    private MediumResponseDto medium;
+    private SupportResponseDto support;
     private String imageUrl;
 }

@@ -5,11 +5,13 @@ import com.example.artvswar.dto.response.AuthorResponseDto;
 import com.example.artvswar.dto.response.MediumResponseDto;
 import com.example.artvswar.dto.response.PaintingResponseDto;
 import com.example.artvswar.dto.response.StyleResponseDto;
+import com.example.artvswar.dto.response.SupportResponseDto;
 import com.example.artvswar.model.Painting;
 import com.example.artvswar.service.AuthorService;
 import com.example.artvswar.service.ImageService;
 import com.example.artvswar.service.MediumService;
 import com.example.artvswar.service.StyleService;
+import com.example.artvswar.service.SupportService;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -18,13 +20,16 @@ public class PaintingMapper {
     private final ImageService imageService;
     private final StyleService styleService;
     private final MediumService mediumService;
+    private final SupportService supportService;
 
     public PaintingMapper(AuthorService authorService, ImageService imageService,
-                          StyleService styleService, MediumService mediumService) {
+                          StyleService styleService, MediumService mediumService,
+                          SupportService supportService) {
         this.authorService = authorService;
         this.imageService = imageService;
         this.styleService = styleService;
         this.mediumService = mediumService;
+        this.supportService = supportService;
     }
 
     public PaintingResponseDto toPaintingResponseDto(Painting painting) {
@@ -39,9 +44,6 @@ public class PaintingMapper {
         AuthorResponseDto authorResponseDto = new AuthorResponseDto();
         authorResponseDto.setId(painting.getAuthor().getId());
         authorResponseDto.setName(painting.getAuthor().getName());
-        authorResponseDto.setCountry(painting.getAuthor().getCountry());
-        authorResponseDto.setCity(painting.getAuthor().getCity());
-        authorResponseDto.setShortStory(painting.getAuthor().getShortStory());
         dto.setAuthor(authorResponseDto);
 
         StyleResponseDto styleResponseDto = new StyleResponseDto();
@@ -53,6 +55,11 @@ public class PaintingMapper {
         mediumResponseDto.setId(painting.getMedium().getId());
         mediumResponseDto.setName(painting.getMedium().getName());
         dto.setMedium(mediumResponseDto);
+
+        SupportResponseDto supportResponseDto = new SupportResponseDto();
+        supportResponseDto.setId(painting.getSupport().getId());
+        supportResponseDto.setName(painting.getSupport().getName());
+        dto.setSupport(supportResponseDto);
 
         dto.setImageUrl(imageService.generateGetUrl(painting.getImageFileName()));
 
@@ -68,6 +75,7 @@ public class PaintingMapper {
         painting.setImageFileName(dto.getImageFileName());
         painting.setStyle(styleService.get(dto.getStyleId()));
         painting.setMedium(mediumService.get(dto.getMediumId()));
+        painting.setSupport(supportService.get(dto.getSupportId()));
         painting.setHeight(dto.getHeight());
         painting.setWidth(dto.getWidth());
         return painting;

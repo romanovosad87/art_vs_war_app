@@ -11,7 +11,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 
 @Entity
 @Getter
@@ -30,6 +29,8 @@ public class Painting {
     private Style style;
     @ManyToOne(fetch = FetchType.LAZY)
     private Medium medium;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Support support;
     private int height;
     private int width;
     @Column(unique = true)

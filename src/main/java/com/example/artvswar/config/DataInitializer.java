@@ -4,10 +4,12 @@ import com.example.artvswar.model.Author;
 import com.example.artvswar.model.Medium;
 import com.example.artvswar.model.Painting;
 import com.example.artvswar.model.Style;
+import com.example.artvswar.model.Support;
 import com.example.artvswar.service.AuthorService;
 import com.example.artvswar.service.MediumService;
 import com.example.artvswar.service.PaintingService;
 import com.example.artvswar.service.StyleService;
+import com.example.artvswar.service.SupportService;
 import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import javax.annotation.PostConstruct;
@@ -18,13 +20,16 @@ public class DataInitializer {
     private final PaintingService paintingService;
     private final StyleService styleService;
     private final MediumService mediumService;
+    private final SupportService supportService;
 
     public DataInitializer(AuthorService authorService, PaintingService paintingService,
-                           StyleService styleService, MediumService mediumService) {
+                           StyleService styleService, MediumService mediumService,
+                           SupportService supportService) {
         this.authorService = authorService;
         this.paintingService = paintingService;
         this.styleService = styleService;
         this.mediumService = mediumService;
+        this.supportService = supportService;
     }
 
     @PostConstruct
@@ -44,6 +49,10 @@ public class DataInitializer {
         mediumOil.setName("Oil");
         mediumService.save(mediumOil);
 
+        Support supportCanvas = new Support();
+        supportCanvas.setName("Canvas");
+        supportService.save(supportCanvas);
+
         Painting flowers = new Painting();
         flowers.setTitle("Flowers");
         flowers.setDescription("Amazing!");
@@ -54,6 +63,7 @@ public class DataInitializer {
         flowers.setImageFileName("Flowers.jpg");
         flowers.setStyle(styleExpr);
         flowers.setMedium(mediumOil);
+        flowers.setSupport(supportCanvas);
         paintingService.save(flowers);
 
         Author marchuk = new Author();
@@ -76,6 +86,7 @@ public class DataInitializer {
         sunrise.setImageFileName("Sunrise.jpg");
         sunrise.setStyle(styleExpr);
         sunrise.setMedium(mediumOil);
+        sunrise.setSupport(supportCanvas);
         paintingService.save(sunrise);
     }
 }

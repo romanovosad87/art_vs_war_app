@@ -20,6 +20,8 @@ public class PaintingRequestDto {
     @Positive
     private Long mediumId;
     @Positive
+    private Long supportId;
+    @Positive
     private int height;
     @Positive
     private int width;

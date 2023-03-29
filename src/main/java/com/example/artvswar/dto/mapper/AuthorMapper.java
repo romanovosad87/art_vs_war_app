@@ -11,9 +11,6 @@ public class AuthorMapper {
         AuthorResponseDto dto = new AuthorResponseDto();
         dto.setId(author.getId());
         dto.setName(author.getName());
-        dto.setCountry(author.getCountry());
-        dto.setCity(author.getCity());
-        dto.setShortStory(author.getShortStory());
         return dto;
     }
 
