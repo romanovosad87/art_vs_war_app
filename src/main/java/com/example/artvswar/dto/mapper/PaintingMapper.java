@@ -12,9 +12,11 @@ import com.example.artvswar.service.ImageService;
 import com.example.artvswar.service.MediumService;
 import com.example.artvswar.service.StyleService;
 import com.example.artvswar.service.SupportService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class PaintingMapper {
     private final AuthorService authorService;
     private final ImageService imageService;
@@ -22,21 +24,12 @@ public class PaintingMapper {
     private final MediumService mediumService;
     private final SupportService supportService;
 
-    public PaintingMapper(AuthorService authorService, ImageService imageService,
-                          StyleService styleService, MediumService mediumService,
-                          SupportService supportService) {
-        this.authorService = authorService;
-        this.imageService = imageService;
-        this.styleService = styleService;
-        this.mediumService = mediumService;
-        this.supportService = supportService;
-    }
-
     public PaintingResponseDto toPaintingResponseDto(Painting painting) {
         PaintingResponseDto dto = new PaintingResponseDto();
         dto.setId(painting.getId());
         dto.setTitle(painting.getTitle());
         dto.setDescription(painting.getDescription());
+        dto.setYearOfCreation(painting.getYearOfCreation());
         dto.setPrice(painting.getPrice());
         dto.setHeight(painting.getHeight());
         dto.setWidth(painting.getWidth());
@@ -62,6 +55,7 @@ public class PaintingMapper {
         dto.setSupport(supportResponseDto);
 
         dto.setImageUrl(imageService.generateGetUrl(painting.getImageFileName()));
+        dto.setEntityCreatedAt(painting.getEntityCreatedAt());
 
         return dto;
     }
@@ -71,6 +65,7 @@ public class PaintingMapper {
         painting.setTitle(dto.getTitle());
         painting.setPrice(dto.getPrice());
         painting.setDescription(dto.getDescription());
+        painting.setYearOfCreation(dto.getYearOfCreation());
         painting.setAuthor(authorService.get(dto.getAuthorId()));
         painting.setImageFileName(dto.getImageFileName());
         painting.setStyle(styleService.get(dto.getStyleId()));

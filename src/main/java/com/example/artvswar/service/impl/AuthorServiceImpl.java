@@ -31,4 +31,15 @@ public class AuthorServiceImpl implements AuthorService {
     public List<Author> getAllAuthors() {
         return authorRepository.findAll();
     }
+
+    @Override
+    public Author getAuthorByEmail(String email) {
+        return authorRepository.getAuthorByEmail(email).orElseThrow(
+                () -> new EntityNotFoundException(String.format("Can't find author by %s", email)));
+    }
+
+    @Override
+    public long getNumberOfAllAuthors() {
+        return authorRepository.count();
+    }
 }
