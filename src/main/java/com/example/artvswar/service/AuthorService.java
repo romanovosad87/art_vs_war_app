@@ -9,4 +9,8 @@ public interface AuthorService {
     Author get(Long id);
 
     List<Author> getAllAuthors();
+
+    Author getAuthorByEmail(String email);
+
+    long getNumberOfAllAuthors();
 }

@@ -10,11 +10,14 @@ import com.example.artvswar.service.MediumService;
 import com.example.artvswar.service.PaintingService;
 import com.example.artvswar.service.StyleService;
 import com.example.artvswar.service.SupportService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
+import java.util.List;
 import javax.annotation.PostConstruct;
 
 @Component
+@RequiredArgsConstructor
 public class DataInitializer {
     private final AuthorService authorService;
     private final PaintingService paintingService;
@@ -22,49 +25,28 @@ public class DataInitializer {
     private final MediumService mediumService;
     private final SupportService supportService;
 
-    public DataInitializer(AuthorService authorService, PaintingService paintingService,
-                           StyleService styleService, MediumService mediumService,
-                           SupportService supportService) {
-        this.authorService = authorService;
-        this.paintingService = paintingService;
-        this.styleService = styleService;
-        this.mediumService = mediumService;
-        this.supportService = supportService;
-    }
-
     @PostConstruct
     public void inject() {
+        List.of("abstraction", "cubism", "expressionism", "impressionism", "photorealism",
+                        "minimalism", "modern", "pop art", "primitivism/naive art", "realism",
+                        "surrealism")
+                .forEach(style -> styleService.save(new Style(style)));
+
+        List.of("oil", "acrylic", "watercolor", "gouache", "collage", "pencil", "levkas",
+                        "pastel", "mixed media", "lonocut", "monotype", "enamel")
+                .forEach(medium -> mediumService.save(new Medium(medium)));
+
+        List.of("canvas", "paper", "hardboard", "cardboard", "silk", "glass", "wooden board", "plywood")
+                .forEach(support -> supportService.save(new Support(support)));
+
+
         Author bilokyr = new Author();
         bilokyr.setName("Kateryna Bilokyr");
         bilokyr.setCountry("Germany");
         bilokyr.setCity("Cologne");
         bilokyr.setShortStory(" Ukrainian folk artist born in the Poltava Governorate");
+        bilokyr.setEmail("bilokyr@ukr.net");
         Author savedBilokyr = authorService.save(bilokyr);
-
-        Style styleExpr = new Style();
-        styleExpr.setName("Expressionism");
-        styleService.save(styleExpr);
-
-        Medium mediumOil = new Medium();
-        mediumOil.setName("Oil");
-        mediumService.save(mediumOil);
-
-        Support supportCanvas = new Support();
-        supportCanvas.setName("Canvas");
-        supportService.save(supportCanvas);
-
-        Painting flowers = new Painting();
-        flowers.setTitle("Flowers");
-        flowers.setDescription("Amazing!");
-        flowers.setPrice(BigDecimal.valueOf(500));
-        flowers.setHeight(50);
-        flowers.setWidth(60);
-        flowers.setAuthor(savedBilokyr);
-        flowers.setImageFileName("Flowers.jpg");
-        flowers.setStyle(styleExpr);
-        flowers.setMedium(mediumOil);
-        flowers.setSupport(supportCanvas);
-        paintingService.save(flowers);
 
         Author marchuk = new Author();
         marchuk.setName("Ivan Marchuk");
@@ -74,19 +56,39 @@ public class DataInitializer {
         marchuk.setShortStory("A contemporary Ukrainian painter, Honored Artist of Ukraine, "
                 + "laureate of the Shevchenko National Prize, "
                 + "Honorary Citizen of Ternopil and Kyiv");
+        marchuk.setEmail("marchyk@gmail.com");
         Author savedMarchuk = authorService.save(marchuk);
 
-        Painting sunrise = new Painting();
-        sunrise.setTitle("Sunrise over the Dnipro");
-        sunrise.setDescription("Cute!");
-        sunrise.setPrice(BigDecimal.valueOf(400));
-        sunrise.setHeight(70);
-        sunrise.setWidth(70);
-        sunrise.setAuthor(savedMarchuk);
-        sunrise.setImageFileName("Sunrise.jpg");
-        sunrise.setStyle(styleExpr);
-        sunrise.setMedium(mediumOil);
-        sunrise.setSupport(supportCanvas);
-        paintingService.save(sunrise);
+        paintingService.save(new Painting("Flowers_1", BigDecimal.valueOf(500), "Amazing!",
+                50, 60, 1986, savedBilokyr, styleService.get(1L), mediumService.get(1L),
+                supportService.get(1L), "Flowers.jpg"));
+
+        paintingService.save(new Painting("Flowers_2", BigDecimal.valueOf(350), "Amazing!",
+                20, 20, 2004, savedBilokyr, styleService.get(3L), mediumService.get(4L),
+                supportService.get(6L), "Flowers2.jpg"));
+
+        paintingService.save(new Painting("Flowers_3", BigDecimal.valueOf(1500), "Amazing!",
+                90, 150, 2020, savedBilokyr, styleService.get(5L), mediumService.get(2L),
+                supportService.get(3L), "Flowers3.jpg"));
+
+        paintingService.save(new Painting("Flowers_4", BigDecimal.valueOf(100), "Amazing!",
+                30, 25, 2008, savedBilokyr, styleService.get(2L), mediumService.get(3L),
+                supportService.get(2L), "Flowers4.jpg"));
+
+        paintingService.save(new Painting("Sunrise over the Dnipro_1", BigDecimal.valueOf(800), "Cute!",
+                70, 70, 1985, savedMarchuk, styleService.get(2L), mediumService.get(2L),
+                supportService.get(2L), "Sunrise.jpg"));
+
+        paintingService.save(new Painting("Sunrise over the Dnipro_2", BigDecimal.valueOf(1100), "Cute!",
+                90, 90, 1999, savedMarchuk, styleService.get(8L), mediumService.get(4L),
+                supportService.get(4L), "Sunrise2.jpg"));
+
+        paintingService.save(new Painting("Sunrise over the Dnipro_3", BigDecimal.valueOf(500), "Cute!",
+                60, 10, 2006, savedMarchuk, styleService.get(7L), mediumService.get(11L),
+                supportService.get(5L), "Sunrise3.jpg"));
+
+        paintingService.save(new Painting("Sunrise over the Dnipro_4", BigDecimal.valueOf(388), "Cute!",
+                75, 75, 2021, savedMarchuk, styleService.get(4L), mediumService.get(10L),
+                supportService.get(8L), "Sunrise4.jpg"));
     }
 }
