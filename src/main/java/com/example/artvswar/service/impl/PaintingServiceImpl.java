@@ -6,23 +6,27 @@ import com.example.artvswar.repository.specification.PaintingSpecificationManage
 import com.example.artvswar.service.PaintingService;
 import com.example.artvswar.util.UrlSortParser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.Map;
 import javax.persistence.EntityNotFoundException;
 
 @RequiredArgsConstructor
 @Service
+@Transactional(readOnly = true)
 public class PaintingServiceImpl implements PaintingService {
-
+    private final static int DEFAULT_IMAGES_QUANTITY = 12;
+    private final static int DEFAULT_PAGE_NUMBER = 0;
     private final PaintingRepository paintingRepository;
     private final PaintingSpecificationManager paintingSpecificationManager;
     private final UrlSortParser urlSortParser;
 
     @Override
+    @Transactional
     public Painting save(Painting painting) {
         return paintingRepository.save(painting);
     }
@@ -34,8 +38,8 @@ public class PaintingServiceImpl implements PaintingService {
     }
 
     @Override
-    public List<Painting> getAll(PageRequest pageRequest) {
-        return paintingRepository.findAll(pageRequest).toList();
+    public Page<Painting> getAll(PageRequest pageRequest) {
+        return paintingRepository.findAll(pageRequest);
     }
 
     @Override
@@ -44,11 +48,11 @@ public class PaintingServiceImpl implements PaintingService {
     }
 
     @Override
-    public List<Painting> getAllByParams(Map<String, String> params) {
+    public Page<Painting> getAllByParams(Map<String, String> params) {
         Specification<Painting> specification = null;
         Sort sort = Sort.unsorted();
-        int page = 0;
-        int pageSize = 10;
+        int page = DEFAULT_PAGE_NUMBER;
+        int pageSize = DEFAULT_IMAGES_QUANTITY;
         for (Map.Entry<String, String> entry : params.entrySet()) {
             switch (entry.getKey()) {
                 case "page":
@@ -70,6 +74,11 @@ public class PaintingServiceImpl implements PaintingService {
             }
         }
         PageRequest pageRequest = PageRequest.of(page, pageSize, sort);
-        return paintingRepository.findAll(specification, pageRequest).toList();
+        return paintingRepository.findAll(specification, pageRequest);
+    }
+
+    @Override
+    public Page<Painting> getAllPaintingsByAuthorId(String id, PageRequest pageRequest) {
+        return paintingRepository.findPaintingByAuthorId(id, pageRequest);
     }
 }

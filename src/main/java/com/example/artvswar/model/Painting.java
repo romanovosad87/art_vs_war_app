@@ -9,7 +9,6 @@ import lombok.Setter;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -48,7 +47,7 @@ public class Painting {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "support_id")
     private Support support;
-    @Column(unique = true)
+//    @Column(unique = true)
     private String imageFileName;
     @UpdateTimestamp
     @JsonFormat(pattern = DateTimePatternUtil.DATE_TIME_PATTERN)

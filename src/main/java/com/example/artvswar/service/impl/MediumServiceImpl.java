@@ -27,6 +27,11 @@ public class MediumServiceImpl implements MediumService {
     }
 
     @Override
+    public Medium getReferenceById(Long id) {
+        return repository.getReferenceById(id);
+    }
+
+    @Override
     public List<Medium> getAll() {
         return repository.findAll();
     }

@@ -4,6 +4,10 @@ import lombok.Data;
 
 @Data
 public class AuthorResponseDto {
-    private Long id;
-    private String name;
+    private String id;
+    private String fullName;
+    private String country;
+    private String city;
+    private String aboutMe;
+    private String photoUrl;
 }
