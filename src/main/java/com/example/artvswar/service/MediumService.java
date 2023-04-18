@@ -8,5 +8,7 @@ public interface MediumService {
 
     Medium get(Long id);
 
+    Medium getReferenceById(Long id);
+
     List<Medium> getAll();
 }

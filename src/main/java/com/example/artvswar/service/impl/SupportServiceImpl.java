@@ -27,6 +27,11 @@ public class SupportServiceImpl implements SupportService {
     }
 
     @Override
+    public Support getReferenceById(Long id) {
+        return repository.getReferenceById(id);
+    }
+
+    @Override
     public List<Support> getAll() {
         return repository.findAll();
     }

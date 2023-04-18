@@ -8,5 +8,7 @@ public interface StyleService {
 
     Style get(Long id);
 
+    Style getReferenceById(Long id);
+
     List<Style> getAll();
 }

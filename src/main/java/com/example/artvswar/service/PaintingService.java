@@ -1,8 +1,8 @@
 package com.example.artvswar.service;
 
 import com.example.artvswar.model.Painting;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import java.util.List;
 import java.util.Map;
 
 public interface PaintingService {
@@ -10,9 +10,11 @@ public interface PaintingService {
 
     Painting get(Long id);
 
-    List<Painting> getAll(PageRequest pageRequest);
+    Page<Painting> getAll(PageRequest pageRequest);
 
     long getNumberOfAllPaintings();
 
-    List<Painting> getAllByParams(Map<String, String> params);
+    Page<Painting> getAllByParams(Map<String, String> params);
+
+    Page<Painting> getAllPaintingsByAuthorId(String id, PageRequest pageRequest);
 }
