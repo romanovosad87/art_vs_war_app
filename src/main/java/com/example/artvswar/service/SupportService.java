@@ -8,5 +8,7 @@ public interface SupportService {
 
     Support get(Long id);
 
+    Support getReferenceById(Long id);
+
     List<Support> getAll();
 }

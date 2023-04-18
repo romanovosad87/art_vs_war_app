@@ -2,12 +2,12 @@ package com.example.artvswar.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.UpdateTimestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -18,21 +18,22 @@ import javax.persistence.Table;
 @Table(name = "authors")
 public class Author {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String name;
+    private String id;
+    private String fullName;
     private String country;
     private String city;
-    private String shortStory;
+    private String aboutMe;
     @Column(unique = true)
-    private String email;
+    private String imageFileName;
     @OneToMany(mappedBy = "author")
     private List<Painting> paintings = new ArrayList<>();
+    @UpdateTimestamp
+    private LocalDateTime createdAt;
 
-//    public void addPainting(Painting painting) {
-//        paintings.add(painting);
-//        painting.setAuthor(this);
-//    }
+    public void addPainting(Painting painting) {
+        paintings.add(painting);
+        painting.setAuthor(this);
+    }
 //
 //    public void remove(Painting painting) {
 //        paintings.remove(painting);

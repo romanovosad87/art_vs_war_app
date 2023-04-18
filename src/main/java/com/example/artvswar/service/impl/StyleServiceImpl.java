@@ -27,6 +27,11 @@ public class StyleServiceImpl implements StyleService {
     }
 
     @Override
+    public Style getReferenceById(Long id) {
+        return repository.getReferenceById(id);
+    }
+
+    @Override
     public List<Style> getAll() {
         return repository.findAll();
     }

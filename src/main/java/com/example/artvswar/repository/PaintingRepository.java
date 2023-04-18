@@ -27,4 +27,9 @@ public interface PaintingRepository extends JpaRepository<Painting, Long>,
             attributePaths = {"author", "style", "medium", "support"}
     )
     Page<Painting> findAll(Specification<Painting> specification, Pageable pageable);
+
+    @EntityGraph(type = EntityGraph.EntityGraphType.FETCH,
+            attributePaths = {"author", "style", "medium", "support"}
+    )
+    Page<Painting> findPaintingByAuthorId(String id, Pageable pageable);
 }

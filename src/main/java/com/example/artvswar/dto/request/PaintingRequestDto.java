@@ -1,11 +1,8 @@
 package com.example.artvswar.dto.request;
 
-import com.example.artvswar.util.DateTimePatternUtil;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import java.math.BigDecimal;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.Positive;
 
 @Data
@@ -14,8 +11,6 @@ public class PaintingRequestDto {
     private String title;
     @Positive
     private BigDecimal price;
-    @Positive
-    private Long authorId;
     @NotBlank
     private String description;
     @Positive
@@ -28,8 +23,7 @@ public class PaintingRequestDto {
     private int height;
     @Positive
     private int width;
-    @JsonFormat(pattern = DateTimePatternUtil.YEAR_PATTERN)
-    @PastOrPresent
+    @Positive
     private int yearOfCreation;
     @NotBlank
     private String imageFileName;
