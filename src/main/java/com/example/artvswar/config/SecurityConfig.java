@@ -26,7 +26,9 @@ public class SecurityConfig {
                 .and()
                 .authorizeRequests(authorize ->
                         authorize.antMatchers(HttpMethod.POST, "/paintings").authenticated()
-                                .antMatchers(HttpMethod.PUT, "/authors/**").authenticated())
+                                .antMatchers(HttpMethod.PUT, "/paintings/**").authenticated()
+                                .antMatchers(HttpMethod.POST, "/authors").authenticated()
+                                .antMatchers(HttpMethod.PUT, "/authors").authenticated())
                 .oauth2ResourceServer()
                 .jwt()
                 .jwtAuthenticationConverter(jwtAuthenticationConverter());
