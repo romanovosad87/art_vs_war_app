@@ -6,9 +6,11 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -31,6 +33,7 @@ public class Painting {
     private Long id;
     private String title;
     private BigDecimal price;
+    @Column(columnDefinition = "longtext")
     private String description;
     private int height;
     private int width;
@@ -47,25 +50,13 @@ public class Painting {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "support_id")
     private Support support;
-//    @Column(unique = true)
+    @Column(unique = true)
     private String imageFileName;
-    @UpdateTimestamp
+    @CreationTimestamp
+    @Column(updatable = false, columnDefinition="TIMESTAMP default now()")
     @JsonFormat(pattern = DateTimePatternUtil.DATE_TIME_PATTERN)
     private LocalDateTime entityCreatedAt;
 
-    public Painting(String title, BigDecimal price, String description, int height, int width,
-                    int yearOfCreation, Author author, Style style, Medium medium, Support support,
-                    String imageFileName) {
-        this.title = title;
-        this.price = price;
-        this.description = description;
-        this.height = height;
-        this.width = width;
-        this.yearOfCreation = yearOfCreation;
-        this.author = author;
-        this.style = style;
-        this.medium = medium;
-        this.support = support;
-        this.imageFileName = imageFileName;
-    }
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 }

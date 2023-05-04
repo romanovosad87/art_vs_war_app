@@ -2,18 +2,16 @@ package com.example.artvswar.service;
 
 import com.example.artvswar.model.Author;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import java.util.Map;
 
 public interface AuthorService {
     Author save(Author author);
 
-    Author update(String id);
+    Author update(Author author);
 
     Author get(String id);
 
-    Author getReferenceById(String id);
-
-    Page<Author> getAll(PageRequest pageRequest);
+    Page<Author> getAll(Map<String, String> params);
 
     long getNumberOfAllAuthors();
 }

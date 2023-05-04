@@ -1,11 +1,11 @@
 package com.example.artvswar.dto.mapper;
 
 import com.example.artvswar.dto.request.PaintingRequestDto;
-import com.example.artvswar.dto.response.AuthorResponseDto;
 import com.example.artvswar.dto.response.MediumResponseDto;
 import com.example.artvswar.dto.response.PaintingResponseDto;
 import com.example.artvswar.dto.response.StyleResponseDto;
 import com.example.artvswar.dto.response.SupportResponseDto;
+import com.example.artvswar.dto.response.author.AuthorForPaintingResponseDto;
 import com.example.artvswar.model.Painting;
 import com.example.artvswar.service.ImageService;
 import com.example.artvswar.service.MediumService;
@@ -32,10 +32,10 @@ public class PaintingMapper {
         dto.setHeight(painting.getHeight());
         dto.setWidth(painting.getWidth());
 
-        AuthorResponseDto authorResponseDto = new AuthorResponseDto();
-        authorResponseDto.setId(painting.getAuthor().getId());
-        authorResponseDto.setFullName(painting.getAuthor().getFullName());
-        dto.setAuthor(authorResponseDto);
+        AuthorForPaintingResponseDto authorDto = new AuthorForPaintingResponseDto();
+        authorDto.setId(painting.getAuthor().getId());
+        authorDto.setFullName(painting.getAuthor().getFullName());
+        dto.setAuthor(authorDto);
 
         StyleResponseDto styleResponseDto = new StyleResponseDto();
         styleResponseDto.setId(painting.getStyle().getId());
@@ -60,16 +60,18 @@ public class PaintingMapper {
 
     public Painting toPaintingModel(PaintingRequestDto dto) {
         Painting painting = new Painting();
+
         painting.setTitle(dto.getTitle());
         painting.setPrice(dto.getPrice());
-        painting.setDescription(dto.getDescription());
         painting.setYearOfCreation(dto.getYearOfCreation());
+        painting.setHeight(dto.getHeight());
+        painting.setWidth(dto.getWidth());
+        painting.setDescription(dto.getDescription());
         painting.setImageFileName(dto.getImageFileName());
         painting.setStyle(styleService.getReferenceById(dto.getStyleId()));
         painting.setMedium(mediumService.getReferenceById(dto.getMediumId()));
         painting.setSupport(supportService.getReferenceById(dto.getSupportId()));
-        painting.setHeight(dto.getHeight());
-        painting.setWidth(dto.getWidth());
+
         return painting;
     }
 }

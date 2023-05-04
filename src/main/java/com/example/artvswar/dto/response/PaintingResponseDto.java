@@ -1,5 +1,6 @@
 package com.example.artvswar.dto.response;
 
+import com.example.artvswar.dto.response.author.AuthorForPaintingResponseDto;
 import com.example.artvswar.util.DateTimePatternUtil;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
@@ -15,7 +16,7 @@ public class PaintingResponseDto {
     private int height;
     private int width;
     private int yearOfCreation;
-    private AuthorResponseDto author;
+    private AuthorForPaintingResponseDto author;
     private StyleResponseDto style;
     private MediumResponseDto medium;
     private SupportResponseDto support;

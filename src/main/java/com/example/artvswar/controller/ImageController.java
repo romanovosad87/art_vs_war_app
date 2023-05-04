@@ -3,6 +3,7 @@ package com.example.artvswar.controller;
 import com.example.artvswar.model.Painting;
 import com.example.artvswar.service.ImageService;
 import com.example.artvswar.service.PaintingService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,17 +13,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import javax.validation.constraints.Size;
 
-//@CrossOrigin
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/images")
 public class ImageController {
     private final ImageService imageService;
     private final PaintingService paintingService;
-
-    public ImageController(ImageService imageService, PaintingService paintingService) {
-        this.imageService = imageService;
-        this.paintingService = paintingService;
-    }
 
     @GetMapping("/getUrl")
     public ResponseEntity<Object> getUrlToSaveImage(@RequestParam("extension")

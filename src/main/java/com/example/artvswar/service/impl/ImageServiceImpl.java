@@ -1,10 +1,13 @@
 package com.example.artvswar.service.impl;
 
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.HttpMethod;
+import com.amazonaws.SdkClientException;
 import com.amazonaws.auth.PEM;
 import com.amazonaws.services.cloudfront.CloudFrontUrlSigner;
 import com.amazonaws.services.cloudfront.util.SignerUtils;
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.example.artvswar.service.ImageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,26 +45,48 @@ public class ImageServiceImpl implements ImageService {
         timeExpiration.setTime(new Date());
         timeExpiration.add(Calendar.MINUTE, 60);
 
-        try {
-            LOG.info("Generating signed GET URL for file name {}", fileName);
+        String imageGetUrl = null;
 
-            InputStream inputStream = privateKeyFilePath.getInputStream();
-            PrivateKey privateKey = PEM.readPrivateKey(inputStream);
-            String resourcePath = SignerUtils.generateResourcePath(SignerUtils.Protocol.https,
-                    distributionDomain, fileName);
-            return CloudFrontUrlSigner.getSignedURLWithCannedPolicy(resourcePath, keyPairId,
-                    privateKey, timeExpiration.getTime());
-        } catch (Exception e) {
-            throw new RuntimeException("Can't generate signed URL", e);
+        if (fileName != null) {
+            try {
+                LOG.info("Generating signed GET URL for file name {}", fileName);
+
+                InputStream inputStream = privateKeyFilePath.getInputStream();
+                PrivateKey privateKey = PEM.readPrivateKey(inputStream);
+                String resourcePath = SignerUtils.generateResourcePath(SignerUtils.Protocol.https,
+                        distributionDomain, fileName);
+                imageGetUrl = CloudFrontUrlSigner.getSignedURLWithCannedPolicy(resourcePath, keyPairId,
+                        privateKey, timeExpiration.getTime());
+            } catch (Exception e) {
+                throw new RuntimeException("Can't generate signed URL", e);
+            }
         }
+        return imageGetUrl;
     }
 
     @Override
     public Map<String, String> generatePutUrl(String extension) {
-        String fileName = UUID.randomUUID() + "." + extension;
-        LOG.info("Generating pre-signed PUT URL for file name {}", fileName);
+        String fileName = null;
+        String imagePutUrl = null;
+        if (extension != null) {
+            LOG.info("Generating pre-signed PUT URL for file name {}", fileName);
+            fileName = UUID.randomUUID() + "." + extension;
+            imagePutUrl = generateUrl(fileName, HttpMethod.PUT);
+        }
         return Map.of("imageFileName", fileName,
-                "imagePutUrl", generateUrl(fileName, HttpMethod.PUT));
+                "imagePutUrl", imagePutUrl);
+    }
+
+    @Override
+    public void delete(String fileName) {
+        try {
+            amazonS3.deleteObject(new DeleteObjectRequest(s3BucketName, fileName));
+        } catch (AmazonServiceException e) {
+            throw new RuntimeException("Amazon S3 couldn't process the call", e);
+        } catch (SdkClientException e) {
+            throw new RuntimeException("Amazon S3 couldn't be contacted for a response, or the "
+                    + "client couldn't parse the response from Amazon S3", e);
+        }
     }
 
     private String generateUrl(String fileName, HttpMethod httpMethod) {
