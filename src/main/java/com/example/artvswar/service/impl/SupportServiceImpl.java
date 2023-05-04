@@ -1,11 +1,11 @@
 package com.example.artvswar.service.impl;
 
+import com.example.artvswar.exception.AppEntityNotFoundException;
 import com.example.artvswar.model.Support;
 import com.example.artvswar.repository.SupportRepository;
 import com.example.artvswar.service.SupportService;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import javax.persistence.EntityNotFoundException;
 
 @Service
 public class SupportServiceImpl implements SupportService {
@@ -23,7 +23,7 @@ public class SupportServiceImpl implements SupportService {
     @Override
     public Support get(Long id) {
         return repository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException(String.format("Can't find support by %s", id)));
+                () -> new AppEntityNotFoundException(String.format("Can't find support by id = %s", id)));
     }
 
     @Override

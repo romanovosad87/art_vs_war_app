@@ -1,11 +1,11 @@
 package com.example.artvswar.service.impl;
 
+import com.example.artvswar.exception.AppEntityNotFoundException;
 import com.example.artvswar.model.Medium;
 import com.example.artvswar.repository.MediumRepository;
 import com.example.artvswar.service.MediumService;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import javax.persistence.EntityNotFoundException;
 
 @Service
 public class MediumServiceImpl implements MediumService {
@@ -23,7 +23,7 @@ public class MediumServiceImpl implements MediumService {
     @Override
     public Medium get(Long id) {
         return repository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException(String.format("Can't find medium by %s", id)));
+                () -> new AppEntityNotFoundException(String.format("Can't find medium by id = %s", id)));
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.example.artvswar.dto.response;
+package com.example.artvswar.dto.response.author;
 
 import lombok.Data;
 
