@@ -58,5 +58,6 @@ public class PaintingRequestDto {
     @Min(value = 1000, message = "min value for year of creation must be 1000", groups = ThirdOrder.class)
     private Integer yearOfCreation;
 
+    @NotNull(message = "image field is required", groups = FirstOrder.class)
     private String imageFileName;
 }
