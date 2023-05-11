@@ -2,6 +2,7 @@ package com.example.artvswar.model;
 
 import com.example.artvswar.util.DateTimePatternUtil;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
@@ -29,6 +30,7 @@ public class Author {
     private String aboutMe;
     @Column(unique = true)
     private String imageFileName;
+    @Setter(AccessLevel.PRIVATE)
     @OneToMany(mappedBy = "author")
     private List<Painting> paintings = new ArrayList<>();
     @CreationTimestamp
@@ -37,6 +39,7 @@ public class Author {
     private LocalDateTime createdAt;
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+    private String email;
 
     public void addPainting(Painting painting) {
         paintings.add(painting);

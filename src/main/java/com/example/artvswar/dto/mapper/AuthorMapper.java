@@ -30,6 +30,7 @@ public class AuthorMapper {
         author.setCity(dto.getCity());
         author.setAboutMe(dto.getAboutMe());
         author.setImageFileName(dto.getImageFileName());
+        author.setEmail(dto.getEmail());
         return author;
     }
 }

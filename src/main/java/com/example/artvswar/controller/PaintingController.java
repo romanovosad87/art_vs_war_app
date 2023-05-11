@@ -71,9 +71,9 @@ public class PaintingController {
         return paintingMapper.toPaintingResponseDto(painting);
     }
 
-    @PreAuthorize("hasRole('AUTHOR')")
-    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
+//    @PreAuthorize("hasRole('AUTHOR')")
+    @ResponseStatus(HttpStatus.CREATED)
     public PaintingResponseDto create(@RequestBody @Valid PaintingRequestDto dto,
                                       @AuthenticationPrincipal Jwt jwt) {
         Painting painting = paintingMapper.toPaintingModel(dto);
@@ -83,9 +83,9 @@ public class PaintingController {
         return paintingMapper.toPaintingResponseDto(paintingService.save(painting));
     }
 
+    @PutMapping("/{id}")
     @PreAuthorize("hasRole('AUTHOR')")
     @ResponseStatus(HttpStatus.OK)
-    @PutMapping("/{id}")
     public PaintingResponseDto update(@PathVariable Long id,
                                       @RequestBody @Valid PaintingRequestDto dto,
                                       @AuthenticationPrincipal Jwt jwt) {
@@ -93,7 +93,7 @@ public class PaintingController {
         painting.setId(id);
         String authorUsername = jwt.getClaimAsString("username");
         Author author = authorService.get(authorUsername);
-        author.addPainting(painting);
+//        author.addPainting(painting);
         return paintingMapper.toPaintingResponseDto(paintingService.update(painting));
     }
 
