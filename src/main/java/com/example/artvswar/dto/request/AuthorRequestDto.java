@@ -41,5 +41,8 @@ public class AuthorRequestDto {
     groups = ThirdOrder.class)
     private String aboutMe;
 
+    @NotBlank(message = "image field is required", groups = FirstOrder.class)
     private String imageFileName;
+
+    private String email;
 }

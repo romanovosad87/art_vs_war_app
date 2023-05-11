@@ -69,8 +69,8 @@ public class ImageServiceImpl implements ImageService {
         String fileName = null;
         String imagePutUrl = null;
         if (extension != null) {
-            LOG.info("Generating pre-signed PUT URL for file name {}", fileName);
             fileName = UUID.randomUUID() + "." + extension;
+            LOG.info("Generating pre-signed PUT URL for file name {}", fileName);
             imagePutUrl = generateUrl(fileName, HttpMethod.PUT);
         }
         return Map.of("imageFileName", fileName,
