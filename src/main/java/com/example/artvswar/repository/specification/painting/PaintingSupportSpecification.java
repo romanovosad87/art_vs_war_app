@@ -11,12 +11,13 @@ import javax.persistence.criteria.JoinType;
 
 @Component
 public class PaintingSupportSpecification implements SpecificationProvider<Painting> {
+    private static final String SUPPORTS = "supports";
     private static final String FILTER_KEY = "supportIn";
     private static final String FIELD_NAME = "name";
     @Override
     public Specification<Painting> getSpecification(String[] supports) {
         return ((root, query, criteriaBuilder) -> {
-            Join<Painting, Style> join = root.join("support", JoinType.INNER);
+            Join<Painting, Style> join = root.join(SUPPORTS, JoinType.INNER);
             CriteriaBuilder.In<String> predicate = criteriaBuilder.in(join.get(FIELD_NAME));
             for (String value : supports) {
                 predicate.value(value);
