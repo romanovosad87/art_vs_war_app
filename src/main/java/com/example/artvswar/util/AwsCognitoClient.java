@@ -14,6 +14,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Component
 public class AwsCognitoClient {
+    private static final String REFRESH_TOKEN_NAME = "REFRESH_TOKEN";
     private final AWSCognitoIdentityProvider cognitoIdentityProvider;
 
     @Value("${cognito.userpool.id}")
@@ -22,7 +23,6 @@ public class AwsCognitoClient {
     @Value("${cognito.client.id}")
     private String clientId;
     public void addUserToGroup(String username, String groupname){
-
         AdminAddUserToGroupRequest addUserToGroupRequest = new AdminAddUserToGroupRequest()
                 .withGroupName(groupname)
                 .withUserPoolId(userPoolId)
@@ -32,12 +32,11 @@ public class AwsCognitoClient {
     }
 
     public AuthenticationResultType getNewTokens(String refreshToken) {
-
         final AdminInitiateAuthRequest authRequest = new AdminInitiateAuthRequest();
         authRequest.withAuthFlow(AuthFlowType.REFRESH_TOKEN_AUTH)
                 .withClientId(clientId)
                 .withUserPoolId(userPoolId)
-                .withAuthParameters(Map.of("REFRESH_TOKEN", refreshToken));
+                .withAuthParameters(Map.of(REFRESH_TOKEN_NAME, refreshToken));
 
         AdminInitiateAuthResult adminInitiateAuthResult
                 = cognitoIdentityProvider.adminInitiateAuth(authRequest);

@@ -4,18 +4,19 @@ import com.example.artvswar.exception.AppEntityNotFoundException;
 import com.example.artvswar.model.Support;
 import com.example.artvswar.repository.SupportRepository;
 import com.example.artvswar.service.SupportService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class SupportServiceImpl implements SupportService {
     private final SupportRepository repository;
 
-    public SupportServiceImpl(SupportRepository repository) {
-        this.repository = repository;
-    }
-
     @Override
+    @Transactional
     public Support save(Support support) {
         return repository.save(support);
     }

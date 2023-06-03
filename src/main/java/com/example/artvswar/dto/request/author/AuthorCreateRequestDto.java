@@ -1,4 +1,4 @@
-package com.example.artvswar.dto.request;
+package com.example.artvswar.dto.request.author;
 
 import com.example.artvswar.lib.FirstOrder;
 import com.example.artvswar.lib.SecondOrder;
@@ -10,9 +10,8 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 @Data
-@GroupSequence({AuthorRequestDto.class, FirstOrder.class, SecondOrder.class, ThirdOrder.class})
-public class AuthorRequestDto {
-
+@GroupSequence({AuthorCreateRequestDto.class, FirstOrder.class, SecondOrder.class, ThirdOrder.class})
+public class AuthorCreateRequestDto {
     @NotBlank(message = "full name field is required", groups = FirstOrder.class)
     @Size(min = 1, max = 101,
             message = "full name must be between 1 and 101 characters", groups = SecondOrder.class)
@@ -44,5 +43,6 @@ public class AuthorRequestDto {
     @NotBlank(message = "image field is required", groups = FirstOrder.class)
     private String imageFileName;
 
+    @NotBlank(message = "email field is required", groups = FirstOrder.class)
     private String email;
 }

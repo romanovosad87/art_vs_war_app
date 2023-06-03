@@ -4,18 +4,19 @@ import com.example.artvswar.exception.AppEntityNotFoundException;
 import com.example.artvswar.model.Medium;
 import com.example.artvswar.repository.MediumRepository;
 import com.example.artvswar.service.MediumService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class MediumServiceImpl implements MediumService {
     private final MediumRepository repository;
 
-    public MediumServiceImpl(MediumRepository repository) {
-        this.repository = repository;
-    }
-
     @Override
+    @Transactional
     public Medium save(Medium medium) {
         return repository.save(medium);
     }

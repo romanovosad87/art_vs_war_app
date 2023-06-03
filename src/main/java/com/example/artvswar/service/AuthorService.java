@@ -1,17 +1,21 @@
 package com.example.artvswar.service;
 
+import com.example.artvswar.dto.response.author.AuthorResponseDto;
 import com.example.artvswar.model.Author;
 import org.springframework.data.domain.Page;
-import java.util.Map;
+import org.springframework.data.domain.Pageable;
 
 public interface AuthorService {
     Author save(Author author);
 
     Author update(Author author);
+    Author getAuthorByCognitoUsername(String cognitoUsername);
 
-    Author get(String id);
+    AuthorResponseDto getDtoByCognitoUsername(String cognitoUsername);
 
-    Page<Author> getAll(Map<String, String> params);
+    Author getReference(String id);
+
+    Page<AuthorResponseDto> getAll(Pageable pageable);
 
     long getNumberOfAllAuthors();
 }
