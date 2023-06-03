@@ -1,15 +1,13 @@
 package com.example.artvswar.repository;
 
 import com.example.artvswar.model.Author;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
+import java.util.Optional;
 
-@Repository
 public interface AuthorRepository extends JpaRepository<Author, String> {
-    @Modifying
-    @Query(value = "insert into authors(id) values (:id)", nativeQuery = true)
-    void saveAuthorById(@Param("id") String id);
+    <T> Page<T> findAllBy(Class<T> type, Pageable pageable);
+
+    <T> Optional<T> findByCognitoUsername(Class<T> type, String cognitoUsername);
 }

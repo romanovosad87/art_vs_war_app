@@ -15,8 +15,8 @@ public class UrlParser {
     private final static int DEFAULT_IMAGES_QUANTITY = 12;
     private final static int DEFAULT_PAGE_NUMBER = 0;
     private final static String PAGE = "page";
-    private final static String PAGE_SIZE = "pageSize";
-    private final static String SORT_BY = "sortBy";
+    private final static String PAGE_SIZE = "size";
+    private final static String SORT_BY = "sort";
     private final static String COMMA = ",";
     private final UrlSortParser urlSortParser;
     private final PaintingSpecificationManager paintingSpecificationManager;

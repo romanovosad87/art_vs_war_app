@@ -10,9 +10,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class AwsCognitoRoleConverter implements Converter<Jwt, Collection<GrantedAuthority>> {
+    private static final String COGNITO_GROUP_CLAIM = "cognito:groups";
     @Override
     public Collection<GrantedAuthority> convert(Jwt source) {
-        List<String> cognitoGroup  = source.getClaimAsStringList("cognito:groups");
+        List<String> cognitoGroup  = source.getClaimAsStringList(COGNITO_GROUP_CLAIM);
         if (cognitoGroup == null || cognitoGroup.isEmpty()) {
             return new ArrayList<>();
         }
