@@ -1,17 +1,21 @@
 package com.example.artvswar.controller;
 
+import com.example.artvswar.dto.request.painting.PaintingCheckInputDto;
 import com.example.artvswar.dto.request.painting.PaintingCreateRequestDto;
-import com.example.artvswar.dto.response.painting.PaintingCreatedResponseDto;
-import com.example.artvswar.dto.response.painting.PaintingDto;
+import com.example.artvswar.dto.request.painting.PaintingUpdateRequestDto;
+import com.example.artvswar.dto.response.FolderResponseDto;
+import com.example.artvswar.dto.response.image.AdditionalImageResponseDto;
+import com.example.artvswar.dto.response.painting.PaintingMainPageResponseDto;
+import com.example.artvswar.dto.response.painting.PaintingParametersForSearchResponseDto;
 import com.example.artvswar.dto.response.painting.PaintingResponseDto;
-import com.example.artvswar.model.Author;
-import com.example.artvswar.model.Painting;
-import com.example.artvswar.service.AuthorService;
+import com.example.artvswar.dto.response.painting.PaintingShortResponseDto;
 import com.example.artvswar.service.PaintingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,21 +25,25 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/paintings")
 public class PaintingController {
+    private static final String SUBJECT = "sub";
+    private static final String ADDED_TO_DATABASE = "entityCreatedAt";
+    private static final int DEFAULT_PAGE_SIZE = 6;
     private final PaintingService paintingService;
-    private final AuthorService authorService;
 
     @GetMapping("/{id}")
     public ResponseEntity<PaintingResponseDto> getById(@PathVariable Long id) {
@@ -43,31 +51,95 @@ public class PaintingController {
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
+    @GetMapping("/v2/{prettyId}")
+    public ResponseEntity<PaintingResponseDto> getByPrettyId(@PathVariable String prettyId) {
+        PaintingResponseDto dto = paintingService.getByPrettyId(prettyId);
+        return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole('AUTHOR')")
+    @GetMapping("/profile/{prettyId}")
+    public ResponseEntity<PaintingResponseDto> getInProfileByPrettyId(@PathVariable String prettyId) {
+        PaintingResponseDto dto = paintingService.getByPrettyId(prettyId);
+        return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+
+    @GetMapping("/author/{authorPrettyId}")
+    public ResponseEntity<Page<PaintingShortResponseDto>> getAllByAuthorPrettyId(
+            @PathVariable String authorPrettyId,
+            @PageableDefault(size = 4) Pageable pageable) {
+        Page<PaintingShortResponseDto> allPaintings = paintingService
+                .findAllByAuthorPrettyId(authorPrettyId, pageable);
+        return new ResponseEntity<>(allPaintings, HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole('AUTHOR')")
+    @GetMapping("/author/all")
+    public ResponseEntity<Page<PaintingShortResponseDto>> getAllByAuthorCognitoSubject(
+            @AuthenticationPrincipal Jwt jwt,
+            @SortDefault(sort = ADDED_TO_DATABASE, direction = Sort.Direction.DESC)
+            @PageableDefault(size = 4) Pageable pageable) {
+        String subject = jwt.getClaimAsString(SUBJECT);
+        Page<PaintingShortResponseDto> allPaintings = paintingService
+                .findAllByAuthorCognitoSubject(subject, pageable);
+        return new ResponseEntity<>(allPaintings, HttpStatus.OK);
+    }
+
+    @GetMapping("/additional")
+    public ResponseEntity<List<PaintingShortResponseDto>> getAdditionalPaintings(
+            @RequestParam String paintingPrettyId,
+            @RequestParam int size) {
+        List<PaintingShortResponseDto> additionalPaintings
+                = paintingService.getAdditionalPaintings(paintingPrettyId, size);
+        return new ResponseEntity<>(additionalPaintings, HttpStatus.OK);
+    }
+
+    @GetMapping("/collection/{collectionPrettyId}")
+    public ResponseEntity<Page<PaintingShortResponseDto>> getAllByCollection(
+            @PathVariable String collectionPrettyId,
+            @PageableDefault(size = DEFAULT_PAGE_SIZE) Pageable pageable) {
+        Page<PaintingShortResponseDto> allPaintings
+                = paintingService.findAllByCollectionPrettyId(collectionPrettyId, pageable);
+        return new ResponseEntity<>(allPaintings, HttpStatus.OK);
+    }
+
+//    @GetMapping
+//    public ResponseEntity<Page<PaintingShortResponseDto>> getAll(@RequestParam Map<String, String> params,
+//                                                                       @PageableDefault(size = 12) Pageable pageable) {
+//        Page<PaintingShortResponseDto> allBy = paintingService.getAll(params, pageable);
+//        return new ResponseEntity<>(allBy, HttpStatus.OK);
+//
+//    }
+
+    @PostMapping("/checkInputAndGet")
+    public FolderResponseDto checkInput(@RequestBody @Valid PaintingCheckInputDto dto,
+                                        @AuthenticationPrincipal Jwt jwt) {
+        String subject = jwt.getClaimAsString(SUBJECT);
+        return paintingService.createCloudinaryFolder(subject, dto.getTitle());
+    }
+
     @PostMapping
     @PreAuthorize("hasRole('AUTHOR')")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<PaintingCreatedResponseDto> create(@RequestBody @Valid PaintingCreateRequestDto dto,
-                                      @AuthenticationPrincipal Jwt jwt) {
-        String authorUsername = jwt.getClaimAsString("username");
-        Painting savedPainting = paintingService.save(dto, authorUsername);
-        PaintingCreatedResponseDto createdResponseDto
-                = new PaintingCreatedResponseDto(savedPainting.getId());
-        return new ResponseEntity<>(createdResponseDto, HttpStatus.CREATED);
+    public ResponseEntity<PaintingResponseDto> create(
+            @RequestBody @Valid PaintingCreateRequestDto dto,
+            @AuthenticationPrincipal Jwt jwt) {
+        String authorSubject = jwt.getClaimAsString(SUBJECT);
+        PaintingResponseDto responseDto = paintingService.save(dto, authorSubject);
+        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
 
-//    @PutMapping("/{id}")
-//    @PreAuthorize("hasRole('AUTHOR')")
-//    @ResponseStatus(HttpStatus.OK)
-//    public PaintingResponseDto update(@PathVariable Long id,
-//                                      @RequestBody @Valid PaintingUpdateRequestDto dto,
-//                                      @AuthenticationPrincipal Jwt jwt) {
-//        Painting painting = paintingMapper.toPaintingModel(dto);
-//        painting.setId(id);
-//        String authorUsername = jwt.getClaimAsString("username");
-//        Author author = authorService.getAuthorByCognitoUsername(authorUsername);
-////        author.addPainting(painting);
-//        return paintingMapper.toPaintingResponseDto(paintingService.update(painting));
-//    }
+    @PutMapping("/{prettyId}")
+    @PreAuthorize("hasRole('AUTHOR')")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<PaintingResponseDto> update(
+            @PathVariable String prettyId,
+            @RequestBody @Valid PaintingUpdateRequestDto dto,
+            @AuthenticationPrincipal Jwt jwt) {
+        String cognitoSubject = jwt.getClaimAsString(SUBJECT);
+        PaintingResponseDto responseDto = paintingService.update(prettyId, dto, cognitoSubject);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
 
     @GetMapping("/count")
     public ResponseEntity<Long> getNumberOfPaintings() {
@@ -75,43 +147,47 @@ public class PaintingController {
                 HttpStatus.OK);
     }
 
-    @GetMapping("/maxPrice")
-    public ResponseEntity<BigDecimal> getMaxPrice() {
-        return new ResponseEntity<>(paintingService.getMaxPrice(), HttpStatus.OK);
-    }
-
-    @GetMapping("/minPrice")
-    public ResponseEntity<BigDecimal> getMinPrice() {
-        return new ResponseEntity<>(paintingService.getMinPrice(), HttpStatus.OK);
-    }
-
-    @GetMapping("/maxHeight")
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Integer> getMaxHeight() {
-        return new ResponseEntity<>(paintingService.getMaxHeight(), HttpStatus.OK);
-    }
-
-    @GetMapping("/maxWidth")
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Integer> getMaxWidth() {
-        return new ResponseEntity<>(paintingService.getMaxWidth(), HttpStatus.OK);
-    }
-
     @GetMapping("/search")
-    public ResponseEntity<Page<PaintingDto>> getAllByParamsReturnDto(
-            @RequestParam Map<String, String> params, @PageableDefault(size = 12) Pageable pageable) {
-        Page<PaintingDto> paintingsDto = paintingService.getAllByParamsReturnDto(params, pageable);
+    public ResponseEntity<Page<PaintingShortResponseDto>> getAllByParamsReturnDto(
+            @RequestParam Map<String, String> params,
+            @PageableDefault(size = 16) Pageable pageable) {
+        Page<PaintingShortResponseDto> paintingsDto = paintingService.getAllByParamsReturnDto(params, pageable);
         return new ResponseEntity<>(paintingsDto, HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('AUTHOR')")
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id,
-                       @AuthenticationPrincipal Jwt jwt) {
-        String authorUsername = jwt.getClaimAsString("username");
-        Author author = authorService.getAuthorByCognitoUsername(authorUsername);
-        Painting painting = paintingService.get(id);
-//        author.remove(painting);
-        paintingService.delete(painting);
+    @DeleteMapping("/{prettyId}")
+    public void delete(@PathVariable String prettyId) {
+        paintingService.deleteByPrettyId(prettyId);
+    }
+
+    @PreAuthorize("hasRole('AUTHOR')")
+    @GetMapping("/additionalImages/{prettyId}")
+    public ResponseEntity<List<AdditionalImageResponseDto>> getAdditionalImagesOfPainting(
+            @PathVariable String prettyId) {
+        List<AdditionalImageResponseDto> dtos
+                = paintingService.getAdditionalImagesByPrettyId(prettyId);
+        return new ResponseEntity<>(dtos, HttpStatus.OK);
+    }
+
+    @GetMapping("/params")
+    public ResponseEntity<PaintingParametersForSearchResponseDto> getActiveParams() {
+        PaintingParametersForSearchResponseDto dto = paintingService.getDistinctParams();
+        return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+
+    @GetMapping("/recommend")
+    public ResponseEntity<List<PaintingShortResponseDto>> getRecommendedPaintingsInShoppingCart(
+            @RequestParam Set<String> prettyIds,
+            @RequestParam int size) {
+        List<PaintingShortResponseDto> recommendedPaintings = paintingService
+                .getRecommendedPaintings(prettyIds, size);
+        return new ResponseEntity<>(recommendedPaintings, HttpStatus.OK);
+    }
+
+    @GetMapping("/mainPage")
+    public ResponseEntity<Map<Double, List<PaintingMainPageResponseDto>>> getPaintingsForMainPage() {
+        Map<Double, List<PaintingMainPageResponseDto>> paintings = paintingService.getPaintingsForMainPage();
+        return new ResponseEntity<>(paintings, HttpStatus.OK);
     }
 }

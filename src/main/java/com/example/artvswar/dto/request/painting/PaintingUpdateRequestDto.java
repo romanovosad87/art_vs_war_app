@@ -1,6 +1,6 @@
 package com.example.artvswar.dto.request.painting;
 
-import com.example.artvswar.dto.request.ImageRequestDto;
+import com.example.artvswar.dto.request.image.PaintingImageUpdateRequestDto;
 import com.example.artvswar.lib.FirstOrder;
 import com.example.artvswar.lib.SecondOrder;
 import com.example.artvswar.lib.ThirdOrder;
@@ -48,15 +48,25 @@ public class PaintingUpdateRequestDto {
     @NotNull(message = "subject field is required", groups = FirstOrder.class)
     private List<Long> subjectIds;
 
-    @NotNull(message = "height field is required", groups = FirstOrder.class)
-    @Min(value = 1, message = "min height is 1 cm", groups = ThirdOrder.class)
-    @Max(value = 700, message = "max height is 700 cm", groups = ThirdOrder.class)
-    private Double height;
+    @NotNull(message = "weight field is required", groups = FirstOrder.class)
+    @Min(value = 1, message = "min weight is 1 gram", groups = ThirdOrder.class)
+    @Max(value = 10_000, message = "max weight is 10_000 gram", groups = ThirdOrder.class)
+    private Double weight;
 
     @NotNull(message = "width field is required", groups = FirstOrder.class)
     @Min(value = 1, message = "min width is 1 cm", groups = ThirdOrder.class)
     @Max(value = 700, message = "max width is 700 cm", groups = ThirdOrder.class)
     private Double width;
+
+    @NotNull(message = "height field is required", groups = FirstOrder.class)
+    @Min(value = 1, message = "min height is 1 cm", groups = ThirdOrder.class)
+    @Max(value = 700, message = "max height is 700 cm", groups = ThirdOrder.class)
+    private Double height;
+
+    @NotNull(message = "depth field is required", groups = FirstOrder.class)
+    @Digits(integer = 1, fraction = 1, message = "depth must have maximum 1 number of digits "
+            + "in centimetres and 1 number of digits in millimeters", groups = ThirdOrder.class)
+    private Double depth;
 
     @NotNull(message = "year of creation field is required", groups = FirstOrder.class)
     @Year(groups = ThirdOrder.class)
@@ -64,5 +74,5 @@ public class PaintingUpdateRequestDto {
     private Integer yearOfCreation;
 
     @NotNull(message = "image field is required", groups = FirstOrder.class)
-    private ImageRequestDto image;
+    private PaintingImageUpdateRequestDto image;
 }

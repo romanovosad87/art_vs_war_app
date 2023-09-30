@@ -14,8 +14,8 @@ public class PaintingPriceBetweenSpecification implements SpecificationProvider<
     public Specification<Painting> getSpecification(String[] fromToPrice) {
         return ((root, query, criteriaBuilder) ->
                 criteriaBuilder.between(root.get(FIELD_NAME),
-                        BigDecimal.valueOf(Integer.parseInt(fromToPrice[0])),
-                        BigDecimal.valueOf(Integer.parseInt(fromToPrice[1]))));
+                        BigDecimal.valueOf(Long.parseLong(fromToPrice[0])),
+                        BigDecimal.valueOf(Long.parseLong(fromToPrice[1]))));
     }
 
     @Override

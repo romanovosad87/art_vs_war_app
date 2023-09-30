@@ -1,11 +1,13 @@
 package com.example.artvswar.dto.request.author;
 
+import com.example.artvswar.dto.request.image.ImageCreateRequestDto;
 import com.example.artvswar.lib.FirstOrder;
 import com.example.artvswar.lib.SecondOrder;
 import com.example.artvswar.lib.ThirdOrder;
 import lombok.Data;
 import javax.validation.GroupSequence;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
@@ -13,8 +15,8 @@ import javax.validation.constraints.Size;
 @GroupSequence({AuthorCreateRequestDto.class, FirstOrder.class, SecondOrder.class, ThirdOrder.class})
 public class AuthorCreateRequestDto {
     @NotBlank(message = "full name field is required", groups = FirstOrder.class)
-    @Size(min = 1, max = 101,
-            message = "full name must be between 1 and 101 characters", groups = SecondOrder.class)
+    @Size(min = 1, max = 40,
+            message = "full name must be between 1 and 40 characters", groups = SecondOrder.class)
     @Pattern(regexp = "[\\p{IsLatin}\\s'-]+", message = "full name except only Latin, space, ' and -",
             groups = ThirdOrder.class)
     private String fullName;
@@ -40,9 +42,9 @@ public class AuthorCreateRequestDto {
     groups = ThirdOrder.class)
     private String aboutMe;
 
-    @NotBlank(message = "image field is required", groups = FirstOrder.class)
-    private String imageFileName;
-
     @NotBlank(message = "email field is required", groups = FirstOrder.class)
     private String email;
+
+    @NotNull(message = "photo file is required", groups = FirstOrder.class)
+    private ImageCreateRequestDto image;
 }

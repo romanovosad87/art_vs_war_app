@@ -1,5 +1,6 @@
 package com.example.artvswar.repository.painting;
 
+import com.example.artvswar.dto.response.MainPageDataResponseDto;
 import com.example.artvswar.dto.response.MediumResponseDto;
 import com.example.artvswar.dto.response.StyleResponseDto;
 import com.example.artvswar.dto.response.SubjectResponseDto;
@@ -7,19 +8,19 @@ import com.example.artvswar.dto.response.SupportResponseDto;
 import com.example.artvswar.dto.response.author.AuthorForPaintingResponseDto;
 import com.example.artvswar.dto.response.image.ImageResponse;
 import com.example.artvswar.dto.response.painting.PaintingDto;
+import com.example.artvswar.dto.response.painting.PaintingParametersForSearchResponseDto;
+import com.example.artvswar.dto.response.painting.PaintingShortResponseDto;
 import com.example.artvswar.model.Author;
 import com.example.artvswar.model.Image;
 import com.example.artvswar.model.Medium;
 import com.example.artvswar.model.Painting;
+import com.example.artvswar.model.PaintingImage;
 import com.example.artvswar.model.Style;
 import com.example.artvswar.model.Subject;
 import com.example.artvswar.model.Support;
-import com.example.artvswar.repository.painting.CustomPaintingRepository;
-import com.example.artvswar.util.image.ImageTransformation;
+import com.example.artvswar.model.enumModel.ModerationStatus;
+import com.example.artvswar.model.enumModel.PaymentStatus;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.jpa.QueryHints;
-import org.hibernate.query.Query;
-import org.springframework.beans.support.PagedListHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -29,25 +30,20 @@ import org.springframework.data.jpa.repository.query.QueryUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.persistence.EntityManager;
 import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -56,34 +52,65 @@ import javax.persistence.criteria.Root;
 @Transactional(readOnly = true)
 public class CustomPaintingRepositoryImpl
         implements CustomPaintingRepository {
+    private static final DateTimeFormatter DATE_TIME_FORMATTER =
+            DateTimeFormatter.ofPattern("dd-MMM-yyyy", Locale.UK);
+    private static final String RANDOM = "RAND";
     private static final String AUTHOR = "author";
+    private static final String COLLECTION = "collection";
+    private static final String PAINTING_IMAGE = "paintingImage";
     private static final String IMAGE = "image";
+    private static final String ADDITIONAL_IMAGES = "additionalImages";
     private static final String STYLES = "styles";
     private static final String MEDIUMS = "mediums";
     private static final String SUPPORTS = "supports";
     private static final String SUBJECTS = "subjects";
     private static final String ID = "id";
+    private static final String PUBLIC_iD = "publicId";
     private static final String TITLE = "title";
     private static final String DESCRIPTION = "description";
     private static final String PRICE = "price";
+    private static final String WEIGHT = "weight";
     private static final String WIDTH = "width";
     private static final String HEIGHT = "height";
+    private static final String DEPTH = "depth";
+    private static final String IS_DELETED = "isDeleted";
     private static final String YEAR_OF_CREATION = "yearOfCreation";
-    private static final String COGNITO_USERNAME = "cognitoUsername";
+    private static final String ADDED_TO_DATABASE = "entityCreatedAt";
+    private static final String COGNITO_SUBJECT = "cognitoSubject";
+    private static final String PRETTY_ID = "prettyId";
     private static final String FULL_NAME = "fullName";
+    private static final String COUNTRY = "country";
+    private static final String IMAGE_URL = "imageUrl";
+    private static final String URL = "url";
+    private static final String MODERATION_STATUS = "moderationStatus";
+    private static final String PAYMENT_STATUS = "paymentStatus";
+    private static final String ROOM_VIEWS = "roomViews";
     private static final String TRANSFORMED_RATIO = "transformedRatio";
     private static final String NAME = "name";
     private static final String PAINTING_ID = "painting_id";
+    private static final String PAINTING_PRETTY_ID = "painting_pretty_id";
     private static final String PAINTING_TITLE = "painting_title";
     private static final String PAINTING_DESCRIPTION = "painting_description";
     private static final String PAINTING_PRICE = "painting_price";
+    private static final String PAINTING_WEIGHT = "painting_weight";
     private static final String PAINTING_HEIGHT = "painting_height";
     private static final String PAINTING_WIDTH = "painting_width";
+    private static final String PAINTING_DEPTH = "painting_depth";
     private static final String PAINTING_YEAR_OF_CREATION = "painting_yearOfCreation";
+    private static final String PAINTING_PAYMENT_STATUS = "painting_payment_status";
+    private static final String PAINTING_ADDED_TO_DATABASE = "painting_addedToDatabase";
     private static final String AUTHOR_ID = "author_id";
+    private static final String AUTHOR_PRETTY_ID = "author_pretty_id";
     private static final String AUTHOR_FULL_NAME = "author_fullName";
-    private static final String IMAGE_ID = "image_id";
+    private static final String AUTHOR_COUNTRY = "author_country";
+    private static final String COLLECTION_ID = "collection_id";
+    private static final String COLLECTION_PRETTY_ID = "collection_prettyId";
+    private static final String COLLECTION_TITLE = "collection_title";
+    private static final String PAINTING_IMAGE_ID = "painting_image_id";
     private static final String IMAGE_RATIO = "image_ratio";
+    private static final String PAINTING_IMAGE_URL = "image_url";
+    private static final String IMAGE_ROOM_VIEWS_URL = "image_roomViews_url";
+    private static final String ADDITIONAL_IMAGE_URL = "additional_image_url";
     private static final String STYLE_ID = "style_id";
     private static final String STYLE_NAME = "style_name";
     private static final String MEDIUM_ID = "medium_id";
@@ -93,142 +120,6 @@ public class CustomPaintingRepositoryImpl
     private static final String SUBJECT_ID = "subject_id";
     private static final String SUBJECT_NAME = "subject_name";
     private final EntityManager entityManager;
-    private final ImageTransformation imageTransformation;
-
-    @Override
-    public Page<PaintingDto> getAllDtos(Pageable pageable) {
-
-//        Map<Long, PaintingDto> paintingDtoMap = new LinkedHashMap<>();
-//
-//
-//        String query = "select p.id as painting_id, "
-//                + "p.title as painting_title, "
-//                + "p.description as painting_description, "
-//                + "p.price as painting_price, "
-//                + "p.width as painting_width, "
-//                + "p.height as painting_height, "
-//                + "p.yearOfCreation as painting_yearOfCreation, "
-//                + "p.imageFileName as painting_imageFileName, "
-//                + "a.cognitoUsername as author_id, "
-//                + "a.fullName as author_fullName "
-//                + "from Painting p "
-//                + "join p.author a";
-//
-//        String ordering;
-//        if (pageable.getSort().isSorted()) {
-//            ordering = " ORDER BY " + pageable.getSort().stream().map(order -> "p." + order.getProperty() + " " + order.getDirection())
-//                    .collect(Collectors.joining(", "));
-//        } else {
-//            ordering = " ORDER BY p.id DESC";
-//        }
-//
-//        int pageSize = pageable.getPageSize();
-//        int offset = (int) pageable.getOffset();
-//
-//        Stream<Tuple> authorStyleStream = entityManager.createQuery(query + ordering, Tuple.class)
-//                .setFirstResult(offset)
-//                .setMaxResults(pageSize)
-//                .getResultStream();
-//
-//        authorStyleStream.map(tuple -> {
-//                    PaintingDto paintingDto = paintingDtoMap.computeIfAbsent(tuple.get("painting_id", Long.class),
-//                            id -> new PaintingDto(tuple.get("painting_id", Long.class),
-//                                    tuple.get("painting_title", String.class),
-//                                    tuple.get("painting_description", String.class),
-//                                    tuple.get("painting_price", BigDecimal.class),
-//                                    tuple.get("painting_height", Double.class),
-//                                    tuple.get("painting_width", Double.class),
-//                                    tuple.get("painting_yearOfCreation", Integer.class)));
-//
-//                    paintingDto.setAuthor(new AuthorForPaintingResponseDto(tuple.get("author_id", String.class),
-//                            tuple.get("author_fullName", String.class)));
-//
-//                    return paintingDto;
-//                })
-//                .collect(Collectors.toList());
-//
-//        String longsId = "";
-//        if (!paintingDtoMap.keySet().isEmpty()) {
-//            longsId = " where p.id in ("
-//                    + paintingDtoMap.keySet().stream()
-//                    .map(String::valueOf)
-//                    .collect(Collectors.joining(", "))
-//                    + ")";
-//        }
-//
-//        Stream<Tuple> styleStream = entityManager.createQuery("select p.id as painting_id, "
-//                        + "st.id as style_id, "
-//                        + "st.name as style_name "
-//                        + "from Painting p "
-//                        + "join p.styles st"
-//                        + longsId, Tuple.class)
-//                .getResultStream();
-//
-//        styleStream.map(tuple -> paintingDtoMap.computeIfPresent(tuple.get("painting_id", Long.class),
-//                        (id, dto) -> {
-//                            dto.getMediums().add(new MediumResponseDto(tuple.get("style_id", Long.class),
-//                                    tuple.get("style_name", String.class)));
-//                            return dto;
-//                        }))
-//                .distinct()
-//                .collect(Collectors.toList());
-//
-//        Stream<Tuple> mediumStream = entityManager.createQuery("select p.id as painting_id, "
-//                        + "m.id as medium_id, "
-//                        + "m.name as medium_name "
-//                        + "from Painting p "
-//                        + "join p.mediums m"
-//                        + longsId, Tuple.class)
-//                .getResultStream();
-//
-//        mediumStream.map(tuple -> paintingDtoMap.computeIfPresent(tuple.get("painting_id", Long.class),
-//                        (id, dto) -> {
-//                            dto.getMediums().add(new MediumResponseDto(tuple.get("medium_id", Long.class),
-//                                    tuple.get("medium_name", String.class)));
-//                            return dto;
-//                        }))
-//                .distinct()
-//                .collect(Collectors.toList());
-//
-//        Stream<Tuple> supportStream = entityManager.createQuery("select p.id as painting_id, "
-//                        + "sp.id as support_id, "
-//                        + "sp.name as support_name "
-//                        + "from Painting p "
-//                        + "join p.supports sp"
-//                        + longsId, Tuple.class)
-//                .getResultStream();
-//
-//        supportStream.map(tuple -> paintingDtoMap.computeIfPresent(tuple.get("painting_id", Long.class),
-//                        (id, dto) -> {
-//                            dto.getSupports().add(new SupportResponseDto(tuple.get("support_id", Long.class),
-//                                    tuple.get("support_name", String.class)));
-//                            return dto;
-//                        }))
-//                .distinct()
-//                .collect(Collectors.toList());
-//
-//        Stream<Tuple> subjectStream = entityManager.createQuery("select p.id as painting_id, "
-//                        + "sb.id as subject_id, "
-//                        + "sb.name as subject_name "
-//                        + "from Painting p "
-//                        + "join p.subjects sb"
-//                        + longsId, Tuple.class)
-//                .getResultStream();
-//
-//        subjectStream.map(tuple -> paintingDtoMap.computeIfPresent(tuple.get("painting_id", Long.class),
-//                        (id, dto) -> {
-//                            dto.getSubjects().add(new SubjectResponseDto(tuple.get("subject_id", Long.class),
-//                                    tuple.get("subject_name", String.class)));
-//                            return dto;
-//                        }))
-//                .distinct()
-//                .collect(Collectors.toList());
-//
-//        List<PaintingDto> paintingDtos = new ArrayList<>(paintingDtoMap.values());
-//        int total = paintingDtos.size();
-//        return new PageImpl<>(paintingDtos, pageable, total);
-        return null;
-    }
 
     @Override
     public Page<PaintingDto> getAllDtosBySpecification(Specification<Painting> specification,
@@ -240,35 +131,45 @@ public class CustomPaintingRepositoryImpl
         CriteriaQuery<Tuple> query = cb.createTupleQuery();
         Root<Painting> painting = query.from(Painting.class);
         Join<Painting, Author> author = painting.join(AUTHOR);
-        Join<Painting, Image> image = painting.join(IMAGE);
+        Join<Painting, PaintingImage> image = painting.join(PAINTING_IMAGE);
+        Predicate authorIsDeleted = cb.equal(author.get(IS_DELETED), false);
 
         if (specification != null) {
-            Predicate predicate = specification.toPredicate(painting, query, cb);
+            Predicate specificationPredicate = specification.toPredicate(painting, query, cb);
             query.multiselect(painting.get(ID).alias(PAINTING_ID),
+                            painting.get(PRETTY_ID).alias(PAINTING_PRETTY_ID),
                             painting.get(TITLE).alias(PAINTING_TITLE),
                             painting.get(DESCRIPTION).alias(PAINTING_DESCRIPTION),
                             painting.get(PRICE).alias(PAINTING_PRICE),
                             painting.get(WIDTH).alias(PAINTING_WIDTH),
                             painting.get(HEIGHT).alias(PAINTING_HEIGHT),
                             painting.get(YEAR_OF_CREATION).alias(PAINTING_YEAR_OF_CREATION),
-                            author.get(COGNITO_USERNAME).alias(AUTHOR_ID),
+                            author.get(COGNITO_SUBJECT).alias(AUTHOR_ID),
+                            author.get(PRETTY_ID).alias(AUTHOR_PRETTY_ID),
                             author.get(FULL_NAME).alias(AUTHOR_FULL_NAME),
-                            image.get(ID).alias(IMAGE_ID),
+                            author.get(COUNTRY).alias(AUTHOR_COUNTRY),
+                            image.get(ID).alias(PAINTING_IMAGE_ID),
+                            image.get(IMAGE_URL).alias(PAINTING_IMAGE_URL),
                             image.get(TRANSFORMED_RATIO).alias(IMAGE_RATIO))
-                    .where(predicate)
+                    .where(specificationPredicate, authorIsDeleted)
                     .orderBy(QueryUtils.toOrders(pageable.getSort(), painting, cb));
         } else {
             query.multiselect(painting.get(ID).alias(PAINTING_ID),
+                            painting.get(PRETTY_ID).alias(PAINTING_PRETTY_ID),
                             painting.get(TITLE).alias(PAINTING_TITLE),
                             painting.get(DESCRIPTION).alias(PAINTING_DESCRIPTION),
                             painting.get(PRICE).alias(PAINTING_PRICE),
                             painting.get(WIDTH).alias(PAINTING_WIDTH),
                             painting.get(HEIGHT).alias(PAINTING_HEIGHT),
                             painting.get(YEAR_OF_CREATION).alias(PAINTING_YEAR_OF_CREATION),
-                            author.get(COGNITO_USERNAME).alias(AUTHOR_ID),
+                            author.get(COGNITO_SUBJECT).alias(AUTHOR_ID),
+                            author.get(PRETTY_ID).alias(AUTHOR_PRETTY_ID),
                             author.get(FULL_NAME).alias(AUTHOR_FULL_NAME),
-                            image.get(ID).alias(IMAGE_ID),
+                            author.get(COUNTRY).alias(AUTHOR_COUNTRY),
+                            image.get(ID).alias(PAINTING_IMAGE_ID),
+                            image.get(IMAGE_URL).alias(PAINTING_IMAGE_URL),
                             image.get(TRANSFORMED_RATIO).alias(IMAGE_RATIO))
+                    .where(authorIsDeleted)
                     .orderBy(QueryUtils.toOrders(pageable.getSort(), painting, cb));
 
         }
@@ -279,10 +180,10 @@ public class CustomPaintingRepositoryImpl
                 .getResultStream();
 
 
-
         paintingAuthorStream.map(tuple -> {
                     PaintingDto paintingDto = paintingDtoMap.computeIfAbsent(tuple.get(PAINTING_ID, Long.class),
                             id -> new PaintingDto(tuple.get(PAINTING_ID, Long.class),
+                                    tuple.get(PAINTING_PRETTY_ID, String.class),
                                     tuple.get(PAINTING_TITLE, String.class),
                                     tuple.get(PAINTING_DESCRIPTION, String.class),
                                     tuple.get(PAINTING_PRICE, BigDecimal.class),
@@ -291,13 +192,13 @@ public class CustomPaintingRepositoryImpl
                                     tuple.get(PAINTING_YEAR_OF_CREATION, Integer.class)));
 
                     paintingDto.setAuthor(new AuthorForPaintingResponseDto(tuple.get(AUTHOR_ID, String.class),
-                            tuple.get(AUTHOR_FULL_NAME, String.class)));
+                            tuple.get(AUTHOR_PRETTY_ID, String.class),
+                            tuple.get(AUTHOR_FULL_NAME, String.class),
+                            tuple.get(AUTHOR_COUNTRY, String.class)));
 
-                    String url = imageTransformation.generateUrl(tuple.get(IMAGE_ID, String.class),
-                            tuple.get(IMAGE_RATIO, Double.class));
 
-                    paintingDto.setImage(new ImageResponse(tuple.get(IMAGE_ID, String.class),
-                            tuple.get(IMAGE_RATIO, Double.class), url));
+                    paintingDto.setImage(new ImageResponse(tuple.get(PAINTING_IMAGE_ID, String.class),
+                            tuple.get(IMAGE_RATIO, Double.class), tuple.get(PAINTING_IMAGE_URL, String.class)));
 
                     return paintingDto;
                 })
@@ -407,47 +308,321 @@ public class CustomPaintingRepositoryImpl
         Root<Painting> root = countQuery.from(Painting.class);
         if (specification != null) {
             Predicate predicate = specification.toPredicate(root, countQuery, cb);
-            countQuery.select(cb.count(root)).where(predicate);
+//            countQuery.select(cb.count(root)).where(predicate);
+            countQuery.select(root.get("id")).where(predicate);
         } else {
-            countQuery.select(cb.count(root));
+            countQuery.select(root.get("id"));
         }
-        long total = entityManager.createQuery(countQuery).getSingleResult();
+        long total = entityManager.createQuery(countQuery).getResultStream().distinct().count();
 
         return new PageImpl<>(paintingDtos, pageable, total);
     }
 
     @Override
-    public Optional<Painting> getByIdWithCustomQuery(Long id) {
-        Painting painting = entityManager.createQuery("select distinct p from Painting p "
-                                + "join fetch p.author "
-                                + "join fetch p.image "
-                                + "join fetch p.styles where p.id = ?1",
-                        Painting.class)
-                .setHint(QueryHints.HINT_PASS_DISTINCT_THROUGH, false)
-                .setParameter(1, id)
+    public Page<PaintingShortResponseDto> getAllShortDtosBySpecification(
+            Specification<Painting> specification,
+            Pageable pageable) {
+
+        Map<Long, PaintingShortResponseDto> paintingDtoMap = new LinkedHashMap<>();
+
+        Sort sort = pageable.getSort();
+        if (sort == Sort.unsorted()) {
+            sort = Sort.by(Sort.Direction.DESC, ADDED_TO_DATABASE);
+        } else {
+            if (pageable.getSort().get().anyMatch(order -> order.getProperty().equals(PRICE))) {
+                sort = pageable.getSort().and(Sort.by(Sort.Direction.DESC, ID));
+            }
+        }
+
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Tuple> query = cb.createTupleQuery();
+        Root<Painting> painting = query.from(Painting.class);
+        Join<Painting, Author> author = painting.join(AUTHOR);
+        Join<Painting, PaintingImage> paintingImage = painting.join(PAINTING_IMAGE);
+        Join<PaintingImage, Image> image = paintingImage.join(IMAGE);
+        Predicate authorIsDeleted = cb.equal(author.get(IS_DELETED), false);
+        Predicate moderationStatus = cb.equal(image.get(MODERATION_STATUS), ModerationStatus.APPROVED);
+
+        if (specification != null) {
+            Predicate specificationPredicate = specification.toPredicate(painting, query, cb);
+            query.multiselect(painting.get(ID).alias(PAINTING_ID),
+                            painting.get(PRETTY_ID).alias(PAINTING_PRETTY_ID),
+                            painting.get(TITLE).alias(PAINTING_TITLE),
+                            painting.get(PRICE).alias(PAINTING_PRICE),
+                            painting.get(WIDTH).alias(PAINTING_WIDTH),
+                            painting.get(HEIGHT).alias(PAINTING_HEIGHT),
+                            painting.get(DEPTH).alias(PAINTING_DEPTH),
+                            painting.get(YEAR_OF_CREATION).alias(PAINTING_YEAR_OF_CREATION),
+                            painting.get(PAYMENT_STATUS).alias(PAINTING_PAYMENT_STATUS),
+                            author.get(PRETTY_ID).alias(AUTHOR_PRETTY_ID),
+                            author.get(FULL_NAME).alias(AUTHOR_FULL_NAME),
+                            author.get(COUNTRY).alias(AUTHOR_COUNTRY),
+                            image.get(PUBLIC_iD).alias(PAINTING_IMAGE_ID),
+                            image.get(URL).alias(PAINTING_IMAGE_URL))
+                    .where(specificationPredicate, moderationStatus, authorIsDeleted)
+                    .orderBy(QueryUtils.toOrders(sort, painting, cb))
+                    .distinct(true);
+
+        } else {
+            query.multiselect(painting.get(ID).alias(PAINTING_ID),
+                            painting.get(PRETTY_ID).alias(PAINTING_PRETTY_ID),
+                            painting.get(TITLE).alias(PAINTING_TITLE),
+                            painting.get(PRICE).alias(PAINTING_PRICE),
+                            painting.get(WIDTH).alias(PAINTING_WIDTH),
+                            painting.get(HEIGHT).alias(PAINTING_HEIGHT),
+                            painting.get(DEPTH).alias(PAINTING_DEPTH),
+                            painting.get(YEAR_OF_CREATION).alias(PAINTING_YEAR_OF_CREATION),
+                            painting.get(PAYMENT_STATUS).alias(PAINTING_PAYMENT_STATUS),
+                            author.get(PRETTY_ID).alias(AUTHOR_PRETTY_ID),
+                            author.get(FULL_NAME).alias(AUTHOR_FULL_NAME),
+                            author.get(COUNTRY).alias(AUTHOR_COUNTRY),
+                            image.get(PUBLIC_iD).alias(PAINTING_IMAGE_ID),
+                            image.get(URL).alias(PAINTING_IMAGE_URL))
+                    .where(moderationStatus, authorIsDeleted)
+                    .orderBy(QueryUtils.toOrders(sort, painting, cb));
+        }
+
+        Stream<Tuple> paintingAuthorStream = entityManager.createQuery(query)
+                .setMaxResults(pageable.getPageSize())
+                .setFirstResult((int) pageable.getOffset())
+                .getResultStream();
+
+
+        List<PaintingShortResponseDto> dtos = paintingAuthorStream.map(tuple -> paintingDtoMap.computeIfAbsent(tuple.get(PAINTING_ID, Long.class),
+                        id -> new PaintingShortResponseDto(tuple.get(PAINTING_ID, Long.class),
+                                tuple.get(PAINTING_PRETTY_ID, String.class),
+                                tuple.get(PAINTING_TITLE, String.class),
+                                tuple.get(PAINTING_PRICE, BigDecimal.class),
+                                tuple.get(PAINTING_WIDTH, Double.class),
+                                tuple.get(PAINTING_HEIGHT, Double.class),
+                                tuple.get(PAINTING_DEPTH, Double.class),
+                                tuple.get(PAINTING_YEAR_OF_CREATION, Integer.class),
+                                tuple.get(PAINTING_PAYMENT_STATUS, PaymentStatus.class),
+                                tuple.get(PAINTING_IMAGE_ID, String.class),
+                                tuple.get(PAINTING_IMAGE_URL, String.class),
+                                tuple.get(AUTHOR_FULL_NAME, String.class),
+                                tuple.get(AUTHOR_PRETTY_ID, String.class),
+                                tuple.get(AUTHOR_COUNTRY, String.class))))
+                .collect(Collectors.toList());
+
+        CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
+        Root<Painting> root = countQuery.from(Painting.class);
+        author = root.join(AUTHOR);
+        paintingImage = root.join(PAINTING_IMAGE);
+        image = paintingImage.join(IMAGE);
+        authorIsDeleted = cb.equal(author.get(IS_DELETED), false);
+        moderationStatus = cb.equal(image.get(MODERATION_STATUS), ModerationStatus.APPROVED);
+
+        if (specification != null) {
+            Predicate predicate = specification.toPredicate(root, countQuery, cb);
+            countQuery.select(root.get(ID)).where(predicate,
+                            authorIsDeleted, moderationStatus)
+                    .distinct(true);
+        } else {
+            countQuery.select(root.get(ID)).where(authorIsDeleted, moderationStatus);
+        }
+        long total = entityManager.createQuery(countQuery).getResultStream().count();
+
+        return new PageImpl<>(dtos, pageable, total);
+    }
+
+    @Override
+    public Page<PaintingShortResponseDto> findAllByAuthorPrettyId(String authorPrettyId,
+                                                                  Pageable pageable) {
+        List<PaintingShortResponseDto> resultList = entityManager.createQuery("select new com.example.artvswar.dto.response.painting.PaintingShortResponseDto("
+                                + "p.id, "
+                                + "p.prettyId, "
+                                + "p.title, "
+                                + "p.price, "
+                                + "p.width, "
+                                + "p.height, "
+                                + "p.depth, "
+                                + "p.yearOfCreation, "
+                                + "p.paymentStatus, "
+                                + "p.paintingImage.image.publicId, "
+                                + "p.paintingImage.image.url, "
+                                + "p.author.fullName,"
+                                + "p.author.prettyId, "
+                                + "p.author.country) "
+                                + "from Painting p "
+                                + "inner join p.author a "
+                                + "where p.paymentStatus != 10 and a.prettyId =?1 "
+                                + "and p.paintingImage.image.moderationStatus = 20 "
+                                + "order by p.entityCreatedAt desc",
+                        PaintingShortResponseDto.class)
+                .setParameter(1, authorPrettyId)
+                .setFirstResult((int) pageable.getOffset())
+                .setMaxResults(pageable.getPageSize())
+                .getResultList();
+
+        long total = entityManager.createQuery("select count(p.id) from Painting p "
+                        + "where p.paymentStatus != 10 and p.author.prettyId =?1 "
+                        + "and p.paintingImage.image.moderationStatus = 20", Long.class)
+                .setParameter(1, authorPrettyId)
                 .getSingleResult();
 
-        painting = entityManager.createQuery("select distinct p from Painting p "
-                                + "join fetch p.mediums where p in ?1",
-                        Painting.class)
-                .setHint(QueryHints.HINT_PASS_DISTINCT_THROUGH, false)
-                .setParameter(1, painting)
+        return new PageImpl<>(resultList, pageable, total);
+    }
+
+    @Override
+    public List<PaintingShortResponseDto> getAdditionalPaintings(String paintingPrettyId,
+                                                                 String authorPrettyId,
+                                                                 int limit) {
+        return entityManager.createQuery("select new com.example.artvswar.dto.response.painting.PaintingShortResponseDto("
+                        + "p.id, "
+                        + "p.prettyId, "
+                        + "p.title, "
+                        + "p.price, "
+                        + "p.width, "
+                        + "p.height, "
+                        + "p.depth, "
+                        + "p.yearOfCreation, "
+                        + "p.paymentStatus, "
+                        + "p.paintingImage.image.publicId, "
+                        + "p.paintingImage.image.url, "
+                        + "p.author.fullName,"
+                        + "p.author.prettyId, "
+                        + "p.author.country) "
+                        + "from Painting p "
+                        + "inner join p.author a "
+                        + "where a.prettyId =?1 and p.prettyId !=?2 and p.paymentStatus = 0 "
+                        + "and p.paintingImage.image.moderationStatus = 20"
+                        + "order by rand()", PaintingShortResponseDto.class)
+                .setParameter(1, authorPrettyId)
+                .setParameter(2, paintingPrettyId)
+                .setFirstResult(0)
+                .setMaxResults(limit)
+                .getResultList();
+    }
+
+    @Override
+    public List<PaintingShortResponseDto> getRecommendedPaintings(Set<String> paintingPrettyIds,
+                                                                  int limit) {
+
+        List<Long> subjectIds = entityManager.createQuery("select distinct sub.id from Painting p join p.subjects sub where p.prettyId in (?1)", Long.class)
+                .setParameter(1, paintingPrettyIds)
+                .getResultList();
+
+        List<Long> stylesIds = entityManager.createQuery("select distinct st.id from Painting p join p.styles st where p.prettyId in (?1)", Long.class)
+                .setParameter(1, paintingPrettyIds)
+                .getResultList();
+
+        return entityManager.createQuery("select distinct new com.example.artvswar.dto.response.painting.PaintingShortResponseDto("
+                        + "p.id, "
+                        + "p.prettyId, "
+                        + "p.title, "
+                        + "p.price, "
+                        + "p.width, "
+                        + "p.height, "
+                        + "p.depth, "
+                        + "p.yearOfCreation, "
+                        + "p.paymentStatus, "
+                        + "p.paintingImage.image.publicId, "
+                        + "p.paintingImage.image.url, "
+                        + "p.author.fullName,"
+                        + "p.author.prettyId, "
+                        + "p.author.country) "
+                        + "from Painting p "
+                        + "inner join p.author a "
+                        + "inner join p.subjects sub "
+                        + "inner join p.styles st "
+                        + "where p.paymentStatus = 0 and a.isDeleted = false "
+                        + "and p.paintingImage.image.moderationStatus = 20 "
+                        + "and p.prettyId not in (?1) and (sub.id in (?2) or st.id in (?3)) "
+                        + "order by rand()", PaintingShortResponseDto.class)
+                .setParameter(1, paintingPrettyIds)
+                .setParameter(2, subjectIds)
+                .setParameter(3, stylesIds)
+                .setFirstResult(0)
+                .setMaxResults(limit)
+                .getResultList();
+    }
+
+    @Override
+    public PaintingParametersForSearchResponseDto getDistinctParameters() {
+
+        PaintingParametersForSearchResponseDto dto = entityManager
+                .createQuery("select new com.example.artvswar.dto.response.painting.PaintingParametersForSearchResponseDto("
+                        + "min(p.price), max(p.price), "
+                        + "min(p.width), max(p.width), "
+                        + "min (p.height), max(p.height)) "
+                        + "from Painting p", PaintingParametersForSearchResponseDto.class)
                 .getSingleResult();
 
-        painting = entityManager.createQuery("select distinct p from Painting p "
-                                + "join fetch p.supports where p in ?1",
-                        Painting.class)
-                .setHint(QueryHints.HINT_PASS_DISTINCT_THROUGH, false)
-                .setParameter(1, painting)
+        dto.setStyles(entityManager
+                .createQuery("select distinct st.name from Painting p join p.styles st", String.class)
+                .getResultList());
+
+        dto.setMediums(entityManager
+                .createQuery("select distinct md.name from Painting p join p.mediums md", String.class)
+                .getResultList());
+
+        dto.setSupports(entityManager
+                .createQuery("select distinct sp.name from Painting p join p.supports sp", String.class)
+                .getResultList());
+
+        dto.setSubjects(entityManager
+                .createQuery("select distinct sb.name from Painting p join p.subjects sb", String.class)
+                .getResultList());
+
+        return dto;
+    }
+
+    @Override
+    public Page<PaintingShortResponseDto> findAllByCollectionPrettyId(String collectionPrettyId,
+                                                                      Pageable pageable) {
+        List<PaintingShortResponseDto> resultList = entityManager.createQuery("select new com.example.artvswar.dto.response.painting.PaintingShortResponseDto("
+                                + "p.id, "
+                                + "p.prettyId, "
+                                + "p.title, "
+                                + "p.price, "
+                                + "p.width, "
+                                + "p.height, "
+                                + "p.depth, "
+                                + "p.yearOfCreation, "
+                                + "p.paymentStatus, "
+                                + "p.paintingImage.image.publicId, "
+                                + "p.paintingImage.image.url, "
+                                + "p.author.fullName,"
+                                + "p.author.prettyId, "
+                                + "p.author.country) "
+                                + "from Painting p "
+                                + "inner join p.collection c "
+                                + "where p.paymentStatus != 10 and c.prettyId =?1 "
+                                + "and p.paintingImage.image.moderationStatus = 20 "
+                                + "order by p.entityCreatedAt desc",
+                        PaintingShortResponseDto.class)
+                .setParameter(1, collectionPrettyId)
+                .setFirstResult((int) pageable.getOffset())
+                .setMaxResults(pageable.getPageSize())
+                .getResultList();
+
+        long total = entityManager.createQuery("select count(p.id) from Painting p "
+                        + "where p.paymentStatus != 10 and p.collection.prettyId =?1 "
+                        + "and p.paintingImage.image.moderationStatus = 20", Long.class)
+                .setParameter(1, collectionPrettyId)
                 .getSingleResult();
 
-        painting = entityManager.createQuery("select distinct p from Painting p "
-                                + "join fetch p.subjects where p in ?1",
-                        Painting.class)
-                .setHint(QueryHints.HINT_PASS_DISTINCT_THROUGH, false)
-                .setParameter(1, painting)
-                .getSingleResult();
+        return new PageImpl<>(resultList, pageable, total);
+    }
 
-        return Optional.of(painting);
+    @Override
+    public MainPageDataResponseDto getDataForMainPage() {
+        Long paintingsQuantity = entityManager.createQuery("select count(p.id) "
+                        + "from Painting p", Long.class).getSingleResult();
+        paintingsQuantity = paintingsQuantity == null ? 0L : paintingsQuantity;
+
+        Long authorsQuantity = entityManager.createQuery("select count(a.id) "
+                        + "from Author a where a.isDeleted = false",
+                        Long.class).getSingleResult();
+        authorsQuantity = authorsQuantity == null ? 0L : authorsQuantity;
+
+        BigDecimal sumOfSoldPaintings = entityManager.createQuery("select sum(p.price) "
+                        + "from Painting p where p.paymentStatus = 20",
+                        BigDecimal.class).getSingleResult();
+        sumOfSoldPaintings = sumOfSoldPaintings == null ? BigDecimal.ZERO : sumOfSoldPaintings;
+
+        return new MainPageDataResponseDto(authorsQuantity, paintingsQuantity, sumOfSoldPaintings);
+
     }
 }

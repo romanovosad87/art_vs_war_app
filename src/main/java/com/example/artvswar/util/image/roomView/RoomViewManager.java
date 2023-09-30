@@ -15,6 +15,7 @@ public class RoomViewManager {
     public List<RoomView> getViewRooms(String publicId, double paintingWidth,
                                        double paintingHeight) {
         return roomViewProviderList.stream()
+                .parallel()
                 .map(provider -> provider.getRoom(publicId, paintingWidth, paintingHeight))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());

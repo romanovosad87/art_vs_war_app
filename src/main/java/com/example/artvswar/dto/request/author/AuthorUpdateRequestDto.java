@@ -1,11 +1,13 @@
 package com.example.artvswar.dto.request.author;
 
+import com.example.artvswar.dto.request.image.ImageUpdateRequestDto;
 import com.example.artvswar.lib.FirstOrder;
 import com.example.artvswar.lib.SecondOrder;
 import com.example.artvswar.lib.ThirdOrder;
 import lombok.Data;
 import javax.validation.GroupSequence;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
@@ -39,10 +41,6 @@ public class AuthorUpdateRequestDto {
     @Pattern(regexp = "[\\p{IsLatin}\\w\\s\\p{P}\\p{S}]+", message = "About Me except only Latin",
             groups = ThirdOrder.class)
     private String aboutMe;
-
-    @NotBlank(message = "image field is required", groups = FirstOrder.class)
-    private String imageFileName;
-
-    @NotBlank
-    private String email;
+    @NotNull(message = "image field is required", groups = FirstOrder.class)
+    private ImageUpdateRequestDto image;
 }

@@ -9,5 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AuthorForPaintingResponseDto {
     private String id;
+    private String prettyId;
     private String fullName;
+    private String country;
 }

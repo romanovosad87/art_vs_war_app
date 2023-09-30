@@ -4,6 +4,8 @@ import com.example.artvswar.dto.response.error.AllErrorFieldResponse;
 import com.example.artvswar.dto.response.error.ErrorFieldResponse;
 import com.example.artvswar.dto.response.error.ErrorResponse;
 import com.example.artvswar.exception.AppEntityNotFoundException;
+import com.example.artvswar.exception.PaintingNotAvailableException;
+import com.example.artvswar.exception.ShippingNotProcessingException;
 import com.example.artvswar.util.ErrorResponseCreator;
 import java.util.Date;
 import java.util.List;
@@ -46,4 +48,18 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ErrorResponse> entityNotFoundExceptionHandler(AppEntityNotFoundException ex) {
         return errorResponseCreator.createResponse(ex, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(value = {PaintingNotAvailableException.class})
+    public ResponseEntity<ErrorResponse> paintingNotAvailableExceptionHandler(
+            PaintingNotAvailableException ex) {
+        return errorResponseCreator.createResponse(ex, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
+    @ExceptionHandler(value = {ShippingNotProcessingException.class})
+    public ResponseEntity<ErrorResponse> shippingNotProcessingHandler(
+            ShippingNotProcessingException ex) {
+        return errorResponseCreator.createResponse(ex, HttpStatus.NOT_FOUND);
+    }
+
+
 }
