@@ -24,6 +24,7 @@ public class AmazonS3Config {
         final BasicAWSCredentials basicAWSCredentials = new BasicAWSCredentials(accessKeyId,
                 accessKeySecret);
 
+
         return AmazonS3ClientBuilder
                 .standard()
                 .withCredentials(new AWSStaticCredentialsProvider(basicAWSCredentials))

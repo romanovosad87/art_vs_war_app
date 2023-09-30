@@ -11,5 +11,4 @@ public class ArtVsWarApplication {
     public static void main(String[] args) {
         SpringApplication.run(ArtVsWarApplication.class, args);
     }
-
 }

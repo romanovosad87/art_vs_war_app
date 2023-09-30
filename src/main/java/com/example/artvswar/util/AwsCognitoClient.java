@@ -4,10 +4,13 @@ import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProvider;
 import com.amazonaws.services.cognitoidp.model.AdminAddUserToGroupRequest;
 import com.amazonaws.services.cognitoidp.model.AdminInitiateAuthRequest;
 import com.amazonaws.services.cognitoidp.model.AdminInitiateAuthResult;
+import com.amazonaws.services.cognitoidp.model.AdminUserGlobalSignOutRequest;
 import com.amazonaws.services.cognitoidp.model.AuthFlowType;
 import com.amazonaws.services.cognitoidp.model.AuthenticationResultType;
+import com.amazonaws.services.cognitoidp.model.DeleteUserRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 import java.util.Map;
 
@@ -42,5 +45,20 @@ public class AwsCognitoClient {
                 = cognitoIdentityProvider.adminInitiateAuth(authRequest);
 
         return adminInitiateAuthResult.getAuthenticationResult();
+    }
+
+    public void deleteUser(Jwt jwt) {
+        DeleteUserRequest deleteUserRequest = new DeleteUserRequest();
+        deleteUserRequest.setAccessToken(jwt.getTokenValue());
+
+        System.out.println(cognitoIdentityProvider.deleteUser(deleteUserRequest).toString());
+    }
+
+    public void signOutUser(String username) {
+        AdminUserGlobalSignOutRequest signOutRequest = new AdminUserGlobalSignOutRequest()
+                .withUserPoolId(userPoolId)
+                .withUsername(username);
+
+        System.out.println(cognitoIdentityProvider.adminUserGlobalSignOut(signOutRequest).toString());
     }
 }

@@ -28,7 +28,12 @@ public class SecurityConfig {
                         authorize.antMatchers(HttpMethod.POST, "/paintings").authenticated()
                                 .antMatchers(HttpMethod.PUT, "/paintings/**").authenticated()
                                 .antMatchers(HttpMethod.POST, "/authors").authenticated()
-                                .antMatchers(HttpMethod.PUT, "/authors").authenticated())
+                                .antMatchers(HttpMethod.PUT, "/authors").authenticated()
+                                .antMatchers(HttpMethod.GET, "/stripe/onboarding").authenticated()
+                                .antMatchers(HttpMethod.POST, "/account").authenticated()
+                                .antMatchers(HttpMethod.POST, "/authors/checkInputAndGet").authenticated()
+                                .antMatchers(HttpMethod.GET, "/cart").authenticated()
+                                .antMatchers(HttpMethod.GET, "/orders").authenticated())
                 .oauth2ResourceServer()
                 .jwt()
                 .jwtAuthenticationConverter(jwtAuthenticationConverter());

@@ -10,7 +10,6 @@ public class RoomViewMapper {
     public RoomViewResponseDto toRoomViewResponseDto(RoomView roomView) {
         RoomViewResponseDto dto = new RoomViewResponseDto();
         dto.setImageUrl(roomView.getImageUrl());
-        dto.setRatio(roomView.getRatio());
         return dto;
     }
 }

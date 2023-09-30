@@ -1,6 +1,8 @@
 package com.example.artvswar.util;
 
+import com.example.artvswar.model.Author;
 import com.example.artvswar.model.Painting;
+import com.example.artvswar.repository.specification.AuthorSpecificationManager;
 import com.example.artvswar.repository.specification.PaintingSpecificationManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -15,11 +17,12 @@ public class UrlParser {
     private final static int DEFAULT_IMAGES_QUANTITY = 12;
     private final static int DEFAULT_PAGE_NUMBER = 0;
     private final static String PAGE = "page";
-    private final static String PAGE_SIZE = "size";
-    private final static String SORT_BY = "sort";
+    private final static String SIZE = "size";
+    private final static String SORT = "sort";
     private final static String COMMA = ",";
     private final UrlSortParser urlSortParser;
     private final PaintingSpecificationManager paintingSpecificationManager;
+    private final AuthorSpecificationManager authorSpecificationManager;
 
     public PageRequest getPageRequest(Map<String, String> params) {
         Sort sort = Sort.unsorted();
@@ -30,10 +33,10 @@ public class UrlParser {
                 case PAGE:
                     page = Integer.parseInt(entry.getValue());
                     break;
-                case PAGE_SIZE:
+                case SIZE:
                     pageSize = Integer.parseInt(entry.getValue());
                     break;
-                case SORT_BY:
+                case SORT:
                     sort = urlSortParser.getSort(entry.getValue());
                     break;
             }
@@ -44,9 +47,24 @@ public class UrlParser {
     public Specification<Painting> getPaintingSpecification(Map<String, String> params) {
         Specification<Painting> specification = null;
         for (Map.Entry<String, String> entry : params.entrySet()) {
-            if (!entry.getKey().equals(PAGE) && !entry.getKey().equals(PAGE_SIZE)
-                    && !entry.getKey().equals(SORT_BY)) {
+            if (!entry.getKey().equals(PAGE) && !entry.getKey().equals(SIZE)
+                    && !entry.getKey().equals(SORT)) {
                 Specification<Painting> spec = paintingSpecificationManager.get(entry.getKey(),
+                        entry.getValue().split(COMMA));
+                specification = specification == null
+                        ? Specification.where(spec)
+                        : specification.and(spec);
+            }
+        }
+        return specification;
+    }
+
+    public Specification<Author> getAuthorSpecification(Map<String, String> params) {
+        Specification<Author> specification = null;
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+            if (!entry.getKey().equals(PAGE) && !entry.getKey().equals(SIZE)
+                    && !entry.getKey().equals(SORT)) {
+                Specification<Author> spec = authorSpecificationManager.get(entry.getKey(),
                         entry.getValue().split(COMMA));
                 specification = specification == null
                         ? Specification.where(spec)
