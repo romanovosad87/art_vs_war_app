@@ -5,4 +5,4 @@
  Online platform for selling artworks with charitable mission **[link](https://artvswar.gallery)**
 
 ## Technologies
-Java,  Srping Boot, Spring WEB, Spring Data JPA, Liquibase, Log4j2, GSON, MySQL, AWS RDS, AWS Cognito, AWS SES, Cloudinary, Stripe, ShipEngine
+Java,  Spring Boot, Spring WEB, Spring Data JPA, Liquibase, Log4j2, GSON, MySQL, AWS RDS, AWS Cognito, AWS SES, Cloudinary, Stripe, ShipEngine
