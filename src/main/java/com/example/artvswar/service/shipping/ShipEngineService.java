@@ -284,7 +284,6 @@ public class ShipEngineService {
             ShippingRateResponseDto responseDto = new ShippingRateResponseDto();
             JSONObject object = new JSONObject(result);
             JSONObject rateResponse = object.getJSONObject("rate_response");
-
             String status = rateResponse.getString("status");
 
             if (status.equals("error")) {

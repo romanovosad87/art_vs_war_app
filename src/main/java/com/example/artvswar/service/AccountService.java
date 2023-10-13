@@ -16,6 +16,8 @@ public interface AccountService {
 
     AccountResponseDto get(String cognitoSubject);
 
+    Account getAccountByCognitoSubject(String cognitoSubject);
+
     Account getAccountByReferenceId(Long id);
 
     String getStripeCustomerId(String cognitoSubject);

@@ -5,6 +5,7 @@ import com.example.artvswar.dto.request.image.ImageUpdateRequestDto;
 import com.example.artvswar.dto.request.author.AuthorCreateRequestDto;
 import com.example.artvswar.dto.request.author.AuthorUpdateRequestDto;
 import com.example.artvswar.dto.response.author.AuthorProfileResponseDto;
+import com.example.artvswar.exception.CloudinaryCredentialException;
 import com.example.artvswar.model.Author;
 import com.example.artvswar.model.AuthorPhoto;
 import com.example.artvswar.model.Image;
@@ -42,7 +43,7 @@ public class AuthorMapper {
             authorPhoto.setImage(image);
             author.setAuthorPhoto(authorPhoto);
         } else {
-            throw new RuntimeException(String.format("The combination of signature: %s and version: "
+            throw new CloudinaryCredentialException(String.format("The combination of signature: %s and version: "
                             + "%s are not valid for dtoImage public_id = %s",
                     dtoImage.getSignature(), dtoImage.getVersion(), dtoImage.getPublicId()));
         }
@@ -67,7 +68,7 @@ public class AuthorMapper {
                 image.setModerationStatus(ModerationStatus.valueOf(dtoImage.getModerationStatus()));
                 cloudinaryClient.delete(publicId);
             } else {
-                throw new RuntimeException(String.format("The combination of signature: %s and version: "
+                throw new CloudinaryCredentialException(String.format("The combination of signature: %s and version: "
                                 + "%s are not valid for dtoImage public_id = %s",
                         dtoImage.getSignature(), dtoImage.getVersion(), dtoImage.getPublicId()));
             }

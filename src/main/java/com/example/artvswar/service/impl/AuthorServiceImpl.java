@@ -7,8 +7,10 @@ import com.example.artvswar.dto.response.FolderResponseDto;
 import com.example.artvswar.dto.response.author.AuthorProfileResponseDto;
 import com.example.artvswar.dto.response.author.AuthorResponseDto;
 import com.example.artvswar.exception.AppEntityNotFoundException;
+import com.example.artvswar.model.Account;
 import com.example.artvswar.model.Author;
 import com.example.artvswar.repository.author.AuthorRepository;
+import com.example.artvswar.service.AccountService;
 import com.example.artvswar.service.AuthorService;
 import com.example.artvswar.util.AwsCognitoClient;
 import com.example.artvswar.util.CloudinaryFolderCreator;
@@ -41,6 +43,7 @@ public class AuthorServiceImpl implements AuthorService {
     private final PrettyIdCreator prettyIdCreator;
     private final UrlParser urlParser;
     private final CloudinaryFolderCreator cloudinaryFolderCreator;
+    private final AccountService accountService;
 
     @Override
     @Transactional
@@ -49,6 +52,8 @@ public class AuthorServiceImpl implements AuthorService {
         author.setCognitoSubject(cognitoSubject);
         author.setCognitoUsername(cognitoUsername);
         author.setPrettyId(createPrettyId(dto.getFullName()));
+        Account account = accountService.getAccountByCognitoSubject(cognitoSubject);
+        author.setAccount(account);
         Author savedUser = authorRepository.save(author);
         awsCognitoClient.addUserToGroup(cognitoUsername, ROLE_AUTHOR);
         return authorMapper.toDto(savedUser);

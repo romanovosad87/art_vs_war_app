@@ -70,6 +70,7 @@
             <artifactId>aws-java-sdk-sesv2</artifactId>
             <version>1.12.472</version>
         </dependency>
+        <!-- for aws ses templates working -->
         <dependency>
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
