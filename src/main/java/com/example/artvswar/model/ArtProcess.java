@@ -28,7 +28,7 @@ public class ArtProcess {
     private String description;
 
     @OneToOne(optional = false, fetch = FetchType.LAZY)
-    @Cascade(CascadeType.SAVE_UPDATE)
+    @Cascade(CascadeType.ALL)
     @JoinColumn(name = "image_id")
     private Image image;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

@@ -4,6 +4,7 @@ import com.example.artvswar.dto.response.error.AllErrorFieldResponse;
 import com.example.artvswar.dto.response.error.ErrorFieldResponse;
 import com.example.artvswar.dto.response.error.ErrorResponse;
 import com.example.artvswar.exception.AppEntityNotFoundException;
+import com.example.artvswar.exception.CloudinaryCredentialException;
 import com.example.artvswar.exception.PaintingNotAvailableException;
 import com.example.artvswar.exception.ShippingNotProcessingException;
 import com.example.artvswar.util.ErrorResponseCreator;
@@ -56,9 +57,15 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(value = {ShippingNotProcessingException.class})
-    public ResponseEntity<ErrorResponse> shippingNotProcessingHandler(
+    public ResponseEntity<ErrorResponse> shippingNotProcessingExceptionHandler(
             ShippingNotProcessingException ex) {
         return errorResponseCreator.createResponse(ex, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(value = {CloudinaryCredentialException.class})
+    public ResponseEntity<ErrorResponse> cloudinaryCredentialsExceptionHandler(
+            CloudinaryCredentialException ex) {
+        return errorResponseCreator.createResponse(ex, HttpStatus.NOT_ACCEPTABLE);
     }
 
 

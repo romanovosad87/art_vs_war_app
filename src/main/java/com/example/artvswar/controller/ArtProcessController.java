@@ -84,9 +84,8 @@ public class ArtProcessController {
     }
 
     @PreAuthorize("hasRole('AUTHOR')")
-    @PostMapping("/checkInputAndGet")
+    @PostMapping("/getFolder")
     public FolderResponseDto checkInputParametersAndReturnCloudinaryFolder(
-            @RequestBody @Valid ArtProcessCreateRequestDto dto,
             @AuthenticationPrincipal Jwt jwt) {
         String subject = jwt.getClaimAsString(SUBJECT);
         return artProcessService.createCloudinaryFolder(subject);

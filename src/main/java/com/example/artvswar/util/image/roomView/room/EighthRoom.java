@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class EighthRoom implements RoomViewProvider {
-//    private static final String underlayPublicId = "art-app/rooms/classic-wooden-chair-by-monstera-plant-h1418";
     private static final int UNDERLAY_PIXEL_WIDTH = 945;
     private static final int UNDERLAY_IN_CENTIMETERS_WIDTH = 133;
     private static final long UNDERLAY_ROOM_ID = 8L;

@@ -57,6 +57,13 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public Account getAccountByCognitoSubject(String cognitoSubject) {
+        return accountRepository.findByCognitoSubject(Account.class, cognitoSubject)
+                .orElseThrow(() -> new AppEntityNotFoundException(
+                        String.format("Can't find account by Cognito subject: %s", cognitoSubject)));
+    }
+
+    @Override
     public Account getAccountByReferenceId(Long id) {
         return accountRepository.getReferenceById(id);
     }

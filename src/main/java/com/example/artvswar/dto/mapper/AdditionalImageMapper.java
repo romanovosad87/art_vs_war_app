@@ -2,6 +2,7 @@ package com.example.artvswar.dto.mapper;
 
 import com.example.artvswar.dto.request.image.ImageCreateRequestDto;
 import com.example.artvswar.dto.response.image.AdditionalImageResponseDto;
+import com.example.artvswar.exception.CloudinaryCredentialException;
 import com.example.artvswar.model.AdditionalImage;
 import com.example.artvswar.model.Image;
 import com.example.artvswar.model.enumModel.ModerationStatus;
@@ -44,7 +45,7 @@ public class AdditionalImageMapper {
             additionalImage.setImage(image);
             return additionalImage;
         } else {
-            throw new RuntimeException(String.format("The combination of signature: %s and version: "
+            throw new CloudinaryCredentialException(String.format("The combination of signature: %s and version: "
                             + "%s are not valid for dtoImage public_id = %s",
                     imageDto.getSignature(), imageDto.getVersion(), imageDto.getPublicId()));
         }

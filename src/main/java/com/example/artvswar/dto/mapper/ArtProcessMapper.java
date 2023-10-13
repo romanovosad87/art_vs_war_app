@@ -5,6 +5,7 @@ import com.example.artvswar.dto.request.artProcess.ArtProcessUpdateRequestDto;
 import com.example.artvswar.dto.request.image.ImageCreateRequestDto;
 import com.example.artvswar.dto.request.image.ImageUpdateRequestDto;
 import com.example.artvswar.dto.response.artProcess.ArtProcessResponseDto;
+import com.example.artvswar.exception.CloudinaryCredentialException;
 import com.example.artvswar.model.ArtProcess;
 import com.example.artvswar.model.Image;
 import com.example.artvswar.model.enumModel.ModerationStatus;
@@ -41,7 +42,7 @@ public class ArtProcessMapper {
             image.setModerationStatus(ModerationStatus.valueOf(dtoImage.getModerationStatus()));
             artProcess.setImage(image);
         } else {
-            throw new RuntimeException(String.format("The combination of signature: %s and version: "
+            throw new CloudinaryCredentialException(String.format("The combination of signature: %s and version: "
                             + "%s are not valid for dtoImage public_id = %s",
                     dtoImage.getSignature(), dtoImage.getVersion(), dtoImage.getPublicId()));
         }
@@ -64,7 +65,7 @@ public class ArtProcessMapper {
                 cloudinaryClient.delete(publicId);
             }
         } else {
-            throw new RuntimeException(String.format("The combination of signature: %s and version: "
+            throw new CloudinaryCredentialException(String.format("The combination of signature: %s and version: "
                             + "%s are not valid for dtoImage public_id = %s",
                     dtoImage.getSignature(), dtoImage.getVersion(), dtoImage.getPublicId()));
         }

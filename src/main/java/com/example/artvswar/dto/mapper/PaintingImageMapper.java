@@ -3,6 +3,7 @@ package com.example.artvswar.dto.mapper;
 import com.example.artvswar.dto.request.image.PaintingImageCreateRequestDto;
 import com.example.artvswar.dto.request.image.PaintingImageUpdateRequestDto;
 import com.example.artvswar.dto.response.image.PaintingImageResponseDto;
+import com.example.artvswar.exception.CloudinaryCredentialException;
 import com.example.artvswar.model.AdditionalImage;
 import com.example.artvswar.model.Image;
 import com.example.artvswar.model.PaintingImage;
@@ -56,7 +57,7 @@ public class PaintingImageMapper {
             paintingImage.setImage(image);
             return paintingImage;
         } else {
-            throw new RuntimeException(String.format("The combination of signature: %s and version: "
+            throw new CloudinaryCredentialException(String.format("The combination of signature: %s and version: "
                     + "%s are not valid for image public_id = %s", signature, version, publicId));
         }
     }
@@ -82,7 +83,7 @@ public class PaintingImageMapper {
             paintingImage.setImage(image);
             return paintingImage;
         } else {
-            throw new RuntimeException(String.format("The combination of signature: %s and version: "
+            throw new CloudinaryCredentialException(String.format("The combination of signature: %s and version: "
                     + "%s are not valid for image public_id = %s", signature, version, publicId));
         }
     }

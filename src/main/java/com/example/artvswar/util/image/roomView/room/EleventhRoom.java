@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class EleventhRoom implements RoomViewProvider {
-//    private static final String underlayPublicId = "art-app/rooms/snake-plant-gray-plant-pot-wooden-cabinet-min_h1418";
     private static final int UNDERLAY_PIXEL_WIDTH = 946;
     private static final int UNDERLAY_IN_CENTIMETERS_WIDTH = 90;
     private static final long UNDERLAY_ROOM_ID = 11L;
