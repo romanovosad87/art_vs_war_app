@@ -24,6 +24,7 @@ import com.stripe.model.LoginLink;
 import com.stripe.model.PaymentIntent;
 import com.stripe.model.Payout;
 import com.stripe.model.PayoutCollection;
+import com.stripe.model.Refund;
 import com.stripe.model.ShippingRate;
 import com.stripe.model.Transfer;
 import com.stripe.model.checkout.Session;
@@ -33,6 +34,7 @@ import com.stripe.param.AccountLinkCreateParams;
 import com.stripe.param.CustomerCreateParams;
 import com.stripe.param.CustomerUpdateParams;
 import com.stripe.param.PayoutListParams;
+import com.stripe.param.RefundCreateParams;
 import com.stripe.param.ShippingRateCreateParams;
 import com.stripe.param.ShippingRateCreateParams.DeliveryEstimate;
 import com.stripe.param.TransferCreateParams;
@@ -203,8 +205,8 @@ public class StripeService {
                                         .build()
                         )
                         .addAllShippingOption(prepareShippingOptions(dto.getShippingRates()))
-                        .setSuccessUrl("https://develop.artvswar.gallery/order-done")
-                        .setCancelUrl("https://develop.artvswar.gallery/cart")
+                        .setSuccessUrl("https://artvswar.gallery/order-done")
+                        .setCancelUrl("https://artvswar.gallery/cart")
                         .build();
 
         try {
@@ -341,6 +343,18 @@ public class StripeService {
 
         } catch (StripeException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public Refund createRefund(String chargeId) {
+        RefundCreateParams params = RefundCreateParams.builder()
+                .setCharge(chargeId)
+                .setReason(RefundCreateParams.Reason.REQUESTED_BY_CUSTOMER)
+                .build();
+        try {
+            return Refund.create(params);
+        } catch (StripeException e) {
+            throw new RuntimeException(String.format("Can't create Refund for chargeId: %s", chargeId), e);
         }
     }
 

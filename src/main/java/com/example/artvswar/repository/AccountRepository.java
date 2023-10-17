@@ -17,5 +17,5 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     Long getIdByCognitoSubject(String cognitoSubject);
 
     @Query("select ac.cognitoSubject from Account ac where ac.stripeCustomerId = ?1")
-    String getCognitoSubjectByStripeCustomerId(String stripeCustomerId);
+    String getAccountCognitoSubjectByStripeCustomerId(String stripeCustomerId);
 }

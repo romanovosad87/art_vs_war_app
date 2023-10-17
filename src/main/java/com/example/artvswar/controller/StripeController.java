@@ -6,6 +6,7 @@ import com.example.artvswar.service.AccountService;
 import com.example.artvswar.service.stripe.StripeService;
 import com.stripe.model.Customer;
 import com.stripe.model.PaymentIntent;
+import com.stripe.model.Refund;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -86,5 +87,10 @@ public class StripeController {
     @GetMapping("/intent/{id}")
     public PaymentIntent getPaymentIntent(@PathVariable String id) {
         return stripeService.retrievePaymentIntent(id);
+    }
+
+    @GetMapping("/refund")
+    public Refund makeRefund(@RequestParam String chargeId) {
+        return stripeService.createRefund(chargeId);
     }
 }

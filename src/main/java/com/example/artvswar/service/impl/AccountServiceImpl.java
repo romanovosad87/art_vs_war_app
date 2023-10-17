@@ -12,10 +12,12 @@ import com.example.artvswar.repository.AccountRepository;
 import com.example.artvswar.service.AccountService;
 import com.example.artvswar.service.ShoppingCartService;
 import com.example.artvswar.util.AwsCognitoClient;
+import com.example.artvswar.util.TimeZoneAPI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -27,6 +29,8 @@ public class AccountServiceImpl implements AccountService {
     private final AccountMapper accountMapper;
     private final AwsCognitoClient awsCognitoClient;
     private final ShoppingCartService shoppingCartService;
+
+    private final TimeZoneAPI timeZoneAPI;
 
     @Override
     @Transactional
@@ -92,13 +96,23 @@ public class AccountServiceImpl implements AccountService {
                 .orElseThrow(() -> new AppEntityNotFoundException(
                         String.format("Can't find account by Cognito Subject : %s", cognitoSubject)));
 
-        List<AccountShippingAddress> addresses = dtos.stream()
+        List<AccountShippingAddress> shippingAddresses = account.getShippingAddresses();
+
+         dtos.stream()
                 .map(accountMapper::toAccountShippingModel)
-                .collect(Collectors.toList());
+                .filter(address -> !shippingAddresses.contains(address))
+                .forEach(shippingAddresses::add);
 
-        account.setShippingAddresses(addresses);
+        AccountShippingAddress address = shippingAddresses.get(shippingAddresses.size() - 1);
 
-        return addresses.stream()
+        int offset = Optional.ofNullable(address).stream()
+                .map(addr -> timeZoneAPI.getOffset(addr.getCity(), addr.getCountry()))
+                .findFirst()
+                .orElse(0);
+
+        account.setOffset(offset);
+
+        return shippingAddresses.stream()
                 .map(accountMapper::toAccountShippingDto)
                 .collect(Collectors.toList());
     }
@@ -121,6 +135,6 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public String getCognitoSubjectByStripeId(String stripeCustomerId) {
-        return null;
+        return accountRepository.getAccountCognitoSubjectByStripeCustomerId(stripeCustomerId);
     }
 }
