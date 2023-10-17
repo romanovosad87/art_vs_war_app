@@ -55,8 +55,9 @@ public class Account {
     private String stripeCustomerId;
 
     @ElementCollection
+    @Setter(AccessLevel.PRIVATE)
     @CollectionTable(name = "account_shipping_addresses", joinColumns = @JoinColumn(name = "account_id"))
-    @Cascade(CascadeType.SAVE_UPDATE)
+    @Cascade(CascadeType.ALL)
     private List<AccountShippingAddress> shippingAddresses = new ArrayList<>();
 
     @Setter(AccessLevel.PRIVATE)
@@ -71,6 +72,9 @@ public class Account {
     private LocalDateTime createdAt;
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    @Column(columnDefinition = "INT default 0")
+    private int offset;
 
     public void addOrder(Order order) {
         orders.add(order);

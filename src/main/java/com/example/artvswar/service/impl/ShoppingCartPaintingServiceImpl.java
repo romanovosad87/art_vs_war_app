@@ -1,9 +1,10 @@
 package com.example.artvswar.service.impl;
 
+import com.example.artvswar.model.ShoppingCart;
 import com.example.artvswar.model.ShoppingCartPainting;
 import com.example.artvswar.repository.ShoppingCartPaintingRepository;
-import com.example.artvswar.service.AccountService;
 import com.example.artvswar.service.ShoppingCartPaintingService;
+import com.example.artvswar.service.ShoppingCartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,23 +19,23 @@ import java.util.stream.Collectors;
 public class ShoppingCartPaintingServiceImpl implements ShoppingCartPaintingService {
 
     private final ShoppingCartPaintingRepository shoppingCartPaintingRepository;
-    private final AccountService accountService;
+    private final ShoppingCartService shoppingCartService;
 
     @Override
     @Transactional
     public void save(Long paintingId, String accountCognitoSubject) {
         ShoppingCartPainting shoppingCartPainting = new ShoppingCartPainting();
         shoppingCartPainting.setPaintingId(paintingId);
-        Long shoppingCartId = accountService.getIdByCognitoSubject(accountCognitoSubject);
-        shoppingCartPainting.setShoppingCartId(shoppingCartId);
+        ShoppingCart shoppingCart = shoppingCartService.get(accountCognitoSubject);
+        shoppingCartPainting.setShoppingCartId(shoppingCart.getId());
         shoppingCartPaintingRepository.save(shoppingCartPainting);
     }
 
     @Override
     @Transactional
     public void remove(Long paintingId, String accountCognitoSubject) {
-        Long shoppingCartId = accountService.getIdByCognitoSubject(accountCognitoSubject);
-        shoppingCartPaintingRepository.deleteCustom(paintingId, shoppingCartId);
+        ShoppingCart shoppingCart = shoppingCartService.get(accountCognitoSubject);
+        shoppingCartPaintingRepository.deleteCustom(paintingId, shoppingCart.getId());
     }
 
     @Override
@@ -53,8 +54,8 @@ public class ShoppingCartPaintingServiceImpl implements ShoppingCartPaintingServ
             for (Long paintingId : newPaintingIds) {
                 ShoppingCartPainting shoppingCartPainting = new ShoppingCartPainting();
                 shoppingCartPainting.setPaintingId(paintingId);
-                Long shoppingCartId = accountService.getIdByCognitoSubject(accountCognitoSubject);
-                shoppingCartPainting.setShoppingCartId(shoppingCartId);
+                ShoppingCart shoppingCart = shoppingCartService.get(accountCognitoSubject);
+                shoppingCartPainting.setShoppingCartId(shoppingCart.getId());
                 shoppingCartPaintingList.add(shoppingCartPainting);
             }
             shoppingCartPaintingRepository.saveAll(shoppingCartPaintingList);

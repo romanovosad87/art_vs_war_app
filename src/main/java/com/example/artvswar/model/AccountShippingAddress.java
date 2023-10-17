@@ -8,7 +8,7 @@ import javax.persistence.Embeddable;
 
 @Data
 @NoArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(of = {"postalCode", "addressLine1"})
 @Embeddable
 public class AccountShippingAddress {
     @Column(nullable = false)

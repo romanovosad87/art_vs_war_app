@@ -6,6 +6,7 @@ import com.google.gson.annotations.JsonAdapter;
 import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -15,8 +16,9 @@ public class OrderResponseDto {
     private BigDecimal totalAmount;
     private BigDecimal subtotalAmount;
     private BigDecimal shippingAmount;
+    private transient LocalDateTime createdAt;
     @JsonAdapter(JsonLocalDateTimeOrderAdapter.class)
-    private LocalDateTime createdAt;
+    private OffsetDateTime orderCreatedAt;
     private Set<PaintingShortResponseDto> paintings = new LinkedHashSet<>();
 
     public OrderResponseDto(Long id, BigDecimal totalAmount, BigDecimal subtotalAmount,
