@@ -1,6 +1,6 @@
 package com.example.artvswar.dto.request.painting;
 
-import com.example.artvswar.dto.request.image.PaintingImageCreateRequestDto;
+import com.example.artvswar.dto.request.image.FullImageCreateRequestDto;
 import com.example.artvswar.lib.FirstOrder;
 import com.example.artvswar.lib.SecondOrder;
 import com.example.artvswar.lib.ThirdOrder;
@@ -80,5 +80,5 @@ public class PaintingCreateRequestDto {
     private Integer yearOfCreation;
 
     @NotNull(message = "image file is required", groups = FirstOrder.class)
-    private PaintingImageCreateRequestDto image;
+    private FullImageCreateRequestDto image;
 }

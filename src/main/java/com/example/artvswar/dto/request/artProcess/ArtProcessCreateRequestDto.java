@@ -1,6 +1,6 @@
 package com.example.artvswar.dto.request.artProcess;
 
-import com.example.artvswar.dto.request.image.ImageCreateRequestDto;
+import com.example.artvswar.dto.request.image.FullImageCreateRequestDto;
 import lombok.Data;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -14,5 +14,6 @@ public class ArtProcessCreateRequestDto {
     private String description;
 
     @NotNull(message = "image file is required")
-    private ImageCreateRequestDto image;
+    private FullImageCreateRequestDto image;
+
 }

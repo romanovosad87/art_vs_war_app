@@ -60,7 +60,7 @@ public class ArtProcessServiceImpl implements ArtProcessService {
                 () -> new AppEntityNotFoundException(
                         String.format("Can't  find art process by id = %s", id)));
         artProcessRepository.deleteById(id);
-        String publicId = artProcess.getImage().getPublicId();
+        String publicId = artProcess.getArtProcessImage().getImage().getPublicId();
         String delete = cloudinaryClient.delete(publicId);
         if (delete.equals("ok")) {
             return String.format("Asset with public id: %s was deleted from Cloudinary", publicId);

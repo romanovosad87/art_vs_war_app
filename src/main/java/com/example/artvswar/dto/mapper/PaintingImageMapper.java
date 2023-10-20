@@ -1,7 +1,7 @@
 package com.example.artvswar.dto.mapper;
 
-import com.example.artvswar.dto.request.image.PaintingImageCreateRequestDto;
-import com.example.artvswar.dto.request.image.PaintingImageUpdateRequestDto;
+import com.example.artvswar.dto.request.image.FullImageCreateRequestDto;
+import com.example.artvswar.dto.request.image.FullImageUpdateRequestDto;
 import com.example.artvswar.dto.response.image.PaintingImageResponseDto;
 import com.example.artvswar.exception.CloudinaryCredentialException;
 import com.example.artvswar.model.AdditionalImage;
@@ -36,7 +36,7 @@ public class PaintingImageMapper {
         return dto;
     }
 
-    public PaintingImage toImageModel(PaintingImageCreateRequestDto dto) {
+    public PaintingImage toImageModel(FullImageCreateRequestDto dto) {
         String publicId = dto.getPublicId();
         String version = dto.getVersion();
         String signature = dto.getSignature();
@@ -62,7 +62,7 @@ public class PaintingImageMapper {
         }
     }
 
-    public PaintingImage toImageModel(PaintingImageUpdateRequestDto dto) {
+    public PaintingImage toImageModel(FullImageUpdateRequestDto dto) {
         String publicId = dto.getPublicId();
         String version = dto.getVersion();
         String signature = dto.getSignature();

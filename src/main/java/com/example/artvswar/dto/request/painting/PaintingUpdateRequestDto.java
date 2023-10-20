@@ -1,6 +1,6 @@
 package com.example.artvswar.dto.request.painting;
 
-import com.example.artvswar.dto.request.image.PaintingImageUpdateRequestDto;
+import com.example.artvswar.dto.request.image.FullImageUpdateRequestDto;
 import com.example.artvswar.lib.FirstOrder;
 import com.example.artvswar.lib.SecondOrder;
 import com.example.artvswar.lib.ThirdOrder;
@@ -74,5 +74,5 @@ public class PaintingUpdateRequestDto {
     private Integer yearOfCreation;
 
     @NotNull(message = "image field is required", groups = FirstOrder.class)
-    private PaintingImageUpdateRequestDto image;
+    private FullImageUpdateRequestDto image;
 }

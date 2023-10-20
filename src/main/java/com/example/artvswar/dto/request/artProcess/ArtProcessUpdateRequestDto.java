@@ -1,6 +1,6 @@
 package com.example.artvswar.dto.request.artProcess;
 
-import com.example.artvswar.dto.request.image.ImageUpdateRequestDto;
+import com.example.artvswar.dto.request.image.FullImageUpdateRequestDto;
 import lombok.Data;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -12,5 +12,5 @@ public class ArtProcessUpdateRequestDto {
     private String description;
 
     @NotNull(message = "image file is required")
-    private ImageUpdateRequestDto image;
+    private FullImageUpdateRequestDto image;
 }

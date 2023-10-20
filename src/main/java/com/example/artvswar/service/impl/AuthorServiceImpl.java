@@ -4,6 +4,7 @@ import com.example.artvswar.dto.mapper.AuthorMapper;
 import com.example.artvswar.dto.request.author.AuthorCreateRequestDto;
 import com.example.artvswar.dto.request.author.AuthorUpdateRequestDto;
 import com.example.artvswar.dto.response.FolderResponseDto;
+import com.example.artvswar.dto.response.author.AuthorCheckStripeAndAddressPresenceResponseDto;
 import com.example.artvswar.dto.response.author.AuthorProfileResponseDto;
 import com.example.artvswar.dto.response.author.AuthorResponseDto;
 import com.example.artvswar.exception.AppEntityNotFoundException;
@@ -146,6 +147,12 @@ public class AuthorServiceImpl implements AuthorService {
     public void delete(String cognitoSubject, Jwt jwt) {
         authorRepository.deleteByCognitoSubject(cognitoSubject);
         awsCognitoClient.deleteUser(jwt);
+    }
+
+    @Override
+    public AuthorCheckStripeAndAddressPresenceResponseDto checkAuthorProfile(
+            String authorCognitoSubject) {
+        return authorRepository.checkAuthorProfile(authorCognitoSubject);
     }
 
     private Page<AuthorResponseDto> transformWithStyles(Page<AuthorResponseDto> authorsDtos) {

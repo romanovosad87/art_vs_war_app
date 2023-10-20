@@ -5,7 +5,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class PaintingImageCreateRequestDto {
+public class FullImageCreateRequestDto {
     @NotNull(message = "public_id field is required")
     private String publicId;
 

@@ -1,5 +1,6 @@
 package com.example.artvswar.repository.author;
 
+import com.example.artvswar.dto.response.author.AuthorCheckStripeAndAddressPresenceResponseDto;
 import com.example.artvswar.dto.response.author.AuthorResponseDto;
 import com.example.artvswar.model.Author;
 import org.springframework.data.domain.Page;
@@ -15,5 +16,7 @@ public interface CustomAuthorRepository {
 
     Page<AuthorResponseDto> findAllBySpecification(Specification<Author> specification,
                                                    Pageable pageable);
+
+    AuthorCheckStripeAndAddressPresenceResponseDto checkAuthorProfile(String cognitoSubject);
 
 }

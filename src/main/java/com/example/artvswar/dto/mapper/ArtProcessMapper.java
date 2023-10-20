@@ -2,11 +2,12 @@ package com.example.artvswar.dto.mapper;
 
 import com.example.artvswar.dto.request.artProcess.ArtProcessCreateRequestDto;
 import com.example.artvswar.dto.request.artProcess.ArtProcessUpdateRequestDto;
-import com.example.artvswar.dto.request.image.ImageCreateRequestDto;
-import com.example.artvswar.dto.request.image.ImageUpdateRequestDto;
+import com.example.artvswar.dto.request.image.FullImageCreateRequestDto;
+import com.example.artvswar.dto.request.image.FullImageUpdateRequestDto;
 import com.example.artvswar.dto.response.artProcess.ArtProcessResponseDto;
 import com.example.artvswar.exception.CloudinaryCredentialException;
 import com.example.artvswar.model.ArtProcess;
+import com.example.artvswar.model.ArtProcessImage;
 import com.example.artvswar.model.Image;
 import com.example.artvswar.model.enumModel.ModerationStatus;
 import com.example.artvswar.util.image.CloudinaryClient;
@@ -21,26 +22,33 @@ public class ArtProcessMapper {
     private final ImageTransformation imageTransformation;
 
     public ArtProcessResponseDto toDto(ArtProcess artProcess) {
-        return new ArtProcessResponseDto(
-                artProcess.getId(),
-                artProcess.getDescription(),
-                artProcess.getImage().getPublicId(),
-                artProcess.getImage().getUrl(),
-                artProcess.getImage().getModerationStatus());
+        Long id = artProcess.getId();
+        String description = artProcess.getDescription();
+        String publicId = artProcess.getArtProcessImage().getImage().getPublicId();
+        String url = artProcess.getArtProcessImage().getImage().getUrl();
+        ModerationStatus moderationStatus = artProcess.getArtProcessImage().getImage().getModerationStatus();
+        Double width = artProcess.getArtProcessImage().getWidth();
+        Double height = artProcess.getArtProcessImage().getHeight();
+        return new ArtProcessResponseDto(id, description, publicId, url, moderationStatus, width, height);
     }
 
     public ArtProcess toModel(ArtProcessCreateRequestDto dto) {
         ArtProcess artProcess = new ArtProcess();
         artProcess.setDescription(dto.getDescription().trim());
-        ImageCreateRequestDto dtoImage = dto.getImage();
+        FullImageCreateRequestDto dtoImage = dto.getImage();
         boolean validSignature = cloudinaryClient.verifySignature(dtoImage.getPublicId(),
                 dtoImage.getVersion(), dtoImage.getSignature());
         if (validSignature) {
+            ArtProcessImage artProcessImage = new ArtProcessImage();
+            artProcessImage.setArtProcess(artProcess);
+            artProcessImage.setWidth(dtoImage.getWidth());
+            artProcessImage.setHeight(dtoImage.getHeight());
             Image image = new Image();
             image.setPublicId(dtoImage.getPublicId());
             image.setUrl(imageTransformation.paintingImageEagerTransformation(dtoImage.getPublicId()));
             image.setModerationStatus(ModerationStatus.valueOf(dtoImage.getModerationStatus()));
-            artProcess.setImage(image);
+            artProcessImage.setImage(image);
+            artProcess.setArtProcessImage(artProcessImage);
         } else {
             throw new CloudinaryCredentialException(String.format("The combination of signature: %s and version: "
                             + "%s are not valid for dtoImage public_id = %s",
@@ -51,18 +59,23 @@ public class ArtProcessMapper {
 
     public ArtProcess toModel(ArtProcessUpdateRequestDto dto, ArtProcess artProcessFromDb) {
         artProcessFromDb.setDescription(dto.getDescription().trim());
-        ImageUpdateRequestDto dtoImage = dto.getImage();
-        if (!dtoImage.getPublicId().equals(artProcessFromDb.getImage().getPublicId())) {
+        FullImageUpdateRequestDto dtoImage = dto.getImage();
+        if (!dtoImage.getPublicId().equals(artProcessFromDb.getArtProcessImage().getImage().getPublicId())) {
             boolean validSignature = cloudinaryClient.verifySignature(dtoImage.getPublicId(),
                     dtoImage.getVersion(), dtoImage.getSignature());
             if (validSignature) {
-                String publicId = artProcessFromDb.getImage().getPublicId();
+                ArtProcessImage artProcessImage = new ArtProcessImage();
+                Long id = artProcessFromDb.getArtProcessImage().getId();
+                artProcessImage.setId(id);
+                artProcessImage.setWidth(dtoImage.getWidth());
+                artProcessImage.setHeight(dtoImage.getHeight());
                 Image image = new Image();
                 image.setPublicId(dtoImage.getPublicId());
                 image.setUrl(imageTransformation.paintingImageEagerTransformation(dtoImage.getPublicId()));
                 image.setModerationStatus(ModerationStatus.valueOf(dtoImage.getModerationStatus()));
-                artProcessFromDb.setImage(image);
-                cloudinaryClient.delete(publicId);
+                artProcessImage.setImage(image);
+                artProcessFromDb.setArtProcessImage(artProcessImage);
+                cloudinaryClient.delete(dtoImage.getPublicId());
             }
         } else {
             throw new CloudinaryCredentialException(String.format("The combination of signature: %s and version: "

@@ -4,6 +4,7 @@ import com.example.artvswar.dto.request.author.AuthorCheckInputDto;
 import com.example.artvswar.dto.request.author.AuthorCreateRequestDto;
 import com.example.artvswar.dto.request.author.AuthorUpdateRequestDto;
 import com.example.artvswar.dto.response.FolderResponseDto;
+import com.example.artvswar.dto.response.author.AuthorCheckStripeAndAddressPresenceResponseDto;
 import com.example.artvswar.dto.response.author.AuthorProfileResponseDto;
 import com.example.artvswar.dto.response.author.AuthorResponseDto;
 import com.example.artvswar.service.AuthorService;
@@ -106,5 +107,11 @@ public class AuthorController {
     public void delete(@AuthenticationPrincipal Jwt jwt) {
         String subject = jwt.getClaimAsString(SUBJECT);
         authorService.delete(subject, jwt);
+    }
+
+    @GetMapping("/check")
+    public AuthorCheckStripeAndAddressPresenceResponseDto checkAuthorProfile(@AuthenticationPrincipal Jwt jwt) {
+        String subject = jwt.getClaimAsString(SUBJECT);
+        return authorService.checkAuthorProfile(subject);
     }
 }
