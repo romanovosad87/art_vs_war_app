@@ -3,6 +3,7 @@ package com.example.artvswar.service;
 import com.example.artvswar.dto.request.author.AuthorCreateRequestDto;
 import com.example.artvswar.dto.request.author.AuthorUpdateRequestDto;
 import com.example.artvswar.dto.response.FolderResponseDto;
+import com.example.artvswar.dto.response.author.AuthorCheckStripeAndAddressPresenceResponseDto;
 import com.example.artvswar.dto.response.author.AuthorProfileResponseDto;
 import com.example.artvswar.dto.response.author.AuthorResponseDto;
 import com.example.artvswar.model.Author;
@@ -34,4 +35,6 @@ public interface AuthorService {
     FolderResponseDto createCloudinaryFolder(String cognitoSubject);
 
     void delete(String cognitoSubject, Jwt jwt);
+
+    AuthorCheckStripeAndAddressPresenceResponseDto checkAuthorProfile(String authorCognitoSubject);
 }

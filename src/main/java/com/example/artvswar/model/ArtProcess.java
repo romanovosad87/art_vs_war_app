@@ -27,10 +27,10 @@ public class ArtProcess {
     private Long id;
     private String description;
 
-    @OneToOne(optional = false, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "artProcess")
     @Cascade(CascadeType.ALL)
-    @JoinColumn(name = "image_id")
-    private Image image;
+    @JoinColumn(name = "art_process_image_id")
+    private ArtProcessImage artProcessImage;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "author_id")
     @JsonBackReference

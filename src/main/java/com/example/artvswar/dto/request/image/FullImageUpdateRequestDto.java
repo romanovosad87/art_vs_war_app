@@ -4,7 +4,7 @@ import lombok.Data;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class PaintingImageUpdateRequestDto {
+public class FullImageUpdateRequestDto {
     @NotNull(message = "public_id field is required")
     private String publicId;
     private String moderationStatus;

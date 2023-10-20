@@ -1,15 +1,16 @@
 package com.example.artvswar.repository.author;
 
 import com.example.artvswar.dto.response.StyleResponseDto;
+import com.example.artvswar.dto.response.author.AuthorCheckStripeAndAddressPresenceResponseDto;
 import com.example.artvswar.dto.response.author.AuthorResponseDto;
 import com.example.artvswar.dto.response.author.AuthorsAllStylesDto;
 import com.example.artvswar.dto.response.painting.PaintingForAllAuthorsDto;
 import com.example.artvswar.model.Author;
 import com.example.artvswar.model.AuthorPhoto;
 import com.example.artvswar.model.Image;
-import com.example.artvswar.model.enumModel.ModerationStatus;
 import com.example.artvswar.model.Painting;
 import com.example.artvswar.model.Style;
+import com.example.artvswar.model.enumModel.ModerationStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -25,6 +26,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -206,5 +208,32 @@ public class CustomAuthorRepositoryImpl
 
         return new PageImpl<>(dtos, pageable, total);
 
+    }
+
+    @Override
+    public AuthorCheckStripeAndAddressPresenceResponseDto checkAuthorProfile(
+            String cognitoSubject) {
+        AuthorCheckStripeAndAddressPresenceResponseDto dto;
+        var isStripeAccountQuery  = entityManager.createQuery("select new com.example.artvswar.dto.response.author.AuthorCheckStripeAndAddressPresenceResponseDto("
+                        + "sp.isDetailsSubmitted) from Author a join a.stripeProfile sp "
+                        + "where a.cognitoSubject = ?1", AuthorCheckStripeAndAddressPresenceResponseDto.class)
+                .setParameter(1, cognitoSubject);
+        try {
+            dto = isStripeAccountQuery.getSingleResult();
+        } catch (NoResultException e) {
+            dto = new AuthorCheckStripeAndAddressPresenceResponseDto(false);
+        }
+
+        var isShippingAddressQuery = entityManager.createQuery("select case when (asa.id is null) then FALSE else TRUE end "
+                        + "from AuthorShippingAddress asa join asa.author a where a.cognitoSubject = ?1", Boolean.class)
+                .setParameter(1, cognitoSubject);
+        boolean result = false;
+        try {
+             result = isShippingAddressQuery.getSingleResult();
+        } catch (NoResultException e) {
+            dto.setHasAddress(false);
+        }
+        dto.setHasAddress(result);
+        return dto;
     }
 }
