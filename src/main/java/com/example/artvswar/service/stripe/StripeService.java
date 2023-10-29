@@ -52,21 +52,23 @@ import java.util.Set;
 
 @RequiredArgsConstructor
 @Service
-@Transactional(readOnly = true)
 public class StripeService {
     private static final long HALF_HOUR = 30L;
     private static final String CURRENCY_EURO = "eur";
+    public static final String REFRESH_URL = "https://www.albedosunrise.com/stripe/onboarding";
+    public static final String RETURN_URL = "https://artvswar.gallery";
+    public static final String SUCCESS_URL = "https://artvswar.gallery/order-done";
+    public static final String CANCEL_URL = "https://artvswar.gallery/cart";
     private final StripeProfileService stripeProfileService;
     private final AuthorService authorService;
     private final PaintingService paintingService;
 
     @Transactional
-    public String createExpressAccount(String cognitoSubject) {
+    public String createExpressAccount(Author author) {
         AccountCreateParams.BusinessProfile paintingMadeByHand = AccountCreateParams.BusinessProfile.builder()
                 .setProductDescription("paintings made by hand")
                 .build();
 
-        Author author = authorService.getAuthorByCognitoSubject(cognitoSubject);
         AccountCreateParams params =
                 AccountCreateParams.builder()
                         .setType(AccountCreateParams.Type.EXPRESS)
@@ -78,23 +80,30 @@ public class StripeService {
         try {
             Account account = Account.create(params);
             String stripeAccountId = account.getId();
-            StripeProfile stripeProfile = new StripeProfile();
-            stripeProfile.setAccountId(stripeAccountId);
-            stripeProfile.setAuthor(author);
-            StripeProfile savedStripeProfile = stripeProfileService.create(stripeProfile);
+            StripeProfile savedStripeProfile = stripeProfileService.create(stripeAccountId, author);
+            System.out.println("Saved stipe profile: " + savedStripeProfile.getId());
             return savedStripeProfile.getAccountId();
         } catch (StripeException e) {
             throw new RuntimeException("Can't create Express account", e);
         }
     }
 
+    @Transactional
     public AccountLink createAccountLink(String authorCognitoSubject) {
-        String expressAccountId = createExpressAccount(authorCognitoSubject);
+        Author author = authorService.getAuthorByCognitoSubject(authorCognitoSubject);
+        StripeProfile stripeProfile = author.getStripeProfile();
+        String expressAccountId;
+        if (stripeProfile == null) {
+            expressAccountId = createExpressAccount(author);
+        } else {
+            expressAccountId = stripeProfile.getAccountId();
+        }
+
         AccountLinkCreateParams params =
                 AccountLinkCreateParams.builder()
                         .setAccount(expressAccountId)
-                        .setRefreshUrl("https://www.albedosunrise.com/stripe/onboarding")
-                        .setReturnUrl("https://develop.artvswar.gallery")
+                        .setRefreshUrl(REFRESH_URL)
+                        .setReturnUrl(RETURN_URL)
                         .setType(AccountLinkCreateParams.Type.ACCOUNT_ONBOARDING)
                         .build();
         try {
@@ -105,6 +114,7 @@ public class StripeService {
         }
     }
 
+    @Transactional
     public String getOnboardingUrl(String authorCognitoSubject) {
         AccountLink accountLink = createAccountLink(authorCognitoSubject);
         return accountLink.getUrl();
@@ -205,8 +215,8 @@ public class StripeService {
                                         .build()
                         )
                         .addAllShippingOption(prepareShippingOptions(dto.getShippingRates()))
-                        .setSuccessUrl("https://artvswar.gallery/order-done")
-                        .setCancelUrl("https://artvswar.gallery/cart")
+                        .setSuccessUrl(SUCCESS_URL)
+                        .setCancelUrl(CANCEL_URL)
                         .build();
 
         try {

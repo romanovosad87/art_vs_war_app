@@ -21,13 +21,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/stripeWebhook")
 public class StripeWebhookController {
+    public static final String STRIPE_SIGNATURE = "Stripe-Signature";
     private final StripeWebhookService stripeWebhookService;
-    @Value("${stripe.webhook.secret}")
-    private String endpointSecret;
+    @Value("${stripe.webhook.secret.checkout}")
+    private String endpointSecretCheckout;
+
+    @Value("${stripe.webhook.secret.expressAccount}")
+    private String endpointSecretExpressAccount;
+
+
 
     @PostMapping("/checkOut")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<String> handleCheckOutSessionEvent(@RequestHeader("Stripe-Signature") String sigHeader,
+    public ResponseEntity<String> handleCheckOutSessionEvent(@RequestHeader(STRIPE_SIGNATURE) String sigHeader,
                                             @RequestBody String payload) {
         if (sigHeader == null) {
             return new ResponseEntity<>("Webhook error, sigHeader == null",
@@ -38,7 +44,7 @@ public class StripeWebhookController {
 
         try {
             event = Webhook.constructEvent(
-                    payload, sigHeader, endpointSecret);
+                    payload, sigHeader, endpointSecretCheckout);
         } catch (SignatureVerificationException e) {
             log.info("⚠️ Webhook error while validating signature");
             return new ResponseEntity<>("Webhook error while validating signature",
@@ -48,5 +54,33 @@ public class StripeWebhookController {
         stripeWebhookService.handleCheckOutSessionEvent(event);
         return new ResponseEntity<>("",
                 HttpStatus.OK);
+    }
+
+    @PostMapping("/expressAccount")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<String> handleUpdateAccountEvent(@RequestHeader(STRIPE_SIGNATURE) String sigHeader,
+                                           @RequestBody String payload) {
+
+        if (sigHeader == null) {
+            return new ResponseEntity<>("Webhook error, sigHeader == null",
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        Event event;
+
+        try {
+            event = Webhook.constructEvent(
+                    payload, sigHeader, endpointSecretExpressAccount);
+        } catch (SignatureVerificationException e) {
+            log.info("⚠️ Webhook error while validating signature");
+            return new ResponseEntity<>("Webhook error while validating signature",
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        stripeWebhookService.handleExpressAccountEvent(event);
+        return new ResponseEntity<>("",
+                HttpStatus.OK);
+
+
     }
 }

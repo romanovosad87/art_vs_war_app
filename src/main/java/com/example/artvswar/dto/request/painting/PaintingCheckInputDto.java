@@ -27,7 +27,7 @@ public class PaintingCheckInputDto {
     private String title;
 
     @NotNull(message = "price field is required", groups = FirstOrder.class)
-    @Digits(integer = 8, fraction = 0, message = "price must have maximum 8 number of digits "
+    @Digits(integer = 5, fraction = 0, message = "price must have maximum 8 number of digits "
             + "without cents", groups = ThirdOrder.class)
     private BigDecimal price;
 

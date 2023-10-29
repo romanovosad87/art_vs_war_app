@@ -12,17 +12,17 @@ import javax.validation.constraints.Size;
 @Data
 @GroupSequence({AccountCreateUpdateRequestDto.class, FirstOrder.class, SecondOrder.class, ThirdOrder.class})
 public class AccountCreateUpdateRequestDto {
-    @NotBlank(message = "full name field is required", groups = FirstOrder.class)
+    @NotBlank(message = "first name field is required", groups = FirstOrder.class)
     @Size(min = 1, max = 30,
             message = "first name must be between 1 and 30 characters", groups = SecondOrder.class)
-    @Pattern(regexp = "[\\p{IsLatin}\\s'-]+", message = "full name except only Latin, space, ' and -",
+    @Pattern(regexp = "[\\p{IsLatin}\\s'-]+", message = "first name except only Latin, space, ' and -",
             groups = ThirdOrder.class)
     private String firstName;
 
-    @NotBlank(message = "full name field is required", groups = FirstOrder.class)
+    @NotBlank(message = "last name field is required", groups = FirstOrder.class)
     @Size(min = 1, max = 30,
             message = "last name must be between 1 and 30 characters", groups = SecondOrder.class)
-    @Pattern(regexp = "[\\p{IsLatin}\\s'-]+", message = "full name except only Latin, space, ' and -",
+    @Pattern(regexp = "[\\p{IsLatin}\\s'-]+", message = "last name except only Latin, space, ' and -",
             groups = ThirdOrder.class)
     private String lastName;
 
@@ -30,7 +30,9 @@ public class AccountCreateUpdateRequestDto {
     private String email;
 
     @NotBlank(message = "phone field is required", groups = FirstOrder.class)
-    @Pattern(regexp = "[\\d-()]*", message = "phone field except only digits, '(', ')' and '-'",
+    @Size(min = 7, max = 30,
+            message = "phone field must be between 7 and 30 characters", groups = SecondOrder.class)
+    @Pattern(regexp = "[\\d\\s-()+]*", message = "phone field except only digits, space '(', ')', '+' and '-'",
             groups = ThirdOrder.class)
     private String phone;
 
