@@ -62,15 +62,17 @@ public class AccountController {
             @RequestBody @Valid List<AccountShippingRequestDto> dtos,
             @AuthenticationPrincipal Jwt jwt) {
         String subject = jwt.getClaimAsString(SUBJECT);
-        List<AccountShippingResponseDto> responseDtos = accountService.saveAccountShippingAddresses(dtos, subject);
-        return new ResponseEntity<>(responseDtos, HttpStatus.CREATED);
+        List<AccountShippingResponseDto> responseDtoList = accountService.saveAccountShippingAddresses(dtos, subject);
+        AccountShippingResponseDto accountShippingResponseDto = responseDtoList.get(responseDtoList.size() - 1);
+        return new ResponseEntity<>(List.of(accountShippingResponseDto), HttpStatus.CREATED);
     }
 
     @GetMapping("/addresses")
     public ResponseEntity<List<AccountShippingResponseDto>> getShippingAddresses(
             @AuthenticationPrincipal Jwt jwt) {
         String subject = jwt.getClaimAsString(SUBJECT);
-        List<AccountShippingResponseDto> responseDtos = accountService.getAccountShippingAddresses(subject);
-        return new ResponseEntity<>(responseDtos, HttpStatus.CREATED);
+        List<AccountShippingResponseDto> responseDtoList = accountService.getAccountShippingAddresses(subject);
+        AccountShippingResponseDto accountShippingResponseDto = responseDtoList.get(responseDtoList.size() - 1);
+        return new ResponseEntity<>(List.of(accountShippingResponseDto), HttpStatus.OK);
     }
 }

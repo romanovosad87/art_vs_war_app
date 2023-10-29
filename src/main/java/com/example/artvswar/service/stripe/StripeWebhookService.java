@@ -10,6 +10,8 @@ import com.example.artvswar.service.DonateService;
 import com.example.artvswar.service.OrderService;
 import com.example.artvswar.service.PaintingService;
 import com.example.artvswar.service.ShoppingCartPaintingService;
+import com.example.artvswar.service.StripeProfileService;
+import com.stripe.model.Account;
 import com.stripe.model.BalanceTransaction;
 import com.stripe.model.Charge;
 import com.stripe.model.Event;
@@ -39,6 +41,7 @@ public class StripeWebhookService {
     private final ShoppingCartPaintingService shoppingCartPaintingService;
     private final StripeService stripeService;
     private final DonateService donateService;
+    private final StripeProfileService stripeProfileService;
 
     @Transactional
     public void handleCheckOutSessionEvent(Event event) {
@@ -99,7 +102,6 @@ public class StripeWebhookService {
                 .collect(Collectors.toList());
         System.out.println("After parsing metadata, paintings: " + paintings);
 
-
         paintings.forEach(painting -> paintingService.changePaymentStatus(painting, PaymentStatus.SOLD));
 
         createOrder(session, paymentIntent, paintings, timeOfEvent);
@@ -115,6 +117,39 @@ public class StripeWebhookService {
         metadata.values().stream()
                 .map(id -> paintingService.get(Long.parseLong(id)))
                 .forEach(painting -> paintingService.changePaymentStatus(painting, PaymentStatus.AVAILABLE));
+    }
+
+    public void handleExpressAccountEvent(Event event) {
+        EventDataObjectDeserializer dataObjectDeserializer = event.getDataObjectDeserializer();
+
+        StripeObject stripeObject = dataObjectDeserializer.getObject().orElseThrow(
+                () -> new RuntimeException(
+                        String.format("Can't deserialize event with id: %s", event.getId())));
+
+//        Long eventCreatedAt = event.getCreated();
+//        LocalDateTime timeOfEvent = LocalDateTime.ofEpochSecond(eventCreatedAt, 0, ZoneOffset.UTC);
+
+        switch (event.getType()) {
+            case "account.updated":
+                Account account = (Account) stripeObject;
+                handleExpressAccountUpdate(account);
+                log.info("Express account updated for id = {}",
+                        account.getId());
+                break;
+            default:
+                log.warn("Unhandled event type: {}", event.getType());
+                break;
+        }
+    }
+
+    public void handleExpressAccountUpdate(Account account) {
+        System.out.println("I am in handle express account method");
+        String accountId = account.getId();
+        boolean isDetailsSubmitted = account.getDetailsSubmitted();
+        if (isDetailsSubmitted) {
+            System.out.println("Details Submitted: " + account.getDetailsSubmitted());
+            stripeProfileService.changeDetailsSubmitted(accountId, isDetailsSubmitted);
+        }
     }
 
     private void handleDonation(Session session) {
