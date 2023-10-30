@@ -12,4 +12,5 @@ public interface OrderService {
     OrderResponseDto getOrder(Long id);
     Order save(Order order);
 
+    void setOrderDelivered(Long id);
 }

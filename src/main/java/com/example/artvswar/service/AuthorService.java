@@ -37,4 +37,6 @@ public interface AuthorService {
     void delete(String cognitoSubject, Jwt jwt);
 
     AuthorCheckStripeAndAddressPresenceResponseDto checkAuthorProfile(String authorCognitoSubject);
+
+    void changeUnsubscribeEmail(String authorSubject, boolean unsubscribe);
 }

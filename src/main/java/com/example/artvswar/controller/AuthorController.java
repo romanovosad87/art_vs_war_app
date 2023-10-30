@@ -1,5 +1,6 @@
 package com.example.artvswar.controller;
 
+import com.example.artvswar.dto.request.author.AuthorChangeUnsubscribeResponseDto;
 import com.example.artvswar.dto.request.author.AuthorCheckInputDto;
 import com.example.artvswar.dto.request.author.AuthorCreateRequestDto;
 import com.example.artvswar.dto.request.author.AuthorUpdateRequestDto;
@@ -19,6 +20,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -113,5 +115,15 @@ public class AuthorController {
     public AuthorCheckStripeAndAddressPresenceResponseDto checkAuthorProfile(@AuthenticationPrincipal Jwt jwt) {
         String subject = jwt.getClaimAsString(SUBJECT);
         return authorService.checkAuthorProfile(subject);
+    }
+
+    @PreAuthorize("hasRole('AUTHOR')")
+    @PatchMapping("/unsubscribe")
+    public ResponseEntity<?> changeUnsubscribeEmail(@Valid @RequestBody
+                                                    AuthorChangeUnsubscribeResponseDto dto,
+                                                    @AuthenticationPrincipal Jwt jwt) {
+        String authorSubject = jwt.getClaimAsString(SUBJECT);
+        authorService.changeUnsubscribeEmail(authorSubject, dto.isUnsubscribe());
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

@@ -55,8 +55,8 @@ import java.util.Set;
 public class StripeService {
     private static final long HALF_HOUR = 30L;
     private static final String CURRENCY_EURO = "eur";
-    public static final String REFRESH_URL = "https://www.albedosunrise.com/stripe/onboarding";
-    public static final String RETURN_URL = "https://artvswar.gallery";
+    public static final String REFRESH_URL = "https://artvswar.gallery/profile/stripe-refresh";
+    public static final String RETURN_URL = "https://artvswar.gallery/profile";
     public static final String SUCCESS_URL = "https://artvswar.gallery/order-done";
     public static final String CANCEL_URL = "https://artvswar.gallery/cart";
     private final StripeProfileService stripeProfileService;

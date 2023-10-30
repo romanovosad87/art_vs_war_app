@@ -625,4 +625,39 @@ public class CustomPaintingRepositoryImpl
         return new MainPageDataResponseDto(authorsQuantity, paintingsQuantity, sumOfSoldPaintings);
 
     }
+
+    @Override
+    public Page<PaintingShortResponseDto> findResentSelling(String authorSubject, Pageable pageable) {
+        List<PaintingShortResponseDto> resultList = entityManager.createQuery("select new com.example.artvswar.dto.response.painting.PaintingShortResponseDto("
+                                + "p.id, "
+                                + "p.prettyId, "
+                                + "p.title, "
+                                + "p.price, "
+                                + "p.width, "
+                                + "p.height, "
+                                + "p.depth, "
+                                + "p.yearOfCreation, "
+                                + "p.paymentStatus, "
+                                + "p.paintingImage.image.publicId, "
+                                + "p.paintingImage.image.url, "
+                                + "p.author.fullName,"
+                                + "p.author.prettyId, "
+                                + "p.author.country) "
+                                + "from Painting p "
+                                + "inner join p.author a "
+                                + "where p.paymentStatus = 20 and a.cognitoSubject =?1 "
+                                + "order by p.updatedAt desc",
+                        PaintingShortResponseDto.class)
+                .setParameter(1, authorSubject)
+                .setFirstResult((int) pageable.getOffset())
+                .setMaxResults(pageable.getPageSize())
+                .getResultList();
+
+        long total = entityManager.createQuery("select count(p.id) from Painting p "
+                        + "where p.paymentStatus = 20 and p.author.cognitoSubject =?1", Long.class)
+                .setParameter(1, authorSubject)
+                .getSingleResult();
+
+        return new PageImpl<>(resultList, pageable, total);
+    }
 }

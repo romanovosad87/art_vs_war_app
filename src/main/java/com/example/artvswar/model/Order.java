@@ -68,6 +68,9 @@ public class Order {
 
     private LocalDateTime completedAt;
 
+    @Column(columnDefinition = "TINYINT not null default false")
+    private boolean isDelivered;
+
     public void addPainting(Painting painting) {
         paintings.add(painting);
         painting.setOrder(this);

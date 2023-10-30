@@ -16,17 +16,19 @@ public class OrderResponseDto {
     private BigDecimal totalAmount;
     private BigDecimal subtotalAmount;
     private BigDecimal shippingAmount;
+    private boolean isDelivered;
     private transient LocalDateTime createdAt;
     @JsonAdapter(JsonLocalDateTimeOrderAdapter.class)
     private OffsetDateTime orderCreatedAt;
     private Set<PaintingShortResponseDto> paintings = new LinkedHashSet<>();
 
     public OrderResponseDto(Long id, BigDecimal totalAmount, BigDecimal subtotalAmount,
-                            BigDecimal shippingAmount, LocalDateTime createdAt) {
+                            BigDecimal shippingAmount, boolean isDelivered, LocalDateTime createdAt) {
         this.id = id;
         this.totalAmount = totalAmount;
         this.subtotalAmount = subtotalAmount;
         this.shippingAmount = shippingAmount;
+        this.isDelivered = isDelivered;
         this.createdAt = createdAt;
     }
 }

@@ -1,5 +1,6 @@
 package com.example.artvswar.controller;
 
+import com.example.artvswar.dto.request.account.AccountChangeUnsubscribeRequestDto;
 import com.example.artvswar.dto.request.account.AccountCreateUpdateRequestDto;
 import com.example.artvswar.dto.request.account.AccountShippingRequestDto;
 import com.example.artvswar.dto.response.account.AccountResponseDto;
@@ -10,9 +11,11 @@ import com.stripe.model.Customer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,6 +45,7 @@ public class AccountController {
         return new ResponseEntity<>(savedAccount, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasRole('CUSTOMER')")
     @PutMapping
     public ResponseEntity<AccountResponseDto> update(@RequestBody @Valid AccountCreateUpdateRequestDto dto,
                                                      @AuthenticationPrincipal Jwt jwt) {
@@ -57,6 +61,7 @@ public class AccountController {
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('CUSTOMER')")
     @PostMapping("/addresses")
     public ResponseEntity<List<AccountShippingResponseDto>> createShippingAddress(
             @RequestBody @Valid List<AccountShippingRequestDto> dtos,
@@ -67,6 +72,7 @@ public class AccountController {
         return new ResponseEntity<>(List.of(accountShippingResponseDto), HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasRole('CUSTOMER')")
     @GetMapping("/addresses")
     public ResponseEntity<List<AccountShippingResponseDto>> getShippingAddresses(
             @AuthenticationPrincipal Jwt jwt) {
@@ -74,5 +80,15 @@ public class AccountController {
         List<AccountShippingResponseDto> responseDtoList = accountService.getAccountShippingAddresses(subject);
         AccountShippingResponseDto accountShippingResponseDto = responseDtoList.get(responseDtoList.size() - 1);
         return new ResponseEntity<>(List.of(accountShippingResponseDto), HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole('CUSTOMER')")
+    @PatchMapping("/unsubscribe")
+    public ResponseEntity<?> changeUnsubscribeEmailStatus(@Valid @RequestBody
+                                                          AccountChangeUnsubscribeRequestDto dto,
+                                                          @AuthenticationPrincipal Jwt jwt) {
+        String accountSubject = jwt.getClaimAsString(SUBJECT);
+        accountService.changeUnsubscribeEmailStatus(accountSubject, dto.isUnsubscribe());
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

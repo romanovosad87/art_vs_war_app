@@ -76,6 +76,9 @@ public class Account {
     @Column(columnDefinition = "INT default 0")
     private int offset;
 
+    @Column(columnDefinition = "TINYINT not null default false")
+    private boolean unsubscribedEmail;
+
     public void addOrder(Order order) {
         orders.add(order);
         order.setAccount(this);

@@ -32,4 +32,6 @@ public interface AccountService {
     Long getIdByCognitoSubject(String cognitoSubject);
 
     String getCognitoSubjectByStripeId(String stripeCustomerId);
+
+    void changeUnsubscribeEmailStatus(String accountSubject, boolean unsubscribe);
 }
