@@ -212,6 +212,12 @@ public class PaintingServiceImpl implements PaintingService {
         System.out.println("payment status changed to " + paymentStatus);
     }
 
+    @Override
+    public Page<PaintingShortResponseDto> findRecentSelling(String authorSubject,
+                                                            Pageable pageable) {
+        return paintingRepository.findResentSelling(authorSubject, pageable);
+    }
+
     private Map<Double, List<PaintingMainPageResponseDto>> parseObject(List<Object[]> response) {
         return response.stream()
                 .collect(Collectors.groupingBy(obj -> (Double) obj[1],

@@ -14,7 +14,7 @@ import javax.validation.constraints.Size;
 public class ContactUsRequestDto {
     @NotBlank(message = "email field is required", groups = FirstOrder.class)
     @Email(message = "incorrectly formed email address",
-            regexp = "^[\\w!#$%&’*+/=?`{|}~^-]+(?:\\.[\\w!#$%&’*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$",
+            regexp = "^[\\w!#$%&’*+/=?`{|}~^-]+(?:\\.[\\w!#$%&’*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,15}$",
             groups = SecondOrder.class)
     String email;
 

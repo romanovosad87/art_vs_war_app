@@ -59,7 +59,8 @@ public class PaintingController {
 
     @PreAuthorize("hasRole('AUTHOR')")
     @GetMapping("/profile/{prettyId}")
-    public ResponseEntity<PaintingResponseDto> getInProfileByPrettyId(@PathVariable String prettyId) {
+    public ResponseEntity<PaintingResponseDto> getInProfileByPrettyId(
+            @PathVariable String prettyId) {
         PaintingResponseDto dto = paintingService.getByPrettyId(prettyId);
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
@@ -189,5 +190,15 @@ public class PaintingController {
     public ResponseEntity<Map<Double, List<PaintingMainPageResponseDto>>> getPaintingsForMainPage() {
         Map<Double, List<PaintingMainPageResponseDto>> paintings = paintingService.getPaintingsForMainPage();
         return new ResponseEntity<>(paintings, HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole('AUTHOR')")
+    @GetMapping("/recentSelling")
+    public ResponseEntity<Page<PaintingShortResponseDto>> getRecentSelling(
+            @AuthenticationPrincipal Jwt jwt,
+            @PageableDefault(size = 10) Pageable pageable) {
+        String authorSubject = jwt.getClaimAsString(SUBJECT);
+        Page<PaintingShortResponseDto> recentSelling = paintingService.findRecentSelling(authorSubject, pageable);
+        return ResponseEntity.ok(recentSelling);
     }
 }

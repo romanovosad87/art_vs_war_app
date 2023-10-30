@@ -2,6 +2,7 @@ package com.example.artvswar.service.impl;
 
 import com.example.artvswar.dto.response.order.OrderResponseDto;
 import com.example.artvswar.dto.response.order.OrderShortResponseDto;
+import com.example.artvswar.exception.AppEntityNotFoundException;
 import com.example.artvswar.model.Account;
 import com.example.artvswar.model.Order;
 import com.example.artvswar.repository.order.OrderRepository;
@@ -41,7 +42,6 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderResponseDto getOrder(Long id) {
-
         return orderRepository.getOrder(id);
     }
 
@@ -49,6 +49,14 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public Order save(Order order) {
         return orderRepository.save(order);
+    }
+
+    @Override
+    @Transactional
+    public void setOrderDelivered(Long id) {
+        Order order = orderRepository.findById(id).orElseThrow(() -> new AppEntityNotFoundException(
+                String.format("Can't find order by id: %s", id)));
+        order.setDelivered(true);
     }
 
     private OffsetDateTime adjustOffset(LocalDateTime localDateTime, int offset) {

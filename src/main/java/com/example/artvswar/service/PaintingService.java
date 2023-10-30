@@ -54,4 +54,6 @@ public interface PaintingService {
     Map<Double, List<PaintingMainPageResponseDto>> getPaintingsForMainPage();
 
     void changePaymentStatus(Painting painting, PaymentStatus paymentStatus);
+
+    Page<PaintingShortResponseDto> findRecentSelling(String authorSubject, Pageable pageable);
 }

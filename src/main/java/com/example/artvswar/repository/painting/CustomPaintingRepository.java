@@ -28,4 +28,6 @@ public interface CustomPaintingRepository {
                                             Pageable pageable);
 
     MainPageDataResponseDto getDataForMainPage();
+
+    Page<PaintingShortResponseDto> findResentSelling(String authorSubject, Pageable pageable);
 }

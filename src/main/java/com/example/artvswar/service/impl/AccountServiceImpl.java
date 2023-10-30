@@ -137,4 +137,13 @@ public class AccountServiceImpl implements AccountService {
     public String getCognitoSubjectByStripeId(String stripeCustomerId) {
         return accountRepository.getAccountCognitoSubjectByStripeCustomerId(stripeCustomerId);
     }
+
+    @Override
+    @Transactional
+    public void changeUnsubscribeEmailStatus(String accountSubject, boolean unsubscribe) {
+        Account account = accountRepository.findByCognitoSubject(Account.class, accountSubject)
+                .orElseThrow(() -> new AppEntityNotFoundException(
+                        String.format("Can't find account by subject: %s", accountSubject)));
+        account.setUnsubscribedEmail(unsubscribe);
+    }
 }

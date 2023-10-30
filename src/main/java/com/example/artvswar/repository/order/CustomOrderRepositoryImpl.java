@@ -41,7 +41,7 @@ public class CustomOrderRepositoryImpl
                 .getResultList();
 
         OrderResponseDto responseDto = entityManager.createQuery("select new com.example.artvswar.dto.response.order.OrderResponseDto("
-                        + "o.id, o.totalAmount, o.subtotalAmount, o.shippingAmount, o.createdAt) "
+                        + "o.id, o.totalAmount, o.subtotalAmount, o.shippingAmount, o.isDelivered, o.createdAt) "
                         + "from Order o where o.id = ?1", OrderResponseDto.class)
                 .setParameter(1, id)
                 .getSingleResult();

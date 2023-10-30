@@ -155,6 +155,15 @@ public class AuthorServiceImpl implements AuthorService {
         return authorRepository.checkAuthorProfile(authorCognitoSubject);
     }
 
+    @Override
+    @Transactional
+    public void changeUnsubscribeEmail(String authorSubject, boolean unsubscribe) {
+        Author author = authorRepository.findByCognitoSubject(Author.class, authorSubject)
+                .orElseThrow(() -> new AppEntityNotFoundException(
+                        String.format("Can't find author by cognito subject: %s", authorSubject)));
+        author.setUnsubscribedEmail(unsubscribe);
+    }
+
     private Page<AuthorResponseDto> transformWithStyles(Page<AuthorResponseDto> authorsDtos) {
         List<String> authorsCognitoSubjects = authorsDtos.stream()
                 .map(AuthorResponseDto::getCognitoSubject)

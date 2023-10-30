@@ -74,6 +74,9 @@ public class Author extends User {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    @Column(columnDefinition = "TINYINT not null default false")
+    private boolean unsubscribedEmail;
+
     public void addPainting(Painting painting) {
         paintings.add(painting);
         painting.setAuthor(this);
