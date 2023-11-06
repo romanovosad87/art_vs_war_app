@@ -1,5 +1,6 @@
 package com.example.artvswar.service.impl;
 
+import com.example.artvswar.exception.AppEntityNotFoundException;
 import com.example.artvswar.model.PaintingImage;
 import com.example.artvswar.repository.paintingImage.PaintingImageRepository;
 import com.example.artvswar.service.PaintingImageService;
@@ -13,9 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class PaintingImageServiceImpl implements PaintingImageService {
     private final PaintingImageRepository paintingImageRepository;
 
+
     @Override
-    public PaintingImage getReference(Long id) {
-        return paintingImageRepository.getReferenceById(id);
+    public PaintingImage get(Long id) {
+        return paintingImageRepository.findById(id)
+                .orElseThrow(() -> new AppEntityNotFoundException(
+                        String.format("Can't find painting image by id: %s", id)));
     }
 
     @Override

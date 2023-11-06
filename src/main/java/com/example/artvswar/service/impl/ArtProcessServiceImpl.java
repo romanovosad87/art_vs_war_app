@@ -13,11 +13,13 @@ import com.example.artvswar.service.AuthorService;
 import com.example.artvswar.util.CloudinaryFolderCreator;
 import com.example.artvswar.util.image.CloudinaryClient;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
+@Log4j2
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ArtProcessServiceImpl implements ArtProcessService {
@@ -55,7 +57,7 @@ public class ArtProcessServiceImpl implements ArtProcessService {
 
     @Override
     @Transactional
-    public String delete(Long id) {
+    public void delete(Long id) {
         ArtProcess artProcess = artProcessRepository.findById(id).orElseThrow(
                 () -> new AppEntityNotFoundException(
                         String.format("Can't  find art process by id = %s", id)));
@@ -63,9 +65,10 @@ public class ArtProcessServiceImpl implements ArtProcessService {
         String publicId = artProcess.getArtProcessImage().getImage().getPublicId();
         String delete = cloudinaryClient.delete(publicId);
         if (delete.equals("ok")) {
-            return String.format("Asset with public id: %s was deleted from Cloudinary", publicId);
+            log.info(String.format("Asset (art process image) with public id: %s was deleted from Cloudinary", publicId));
+        } else {
+            log.info(String.format("Asset (art process image) with public id: %s was NOT deleted from Cloudinary", publicId));
         }
-        return String.format("Asset with public id: %s was NOT deleted from Cloudinary", publicId);
     }
 
     @Override

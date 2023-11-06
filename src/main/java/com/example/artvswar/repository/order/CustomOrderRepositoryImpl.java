@@ -2,9 +2,11 @@ package com.example.artvswar.repository.order;
 
 import com.example.artvswar.dto.response.order.OrderResponseDto;
 import com.example.artvswar.dto.response.painting.PaintingShortResponseDto;
+import com.example.artvswar.model.Order;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.EntityManager;
 
@@ -49,5 +51,26 @@ public class CustomOrderRepositoryImpl
         responseDto.getPaintings().addAll(paintings);
 
         return responseDto;
+    }
+
+    @Override
+    public List<Order> getOrdersCreatedBeforeAndAreNotMarkedAsDelivered(LocalDateTime time) {
+        return entityManager.createQuery("select o from Order o "
+                        + "where o.isDelivered = false and o.createdAt < ?1", Order.class)
+                .setParameter(1, time)
+                .getResultList();
+    }
+
+    @Override
+    public List<Order> getOrdersDeliveredAtBeforeAndDoNotHasTransfer(LocalDateTime time) {
+        return entityManager.createQuery("select o from Order o "
+                        + "join fetch o.paintings p "
+                        + "join fetch p.author a "
+                        + "join fetch a.stripeProfile sp "
+                        + "where o.isDelivered = true and  o.transferAmount is null "
+                        + "and o.deliveredAt < ?1", Order.class)
+                .setParameter(1, time)
+                .getResultList();
+
     }
 }

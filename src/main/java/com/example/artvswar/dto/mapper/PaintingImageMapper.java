@@ -62,7 +62,7 @@ public class PaintingImageMapper {
         }
     }
 
-    public PaintingImage toImageModel(FullImageUpdateRequestDto dto) {
+    public PaintingImage toImageModel(FullImageUpdateRequestDto dto, PaintingImage paintingImage) {
         String publicId = dto.getPublicId();
         String version = dto.getVersion();
         String signature = dto.getSignature();
@@ -70,13 +70,12 @@ public class PaintingImageMapper {
 
         boolean imageIsValidSignature = cloudinaryClient.verifySignature(publicId, version, signature);
         if (imageIsValidSignature) {
-            PaintingImage paintingImage = new PaintingImage();
             paintingImage.setHeight(dto.getHeight());
             paintingImage.setWidth(dto.getWidth());
             paintingImage.setInitialRatio(dto.getWidth() / (dto.getHeight()));
             paintingImage.setTransformedRatio(ratioHelper.getTransformedRatio(
                     dto.getWidth() / (dto.getHeight())));
-            Image image = new Image();
+            Image image = paintingImage.getImage();
             image.setPublicId(publicId);
             image.setUrl(imageTransformation.paintingImageEagerTransformation(publicId));
             image.setModerationStatus(ModerationStatus.valueOf(moderationStatus));

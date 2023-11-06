@@ -5,7 +5,6 @@ import com.example.artvswar.dto.response.stripe.StripeBalanceEarningsResponseDto
 import com.example.artvswar.service.AccountService;
 import com.example.artvswar.service.stripe.StripeService;
 import com.stripe.model.Customer;
-import com.stripe.model.PaymentIntent;
 import com.stripe.model.Refund;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -72,11 +71,6 @@ public class StripeController {
     public String createCustomer(@RequestParam String name, @RequestParam String email) {
         Customer customer = stripeService.createCustomer(name, email);
         return customer.getId();
-    }
-
-    @GetMapping("/intent/{id}")
-    public PaymentIntent getPaymentIntent(@PathVariable String id) {
-        return stripeService.retrievePaymentIntent(id);
     }
 
     @GetMapping("/refund")

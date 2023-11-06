@@ -7,9 +7,11 @@ import com.example.artvswar.dto.response.FolderResponseDto;
 import com.example.artvswar.dto.response.image.AdditionalImageResponseDto;
 import com.example.artvswar.dto.response.painting.PaintingMainPageResponseDto;
 import com.example.artvswar.dto.response.painting.PaintingParametersForSearchResponseDto;
+import com.example.artvswar.dto.response.painting.PaintingProfileResponseDto;
 import com.example.artvswar.dto.response.painting.PaintingResponseDto;
 import com.example.artvswar.dto.response.painting.PaintingShortResponseDto;
 import com.example.artvswar.exception.AppEntityNotFoundException;
+import com.example.artvswar.exception.PaintingNotAvailableException;
 import com.example.artvswar.model.Author;
 import com.example.artvswar.model.Painting;
 import com.example.artvswar.model.enumModel.PaymentStatus;
@@ -21,6 +23,7 @@ import com.example.artvswar.util.PrettyIdCreator;
 import com.example.artvswar.util.UrlParser;
 import com.example.artvswar.util.image.CloudinaryClient;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -34,8 +37,10 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Log4j2
 @Transactional(readOnly = true)
 public class PaintingServiceImpl implements PaintingService {
+    public static final String PAINTING = "Can't find painting by prettyId: %s";
     private final PaintingRepository paintingRepository;
     private final PaintingMapper paintingMapper;
     private final UrlParser urlParser;
@@ -60,7 +65,13 @@ public class PaintingServiceImpl implements PaintingService {
     public PaintingResponseDto update(String prettyId, PaintingUpdateRequestDto dto, String cognitoSubject) {
         Painting paintingFromDB = paintingRepository.findByPrettyId(prettyId)
                 .orElseThrow(() -> new AppEntityNotFoundException(
-                        String.format("Can't find painting by prettyId: %s", prettyId)));
+                        String.format(PAINTING, prettyId)));
+
+        if (paintingFromDB.getPaymentStatus() != PaymentStatus.AVAILABLE) {
+            throw new PaintingNotAvailableException("Can't update painting as it is sold "
+                    + "or is in process of painting");
+        }
+
         if (paintingFromDB.getAuthor().getCognitoSubject().equals(cognitoSubject)) {
             if(!dto.getTitle().equals(paintingFromDB.getTitle())) {
                 paintingFromDB.setPrettyId(createPrettyId(dto.getTitle()));
@@ -108,13 +119,26 @@ public class PaintingServiceImpl implements PaintingService {
     }
 
     @Override
+    public PaintingProfileResponseDto getForProfileByPrettyId(String prettyId) {
+        Painting painting = paintingRepository.findByPrettyId(prettyId)
+                .orElseThrow(() -> new AppEntityNotFoundException(
+                        String.format("Can't find painting by prettyId: %s", prettyId)));
+        return paintingMapper.toPaintingProfileResponseDto(painting);
+    }
+
+    @Override
     @Transactional
     public void deleteByPrettyId(String prettyId) {
         Painting painting = paintingRepository.findByPrettyId(prettyId)
                 .orElseThrow(() -> new AppEntityNotFoundException(
                         String.format("Can't find painting by prettyId: %s", prettyId)));
 
-        paintingRepository.deleteByPrettyId(prettyId);
+        if (painting.getPaymentStatus() != PaymentStatus.AVAILABLE) {
+            throw new PaintingNotAvailableException("Can't delete painting because it is sold "
+                    + "or is in process of purchasing");
+        }
+
+        paintingRepository.delete(painting);
         cloudinaryClient.delete(painting.getPaintingImage().getImage().getPublicId());
         painting.getAdditionalImages()
                 .forEach(additionalImage -> cloudinaryClient
@@ -209,7 +233,8 @@ public class PaintingServiceImpl implements PaintingService {
     @Transactional
     public void changePaymentStatus(Painting painting, PaymentStatus paymentStatus) {
         painting.setPaymentStatus(paymentStatus);
-        System.out.println("payment status changed to " + paymentStatus);
+        log.info(String.format("For painting with id: '%s', title: '%s', payment status changed to %s",
+                painting.getId(), painting.getTitle(), paymentStatus));
     }
 
     @Override

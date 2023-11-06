@@ -7,6 +7,7 @@ import com.example.artvswar.dto.response.FolderResponseDto;
 import com.example.artvswar.dto.response.image.AdditionalImageResponseDto;
 import com.example.artvswar.dto.response.painting.PaintingMainPageResponseDto;
 import com.example.artvswar.dto.response.painting.PaintingParametersForSearchResponseDto;
+import com.example.artvswar.dto.response.painting.PaintingProfileResponseDto;
 import com.example.artvswar.dto.response.painting.PaintingResponseDto;
 import com.example.artvswar.dto.response.painting.PaintingShortResponseDto;
 import com.example.artvswar.service.PaintingService;
@@ -59,9 +60,9 @@ public class PaintingController {
 
     @PreAuthorize("hasRole('AUTHOR')")
     @GetMapping("/profile/{prettyId}")
-    public ResponseEntity<PaintingResponseDto> getInProfileByPrettyId(
+    public ResponseEntity<PaintingProfileResponseDto> getInProfileByPrettyId(
             @PathVariable String prettyId) {
-        PaintingResponseDto dto = paintingService.getByPrettyId(prettyId);
+        PaintingProfileResponseDto dto = paintingService.getForProfileByPrettyId(prettyId);
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
@@ -103,14 +104,6 @@ public class PaintingController {
                 = paintingService.findAllByCollectionPrettyId(collectionPrettyId, pageable);
         return new ResponseEntity<>(allPaintings, HttpStatus.OK);
     }
-
-//    @GetMapping
-//    public ResponseEntity<Page<PaintingShortResponseDto>> getAll(@RequestParam Map<String, String> params,
-//                                                                       @PageableDefault(size = 12) Pageable pageable) {
-//        Page<PaintingShortResponseDto> allBy = paintingService.getAll(params, pageable);
-//        return new ResponseEntity<>(allBy, HttpStatus.OK);
-//
-//    }
 
     @PostMapping("/checkInputAndGet")
     public FolderResponseDto checkInput(@RequestBody @Valid PaintingCheckInputDto dto,
@@ -158,6 +151,7 @@ public class PaintingController {
 
     @PreAuthorize("hasRole('AUTHOR')")
     @DeleteMapping("/{prettyId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable String prettyId) {
         paintingService.deleteByPrettyId(prettyId);
     }
@@ -196,7 +190,7 @@ public class PaintingController {
     @GetMapping("/recentSelling")
     public ResponseEntity<Page<PaintingShortResponseDto>> getRecentSelling(
             @AuthenticationPrincipal Jwt jwt,
-            @PageableDefault(size = 10) Pageable pageable) {
+            @PageableDefault Pageable pageable) {
         String authorSubject = jwt.getClaimAsString(SUBJECT);
         Page<PaintingShortResponseDto> recentSelling = paintingService.findRecentSelling(authorSubject, pageable);
         return ResponseEntity.ok(recentSelling);

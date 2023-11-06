@@ -55,8 +55,8 @@ public class ArtProcessController {
     @DeleteMapping
     @PreAuthorize("hasRole('AUTHOR')")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public String delete(@RequestParam Long id) {
-        return artProcessService.delete(id);
+    public void delete(@RequestParam Long id) {
+        artProcessService.delete(id);
     }
 
     @GetMapping("/all")

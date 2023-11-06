@@ -4,6 +4,7 @@ import com.example.artvswar.exception.AppEntityNotFoundException;
 import com.example.artvswar.model.Author;
 import com.example.artvswar.model.StripeProfile;
 import com.example.artvswar.repository.StripeProfileRepository;
+import com.example.artvswar.service.AuthorService;
 import com.example.artvswar.service.StripeProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,13 +16,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class StripeProfileServiceImpl implements StripeProfileService {
 
     private final StripeProfileRepository stripeProfileRepository;
+    private final AuthorService authorService;
 
     @Override
     @Transactional
-    public StripeProfile create(String accountId, Author author) {
+    public StripeProfile create(String accountId, String authorCognitoSubject) {
+        Author authorFromDb = authorService.getAuthorByCognitoSubject(authorCognitoSubject);
         StripeProfile stripeProfile = new StripeProfile();
         stripeProfile.setAccountId(accountId);
-        stripeProfile.setAuthor(author);
+        stripeProfile.setAuthor(authorFromDb);
         return stripeProfileRepository.save(stripeProfile);
     }
 

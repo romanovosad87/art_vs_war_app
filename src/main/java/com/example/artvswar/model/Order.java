@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.NaturalId;
@@ -26,6 +27,7 @@ import javax.persistence.Table;
 @Setter
 @EqualsAndHashCode(of = "checkoutSessionId")
 @Entity
+@ToString
 @Table(name = "orders")
 public class Order {
     @Id
@@ -70,6 +72,7 @@ public class Order {
 
     @Column(columnDefinition = "TINYINT not null default false")
     private boolean isDelivered;
+    private LocalDateTime deliveredAt;
 
     public void addPainting(Painting painting) {
         paintings.add(painting);

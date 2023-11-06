@@ -9,7 +9,7 @@ import java.util.List;
 public interface ArtProcessService {
     ArtProcessResponseDto save(ArtProcessCreateRequestDto dto, String cognitoSubject);
     ArtProcessResponseDto update(Long id, ArtProcessUpdateRequestDto dto, String cognitoSubject);
-    String delete(Long id);
+    void delete(Long id);
 
     ArtProcessResponseDto getById(Long id);
 

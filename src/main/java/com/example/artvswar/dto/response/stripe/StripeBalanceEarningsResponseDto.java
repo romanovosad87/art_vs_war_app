@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class StripeBalanceEarningsResponseDto {
-    private Long balance;
-    private Long totalEarnings;
+    private Double balance;
+    private Double totalEarnings;
 }

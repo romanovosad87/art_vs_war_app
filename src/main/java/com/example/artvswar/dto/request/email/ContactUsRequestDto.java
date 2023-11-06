@@ -19,7 +19,7 @@ public class ContactUsRequestDto {
     String email;
 
     @NotBlank(message = "message field is required", groups = FirstOrder.class)
-    @Size(min = 1, max = 10000,
-            message = "message must be between 1 and 10 000 characters", groups = SecondOrder.class)
+    @Size(min = 20, max = 10000,
+            message = "message must be between 20 and 10 000 characters", groups = SecondOrder.class)
     String message;
 }
