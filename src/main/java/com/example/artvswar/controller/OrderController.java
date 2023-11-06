@@ -45,7 +45,7 @@ public class OrderController {
     }
 
     @PatchMapping("/delivered/{id}")
-    public ResponseEntity<?> setOrderDelivered(@PathVariable Long id) {
+    public ResponseEntity<Void> setOrderDelivered(@PathVariable Long id) {
         orderService.setOrderDelivered(id);
         return ResponseEntity.status(HttpStatus.OK).build();
     }

@@ -5,12 +5,14 @@ import com.example.artvswar.dto.request.painting.PaintingUpdateRequestDto;
 import com.example.artvswar.dto.response.author.AuthorForPaintingResponseDto;
 import com.example.artvswar.dto.response.collection.CollectionInPaintingResponseDto;
 import com.example.artvswar.dto.response.image.PaintingImageResponseDto;
+import com.example.artvswar.dto.response.painting.PaintingProfileResponseDto;
+import com.example.artvswar.dto.response.painting.PaintingProfileResponseDto.IdValuePair;
 import com.example.artvswar.dto.response.painting.PaintingResponseDto;
 import com.example.artvswar.model.AdditionalImage;
 import com.example.artvswar.model.Collection;
 import com.example.artvswar.model.Medium;
-import com.example.artvswar.model.PaintingImage;
 import com.example.artvswar.model.Painting;
+import com.example.artvswar.model.PaintingImage;
 import com.example.artvswar.model.RoomView;
 import com.example.artvswar.model.Style;
 import com.example.artvswar.model.Subject;
@@ -23,6 +25,7 @@ import com.example.artvswar.service.SupportService;
 import com.example.artvswar.util.image.CloudinaryClient;
 import com.example.artvswar.util.image.roomView.RoomViewManager;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -30,6 +33,7 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
+@Log4j2
 public class PaintingMapper {
     private final PaintingImageMapper paintingImageMapper;
     private final RoomViewManager roomViewManager;
@@ -98,6 +102,67 @@ public class PaintingMapper {
         return dto;
     }
 
+    public PaintingProfileResponseDto toPaintingProfileResponseDto(Painting painting) {
+        PaintingProfileResponseDto dto = new PaintingProfileResponseDto();
+        dto.setId(painting.getId());
+        dto.setPrettyId(painting.getPrettyId());
+        dto.setTitle(painting.getTitle());
+        dto.setDescription(painting.getDescription());
+        dto.setYearOfCreation(painting.getYearOfCreation());
+        dto.setPrice(painting.getPrice());
+        dto.setWeight(painting.getWeight());
+        dto.setWidth(painting.getWidth());
+        dto.setHeight(painting.getHeight());
+        dto.setDepth(painting.getDepth());
+        dto.setPaymentStatus(painting.getPaymentStatus());
+        dto.setAddedToDatabase(painting.getEntityCreatedAt());
+
+        CollectionInPaintingResponseDto collectionDto = new CollectionInPaintingResponseDto();
+        Collection collection = painting.getCollection().orElseGet(Collection::new);
+        collectionDto.setId(collection.getId());
+        collectionDto.setPrettyId(collection.getPrettyId());
+        collectionDto.setTitle(collection.getTitle());
+
+        dto.setCollection(collectionDto);
+
+        AuthorForPaintingResponseDto authorDto = new AuthorForPaintingResponseDto();
+        authorDto.setId(painting.getAuthor().getCognitoSubject());
+        authorDto.setPrettyId(painting.getAuthor().getPrettyId());
+        authorDto.setFullName(painting.getAuthor().getFullName());
+        authorDto.setCountry(painting.getAuthor().getCountry());
+        dto.setAuthor(authorDto);
+
+        List<IdValuePair> styles = painting.getStyles().stream()
+                .map(ent -> new IdValuePair(ent.getId(), ent.getName()))
+                .collect(Collectors.toList());
+        dto.setStyles(styles);
+
+        List<IdValuePair>  mediums = painting.getMediums().stream()
+                .map(ent -> new IdValuePair(ent.getId(), ent.getName()))
+                .collect(Collectors.toList());
+        dto.setMediums(mediums);
+
+        List<IdValuePair>  supports = painting.getSupports().stream()
+                .map(ent -> new IdValuePair(ent.getId(), ent.getName()))
+                .collect(Collectors.toList());
+        dto.setSupports(supports);
+
+        List<IdValuePair>  subjects = painting.getSubjects().stream()
+                .map(ent -> new IdValuePair(ent.getId(), ent.getName()))
+                .collect(Collectors.toList());
+        dto.setSubjects(subjects);
+
+        PaintingImage paintingImage = painting.getPaintingImage();
+        List<AdditionalImage> additionalImages = painting.getAdditionalImages();
+        PaintingImageResponseDto paintingImageResponseDto
+                = paintingImageMapper.toImageResponseDto(paintingImage, additionalImages);
+        dto.setPaintingImageResponseDto(paintingImageResponseDto);
+
+        return dto;
+    }
+
+
+
     @Transactional
     public Painting toPaintingModel(PaintingCreateRequestDto dto) {
         Painting painting = new Painting();
@@ -116,7 +181,7 @@ public class PaintingMapper {
                 dto.getWidth(), dto.getHeight());
         long end = System.currentTimeMillis();
         long duration = end - start;   // measure parallel stream
-        System.out.println(duration + " µ");
+        log.info("Mock rooms creation lasted " + duration + " µ");
         paintingImage.getRoomViews().addAll(viewRooms);
         painting.addPaintingImage(paintingImage);
 
@@ -155,14 +220,17 @@ public class PaintingMapper {
 
         if (!dto.getImage().getPublicId().equals(paintingFromDB.getPaintingImage().getImage().getPublicId())) {
             PaintingImage paintingImageFromDB = paintingFromDB.getPaintingImage();
-            PaintingImage paintingImage = paintingImageMapper.toImageModel(dto.getImage());
+            String publicId = paintingImageFromDB.getImage().getPublicId();
+            PaintingImage paintingImage = paintingImageMapper.toImageModel(dto.getImage(), paintingImageFromDB);
             List<RoomView> viewRooms = roomViewManager.getViewRooms(paintingImage.getImage().getPublicId(),
                     dto.getWidth(), dto.getHeight());
-            paintingImage.getRoomViews().addAll(viewRooms);
+            List<RoomView> roomViews = paintingImage.getRoomViews();
+            roomViews.clear();
+            roomViews.addAll(viewRooms);
 
-            paintingFromDB.setPaintingImage(paintingImage);
+            paintingFromDB.addPaintingImage(paintingImage);
 
-            cloudinaryClient.delete(paintingImageFromDB.getImage().getPublicId());
+            cloudinaryClient.delete(publicId);
         }
         return paintingFromDB;
     }

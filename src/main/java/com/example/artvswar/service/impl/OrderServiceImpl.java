@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(readOnly = true)
 public class OrderServiceImpl implements OrderService {
+    public static final long DAYS_BEFORE = 5L;
     private final OrderRepository orderRepository;
     private final AccountService accountService;
 
@@ -57,7 +59,31 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findById(id).orElseThrow(() -> new AppEntityNotFoundException(
                 String.format("Can't find order by id: %s", id)));
         order.setDelivered(true);
+        order.setDeliveredAt(LocalDateTime.now().atOffset(ZoneOffset.UTC).toLocalDateTime());
     }
+
+    @Override
+    @Transactional
+    @Scheduled(cron = "0 0 8,17 * * ?", zone = "ECT")
+    public void setOrderDeliveredForMoreThanFiveDays() {
+        LocalDateTime fiveDaysBefore = LocalDateTime.now()
+                .minusDays(DAYS_BEFORE)
+                .atOffset(ZoneOffset.UTC)
+                .toLocalDateTime();
+        List<Order> orders = orderRepository
+                .getOrdersCreatedBeforeAndAreNotMarkedAsDelivered(fiveDaysBefore);
+        orders.forEach(order -> {
+            order.setDelivered(true);
+            order.setDeliveredAt(LocalDateTime.now().atOffset(ZoneOffset.UTC).toLocalDateTime());
+        });
+    }
+
+    @Override
+    @Transactional
+    public List<Order> getOrdersDeliveredAtBeforeAndDoNotHasTransfer(LocalDateTime time) {
+        return orderRepository.getOrdersDeliveredAtBeforeAndDoNotHasTransfer(time);
+    }
+
 
     private OffsetDateTime adjustOffset(LocalDateTime localDateTime, int offset) {
         ZoneOffset zoneOffset = ZoneOffset.ofHours(offset);

@@ -11,6 +11,7 @@ import com.example.artvswar.service.OrderService;
 import com.example.artvswar.service.PaintingService;
 import com.example.artvswar.service.ShoppingCartPaintingService;
 import com.example.artvswar.service.StripeProfileService;
+import com.example.artvswar.util.StripeUtils;
 import com.stripe.model.Account;
 import com.stripe.model.BalanceTransaction;
 import com.stripe.model.Charge;
@@ -39,7 +40,7 @@ public class StripeWebhookService {
     private final OrderMapper orderMapper;
     private final AccountService accountService;
     private final ShoppingCartPaintingService shoppingCartPaintingService;
-    private final StripeService stripeService;
+    private final StripeUtils stripeUtils;
     private final DonateService donateService;
     private final StripeProfileService stripeProfileService;
 
@@ -94,7 +95,7 @@ public class StripeWebhookService {
         Map<String, String> metadata = session.getMetadata();
         System.out.println(metadata);
 
-        PaymentIntent paymentIntent = stripeService.retrievePaymentIntent(session.getPaymentIntent());
+        PaymentIntent paymentIntent = stripeUtils.retrievePaymentIntent(session.getPaymentIntent());
         System.out.println(paymentIntent);
 
         List<Painting> paintings = metadata.values().stream()
@@ -129,16 +130,13 @@ public class StripeWebhookService {
 //        Long eventCreatedAt = event.getCreated();
 //        LocalDateTime timeOfEvent = LocalDateTime.ofEpochSecond(eventCreatedAt, 0, ZoneOffset.UTC);
 
-        switch (event.getType()) {
-            case "account.updated":
-                Account account = (Account) stripeObject;
-                handleExpressAccountUpdate(account);
-                log.info("Express account updated for id = {}",
-                        account.getId());
-                break;
-            default:
-                log.warn("Unhandled event type: {}", event.getType());
-                break;
+        if (event.getType().equals("account.updated")) {
+            Account account = (Account) stripeObject;
+            handleExpressAccountUpdate(account);
+            log.info("Express account updated for id = {}",
+                    account.getId());
+        } else {
+            log.warn("Unhandled event type: {}", event.getType());
         }
     }
 
@@ -178,11 +176,11 @@ public class StripeWebhookService {
     }
 
     private BigDecimal getNetAmount(String paymentIntentId) {
-        PaymentIntent paymentIntent = stripeService.retrievePaymentIntent(paymentIntentId);
+        PaymentIntent paymentIntent = stripeUtils.retrievePaymentIntent(paymentIntentId);
         String latestChargeId = paymentIntent.getLatestCharge();
-        Charge charge = stripeService.retrieveCharge(latestChargeId);
+        Charge charge = stripeUtils.retrieveCharge(latestChargeId);
         String balanceTransactionId = charge.getBalanceTransaction();
-        BalanceTransaction balanceTransaction = stripeService.retrieveBalanceTransaction(balanceTransactionId);
+        BalanceTransaction balanceTransaction = stripeUtils.retrieveBalanceTransaction(balanceTransactionId);
         return BigDecimal.valueOf((double)balanceTransaction.getNet() / 100);
     }
 }

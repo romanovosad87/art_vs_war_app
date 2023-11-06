@@ -78,13 +78,18 @@ public class AccountController {
             @AuthenticationPrincipal Jwt jwt) {
         String subject = jwt.getClaimAsString(SUBJECT);
         List<AccountShippingResponseDto> responseDtoList = accountService.getAccountShippingAddresses(subject);
-        AccountShippingResponseDto accountShippingResponseDto = responseDtoList.get(responseDtoList.size() - 1);
-        return new ResponseEntity<>(List.of(accountShippingResponseDto), HttpStatus.OK);
+        if (!responseDtoList.isEmpty()) {
+            AccountShippingResponseDto accountShippingResponseDto = responseDtoList.get(responseDtoList.size() - 1);
+            responseDtoList.clear();
+            responseDtoList.add(accountShippingResponseDto);
+        }
+
+        return new ResponseEntity<>(responseDtoList, HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('CUSTOMER')")
     @PatchMapping("/unsubscribe")
-    public ResponseEntity<?> changeUnsubscribeEmailStatus(@Valid @RequestBody
+    public ResponseEntity<Void> changeUnsubscribeEmailStatus(@Valid @RequestBody
                                                           AccountChangeUnsubscribeRequestDto dto,
                                                           @AuthenticationPrincipal Jwt jwt) {
         String accountSubject = jwt.getClaimAsString(SUBJECT);

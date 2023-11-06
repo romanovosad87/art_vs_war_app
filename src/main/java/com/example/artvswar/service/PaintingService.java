@@ -6,6 +6,7 @@ import com.example.artvswar.dto.response.FolderResponseDto;
 import com.example.artvswar.dto.response.image.AdditionalImageResponseDto;
 import com.example.artvswar.dto.response.painting.PaintingMainPageResponseDto;
 import com.example.artvswar.dto.response.painting.PaintingParametersForSearchResponseDto;
+import com.example.artvswar.dto.response.painting.PaintingProfileResponseDto;
 import com.example.artvswar.dto.response.painting.PaintingResponseDto;
 import com.example.artvswar.dto.response.painting.PaintingShortResponseDto;
 import com.example.artvswar.model.Painting;
@@ -29,6 +30,8 @@ public interface PaintingService {
     PaintingResponseDto getDto(Long id);
 
     PaintingResponseDto getByPrettyId(String prettyId);
+
+    PaintingProfileResponseDto getForProfileByPrettyId(String prettyId);
 
     void deleteByPrettyId(String prettyId);
 
