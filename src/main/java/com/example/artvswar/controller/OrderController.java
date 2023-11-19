@@ -34,7 +34,17 @@ public class OrderController {
             @SortDefault(sort = CREATED_AT, direction = Sort.Direction.DESC)
             @PageableDefault(size = PAGE_SIZE) Pageable pageable) {
         String cognitoSubject = jwt.getClaimAsString(SUBJECT);
-        Page<OrderShortResponseDto> dtos = orderService.getAllOrdersByAccount(cognitoSubject, pageable);
+        Page<OrderShortResponseDto> dtos = orderService.getAllShortOrdersByAccount(cognitoSubject, pageable);
+        return new ResponseEntity<>(dtos, HttpStatus.OK);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<Page<OrderResponseDto>> getAllFullByAccount(
+            @AuthenticationPrincipal Jwt jwt,
+            @SortDefault(sort = CREATED_AT, direction = Sort.Direction.DESC)
+            @PageableDefault(size = PAGE_SIZE) Pageable pageable) {
+        String cognitoSubject = jwt.getClaimAsString(SUBJECT);
+        Page<OrderResponseDto> dtos = orderService.getAllFullOrdersByAccount(cognitoSubject, pageable);
         return new ResponseEntity<>(dtos, HttpStatus.OK);
     }
 
