@@ -11,7 +11,7 @@ import java.time.format.DateTimeFormatter;
 @Component
 public class JsonLocalDateTimeOrderAdapter extends TypeAdapter<OffsetDateTime> {
     private static final DateTimeFormatter formatter
-            = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss XXX");
+            = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     @Override
     public void write(JsonWriter out, OffsetDateTime value) throws IOException {
         out.beginObject();

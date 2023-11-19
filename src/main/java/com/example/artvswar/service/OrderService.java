@@ -9,9 +9,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface OrderService {
-    Page<OrderShortResponseDto> getAllOrdersByAccount(String cognitoSubject, Pageable pageable);
+    Page<OrderShortResponseDto> getAllShortOrdersByAccount(String cognitoSubject, Pageable pageable);
 
     OrderResponseDto getOrder(Long id);
+
+    Page<OrderResponseDto> getAllFullOrdersByAccount(String cognitoSubject, Pageable pageable);
+
     Order save(Order order);
 
     void setOrderDelivered(Long id);

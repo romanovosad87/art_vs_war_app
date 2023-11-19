@@ -30,7 +30,7 @@ public class OrderServiceImpl implements OrderService {
     private final AccountService accountService;
 
     @Override
-    public Page<OrderShortResponseDto> getAllOrdersByAccount(String cognitoSubject, Pageable pageable) {
+    public Page<OrderShortResponseDto> getAllShortOrdersByAccount(String cognitoSubject, Pageable pageable) {
         Account account = accountService.getAccountByCognitoSubject(cognitoSubject);
         Page<OrderShortResponseDto> orders = orderRepository
                 .findAllByAccount_CognitoSubject(cognitoSubject, pageable);
@@ -45,6 +45,20 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderResponseDto getOrder(Long id) {
         return orderRepository.getOrder(id);
+    }
+
+    @Override
+    public Page<OrderResponseDto> getAllFullOrdersByAccount(String cognitoSubject,
+                                                            Pageable pageable) {
+        Account account = accountService.getAccountByCognitoSubject(cognitoSubject);
+        Page<OrderResponseDto> orders = orderRepository.getAllOrdersByAccount(cognitoSubject, pageable);
+        List<OrderResponseDto> ordersList = orders.getContent().stream()
+                .peek(order -> order.setOrderCreatedAt(adjustOffset(order.getCreatedAt(),
+                        account.getOffset())))
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(ordersList, orders.getPageable(), orders.getTotalElements());
+
     }
 
     @Override
