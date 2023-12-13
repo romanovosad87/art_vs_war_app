@@ -86,4 +86,15 @@ public class PaintingImageMapper {
                     + "%s are not valid for image public_id = %s", signature, version, publicId));
         }
     }
+
+    public PaintingImage toImageModelSameImage(FullImageUpdateRequestDto dto, PaintingImage paintingImage) {
+
+            paintingImage.setHeight(dto.getHeight());
+            paintingImage.setWidth(dto.getWidth());
+            paintingImage.setInitialRatio(dto.getWidth() / (dto.getHeight()));
+            paintingImage.setTransformedRatio(ratioHelper.getTransformedRatio(
+                    dto.getWidth() / (dto.getHeight())));
+
+            return paintingImage;
+    }
 }

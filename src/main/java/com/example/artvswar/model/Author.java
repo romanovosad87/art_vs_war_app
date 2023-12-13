@@ -28,7 +28,6 @@ import javax.persistence.Table;
 @Entity
 @Getter
 @Setter
-@ToString
 @SQLDelete(sql = "UPDATE authors SET is_deleted = true where cognito_subject = ?",
         check = ResultCheckStyle.COUNT)
 @Where(clause = "is_deleted = false")

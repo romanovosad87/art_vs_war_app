@@ -4,6 +4,7 @@ import com.example.artvswar.model.enumModel.ModerationStatus;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
@@ -19,6 +20,7 @@ import javax.persistence.Table;
 @Getter
 @Setter
 @Entity
+@ToString
 @Table(name = "images",
         indexes = {@Index(name = "moderation_status", columnList = "moderationStatus")})
 public class Image {

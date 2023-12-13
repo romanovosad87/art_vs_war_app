@@ -137,17 +137,17 @@ public class PaintingMapper {
                 .collect(Collectors.toList());
         dto.setStyles(styles);
 
-        List<IdValuePair>  mediums = painting.getMediums().stream()
+        List<IdValuePair> mediums = painting.getMediums().stream()
                 .map(ent -> new IdValuePair(ent.getId(), ent.getName()))
                 .collect(Collectors.toList());
         dto.setMediums(mediums);
 
-        List<IdValuePair>  supports = painting.getSupports().stream()
+        List<IdValuePair> supports = painting.getSupports().stream()
                 .map(ent -> new IdValuePair(ent.getId(), ent.getName()))
                 .collect(Collectors.toList());
         dto.setSupports(supports);
 
-        List<IdValuePair>  subjects = painting.getSubjects().stream()
+        List<IdValuePair> subjects = painting.getSubjects().stream()
                 .map(ent -> new IdValuePair(ent.getId(), ent.getName()))
                 .collect(Collectors.toList());
         dto.setSubjects(subjects);
@@ -160,7 +160,6 @@ public class PaintingMapper {
 
         return dto;
     }
-
 
 
     @Transactional
@@ -203,9 +202,23 @@ public class PaintingMapper {
         paintingFromDB.setTitle(dto.getTitle());
         paintingFromDB.setPrice(dto.getPrice());
         paintingFromDB.setYearOfCreation(dto.getYearOfCreation());
+
+        Double widthDto = dto.getWidth();
+        Double heightDto = dto.getHeight();
+
+        Double dbWidth = paintingFromDB.getWidth();
+        Double dbHeight = paintingFromDB.getHeight();
+
+        boolean isNewImageNotDownloaded = dto.getImage().getPublicId().equals(paintingFromDB.getPaintingImage().getImage().getPublicId());
+
+        if ((!widthDto.equals(dbWidth) || !heightDto.equals(dbHeight))
+        && isNewImageNotDownloaded) {
+            createMockRoomsSameImage(dto, paintingFromDB);
+        }
+
         paintingFromDB.setWeight(dto.getWeight());
-        paintingFromDB.setWidth(dto.getWidth());
-        paintingFromDB.setHeight(dto.getHeight());
+        paintingFromDB.setWidth(widthDto);
+        paintingFromDB.setHeight(heightDto);
         paintingFromDB.setDepth(dto.getDepth());
         paintingFromDB.setDescription(dto.getDescription());
         dto.getStyleIds().forEach(
@@ -218,20 +231,37 @@ public class PaintingMapper {
                 subjectId -> paintingFromDB.addSubject(subjectService.getReferenceById(subjectId))
         );
 
-        if (!dto.getImage().getPublicId().equals(paintingFromDB.getPaintingImage().getImage().getPublicId())) {
+
+        if (!isNewImageNotDownloaded) {
+            createMockRooms(dto, paintingFromDB);
+
             PaintingImage paintingImageFromDB = paintingFromDB.getPaintingImage();
             String publicId = paintingImageFromDB.getImage().getPublicId();
-            PaintingImage paintingImage = paintingImageMapper.toImageModel(dto.getImage(), paintingImageFromDB);
-            List<RoomView> viewRooms = roomViewManager.getViewRooms(paintingImage.getImage().getPublicId(),
-                    dto.getWidth(), dto.getHeight());
-            List<RoomView> roomViews = paintingImage.getRoomViews();
-            roomViews.clear();
-            roomViews.addAll(viewRooms);
-
-            paintingFromDB.addPaintingImage(paintingImage);
-
             cloudinaryClient.delete(publicId);
         }
         return paintingFromDB;
+    }
+
+    private void createMockRooms(PaintingUpdateRequestDto dto, Painting paintingFromDB) {
+        PaintingImage paintingImageFromDB = paintingFromDB.getPaintingImage();
+        PaintingImage paintingImage = paintingImageMapper.toImageModel(dto.getImage(), paintingImageFromDB);
+        List<RoomView> viewRooms = roomViewManager.getViewRooms(paintingImage.getImage().getPublicId(),
+                dto.getWidth(), dto.getHeight());
+        List<RoomView> roomViews = paintingImage.getRoomViews();
+        roomViews.clear();
+        roomViews.addAll(viewRooms);
+
+        paintingFromDB.addPaintingImage(paintingImage);
+    }
+
+    private void createMockRoomsSameImage(PaintingUpdateRequestDto dto, Painting paintingFromDB) {
+        PaintingImage paintingImageFromDB = paintingFromDB.getPaintingImage();
+        List<RoomView> viewRooms = roomViewManager.getViewRooms(paintingImageFromDB.getImage().getPublicId(),
+                dto.getWidth(), dto.getHeight());
+        List<RoomView> roomViews = paintingImageFromDB.getRoomViews();
+        roomViews.clear();
+        roomViews.addAll(viewRooms);
+
+        paintingFromDB.addPaintingImage(paintingImageFromDB);
     }
 }

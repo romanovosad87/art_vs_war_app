@@ -7,10 +7,12 @@ import com.example.artvswar.dto.response.FolderResponseDto;
 import com.example.artvswar.dto.response.artProcess.ArtProcessResponseDto;
 import com.example.artvswar.exception.AppEntityNotFoundException;
 import com.example.artvswar.model.ArtProcess;
+import com.example.artvswar.model.enumModel.ModerationStatus;
 import com.example.artvswar.repository.ArtProcessRepository;
 import com.example.artvswar.service.ArtProcessService;
 import com.example.artvswar.service.AuthorService;
 import com.example.artvswar.util.CloudinaryFolderCreator;
+import com.example.artvswar.util.ModerationMockImage;
 import com.example.artvswar.util.image.CloudinaryClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -80,14 +82,25 @@ public class ArtProcessServiceImpl implements ArtProcessService {
 
     @Override
     public List<ArtProcessResponseDto> getAllByAuthorPrettyId(String authorPrettyId) {
-        return artProcessRepository.findByAuthorPrettyId(ArtProcessResponseDto.class,
-                authorPrettyId);
+        return artProcessRepository.findByAuthorPrettyId(authorPrettyId);
     }
 
     @Override
     public List<ArtProcessResponseDto> getAllByAuthorCognitoSubject(String cognitoSubject) {
-        return artProcessRepository.findByAuthorCognitoSubject(ArtProcessResponseDto.class,
+        List<ArtProcessResponseDto> dtos = artProcessRepository.findByAuthorCognitoSubject(ArtProcessResponseDto.class,
                 cognitoSubject);
+        dtos.forEach(dto -> {
+                    if (dto.getArtProcessImageImageModerationStatus() == ModerationStatus.PENDING) {
+                        dto.setArtProcessImageWidth(ModerationMockImage.IMAGE_WIDTH);
+                        dto.setArtProcessImageHeight(ModerationMockImage.IMAGE_HEIGHT);
+                        dto.setArtProcessImageImageUrl(ModerationMockImage.PENDING_URL);
+                    } else if (dto.getArtProcessImageImageModerationStatus() == ModerationStatus.REJECTED) {
+                        dto.setArtProcessImageWidth(ModerationMockImage.IMAGE_WIDTH);
+                        dto.setArtProcessImageHeight(ModerationMockImage.IMAGE_HEIGHT);
+                        dto.setArtProcessImageImageUrl(ModerationMockImage.REJECTED_URL);
+                    }
+                });
+        return dtos;
     }
 
     @Override

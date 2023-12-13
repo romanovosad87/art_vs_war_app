@@ -56,8 +56,7 @@ public class StripeService {
         } else {
             expressAccountId = stripeProfile.getAccountId();
         }
-        stripeUtils.createAccountLink(expressAccountId);
-        AccountLink accountLink = stripeUtils.createAccountLink(authorCognitoSubject);
+        AccountLink accountLink = stripeUtils.createAccountLink(expressAccountId);
         return accountLink.getUrl();
     }
 

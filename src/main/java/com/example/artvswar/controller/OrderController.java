@@ -42,7 +42,7 @@ public class OrderController {
     public ResponseEntity<Page<OrderResponseDto>> getAllFullByAccount(
             @AuthenticationPrincipal Jwt jwt,
             @SortDefault(sort = CREATED_AT, direction = Sort.Direction.DESC)
-            @PageableDefault(size = PAGE_SIZE) Pageable pageable) {
+            @PageableDefault(size = 10) Pageable pageable) {
         String cognitoSubject = jwt.getClaimAsString(SUBJECT);
         Page<OrderResponseDto> dtos = orderService.getAllFullOrdersByAccount(cognitoSubject, pageable);
         return new ResponseEntity<>(dtos, HttpStatus.OK);

@@ -69,7 +69,7 @@ public class PaintingServiceImpl implements PaintingService {
 
         if (paintingFromDB.getPaymentStatus() != PaymentStatus.AVAILABLE) {
             throw new PaintingNotAvailableException("Can't update painting as it is sold "
-                    + "or is in process of painting");
+                    + "or is in process of payment");
         }
 
         if (paintingFromDB.getAuthor().getCognitoSubject().equals(cognitoSubject)) {

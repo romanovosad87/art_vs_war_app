@@ -12,6 +12,7 @@ import com.example.artvswar.service.ImageService;
 import com.example.artvswar.util.image.CloudinaryClient;
 import com.example.artvswar.util.image.roomView.RoomViewManager;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @Transactional(readOnly = true)
 public class CloudinaryImageService {
     private static final DateTimeFormatter DATE_TIME_FORMATTER =
@@ -66,13 +68,14 @@ public class CloudinaryImageService {
         return cloudinaryClient.listRejectedAssets();
     }
 
+    @Transactional
     public void handleModerationResponse(String body) throws JSONException {
         JSONObject object = new JSONObject(body);
         String moderationKind = object.getString("moderation_kind");
         String moderationStatus = object.getString("moderation_status");
         String publicId = object.getString("public_id");
-        String moderationResponse = object.getString("moderation_response");
         if (moderationKind.equals("aws_rek") && moderationStatus.equals("rejected")) {
+            String moderationResponse = object.getString("moderation_response");
             emailService.sendImageRejectionMail(publicId, moderationResponse);
         }
 
