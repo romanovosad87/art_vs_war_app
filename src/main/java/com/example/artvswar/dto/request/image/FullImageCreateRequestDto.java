@@ -21,4 +21,6 @@ public class FullImageCreateRequestDto {
 
     @NotNull(message = "signature field is required")
     private String signature;
+
+    private String secureUrl;
 }

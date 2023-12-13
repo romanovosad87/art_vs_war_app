@@ -12,4 +12,5 @@ public class FullImageUpdateRequestDto {
     private Double height;
     private String version;
     private String signature;
+    private String secureUrl;
 }

@@ -112,11 +112,11 @@ public class CloudinaryClient {
 
     public void addTagOnManualModeration(String body) throws JSONException {
         JSONObject object = new JSONObject(body);
-        String moderationStatus = (String) object.get("moderation_status");
-        String publicId = (String) object.get("public_id");
-        String moderatedAt = (String) object.get("moderation_updated_at");
-        String source = (String) object.getJSONObject("notification_context").getJSONObject("triggered_by").get("source");
-        String id = (String) object.getJSONObject("notification_context").getJSONObject("triggered_by").get("id");
+        String moderationStatus = object.getString("moderation_status");
+        String publicId = object.getString("public_id");
+        String moderatedAt = object.getString("moderation_updated_at");
+        String source = object.getJSONObject("notification_context").getJSONObject("triggered_by").getString("source");
+        String id = object.getJSONObject("notification_context").getJSONObject("triggered_by").getString("id");
         try {
             cloudinary.uploader().addTag("moderation: status " + moderationStatus + System.lineSeparator()
                             + " source  - " + source + System.lineSeparator()

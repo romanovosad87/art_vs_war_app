@@ -75,7 +75,8 @@ public class StripeUtils {
                         .build();
         try {
             Account account = Account.create(params);
-            log.info(String.format("Created Stripe account with id: '%s' for Author %s", account.getId(), author));
+            log.info(String.format("Created Stripe account with id: '%s' for Author Cognito Subject '%s'",
+                    account.getId(), author.getCognitoSubject()));
             return account;
         } catch (StripeException e) {
             throw new RuntimeException("Can't create Express account", e);

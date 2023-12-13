@@ -10,6 +10,7 @@ import com.example.artvswar.model.ArtProcess;
 import com.example.artvswar.model.ArtProcessImage;
 import com.example.artvswar.model.Image;
 import com.example.artvswar.model.enumModel.ModerationStatus;
+import com.example.artvswar.util.ModerationMockImage;
 import com.example.artvswar.util.image.CloudinaryClient;
 import com.example.artvswar.util.image.ImageTransformation;
 import lombok.RequiredArgsConstructor;
@@ -25,10 +26,19 @@ public class ArtProcessMapper {
         Long id = artProcess.getId();
         String description = artProcess.getDescription();
         String publicId = artProcess.getArtProcessImage().getImage().getPublicId();
-        String url = artProcess.getArtProcessImage().getImage().getUrl();
         ModerationStatus moderationStatus = artProcess.getArtProcessImage().getImage().getModerationStatus();
-        Double width = artProcess.getArtProcessImage().getWidth();
-        Double height = artProcess.getArtProcessImage().getHeight();
+        String url;
+        Double width;
+        Double height;
+        if (moderationStatus.equals(ModerationStatus.APPROVED)) {
+            width = artProcess.getArtProcessImage().getWidth();
+            height = artProcess.getArtProcessImage().getHeight();
+            url = artProcess.getArtProcessImage().getImage().getUrl();
+        } else {
+            width = ModerationMockImage.IMAGE_WIDTH;
+            height = ModerationMockImage.IMAGE_HEIGHT;
+            url = ModerationMockImage.PENDING_URL;
+        }
         return new ArtProcessResponseDto(id, description, publicId, url, moderationStatus, width, height);
     }
 
@@ -45,8 +55,13 @@ public class ArtProcessMapper {
             artProcessImage.setHeight(dtoImage.getHeight());
             Image image = new Image();
             image.setPublicId(dtoImage.getPublicId());
-            image.setUrl(imageTransformation.paintingImageEagerTransformation(dtoImage.getPublicId()));
-            image.setModerationStatus(ModerationStatus.valueOf(dtoImage.getModerationStatus()));
+            ModerationStatus moderationStatus = ModerationStatus.valueOf(dtoImage.getModerationStatus());
+            image.setModerationStatus(moderationStatus);
+            if (moderationStatus.equals(ModerationStatus.APPROVED)) {
+                image.setUrl(imageTransformation.paintingImageEagerTransformation(dtoImage.getPublicId()));
+            } else {
+                image.setUrl(dtoImage.getSecureUrl());
+            }
             artProcessImage.setImage(image);
             artProcess.setArtProcessImage(artProcessImage);
         } else {

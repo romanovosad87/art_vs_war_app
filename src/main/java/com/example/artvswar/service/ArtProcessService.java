@@ -13,7 +13,7 @@ public interface ArtProcessService {
 
     ArtProcessResponseDto getById(Long id);
 
-    List<ArtProcessResponseDto> getAllByAuthorPrettyId(String authorId);
+    List<ArtProcessResponseDto> getAllByAuthorPrettyId(String authorPrettyId);
 
     List<ArtProcessResponseDto> getAllByAuthorCognitoSubject(String cognitoSubject);
 

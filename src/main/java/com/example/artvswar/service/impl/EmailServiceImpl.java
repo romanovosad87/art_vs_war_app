@@ -12,7 +12,6 @@ import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -24,18 +23,26 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void sendImageRejectionMail(String publicId, String moderationResponse) {
-        String adminEmails = adminService.getAll()
+        String[] adminEmails = adminService.getAll()
                 .stream()
                 .map(AdminResponseDto::getEmail)
-                .collect(Collectors.joining(", "));
+                .toArray(String[]::new);
+
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         simpleMailMessage.setFrom("Art vs War (moderation) <moderation@artvswar.gallery>");
         simpleMailMessage.setTo(adminEmails);
         simpleMailMessage.setSubject("AWS_REK moderation rejection");
-        simpleMailMessage.setText(String.format("Image with public_id - %s was rejected by AWS-Rekognition."
+        simpleMailMessage.setText(String.format("Image with public_id - '%s' was rejected by AWS-Rekognition."
                 + System.lineSeparator()
-                + "Moderation response:  %s." + System.lineSeparator()
-                + "Please make manual moderation in Cloudinary dashboard.", publicId, moderationResponse));
+                + System.lineSeparator()
+                + "Moderation response:  %s."
+                + System.lineSeparator()
+                + System.lineSeparator()
+                + "Please make manual moderation in Cloudinary dashboard:"
+                + System.lineSeparator()
+                + "https://console.cloudinary.com/console/c-1e98a800837a96a82947e8ca3b3fd0/"
+                + "media_library/moderation?type=aws_rek&q=&status=rejected",
+                publicId, moderationResponse));
         mailSender.send(simpleMailMessage);
     }
 
