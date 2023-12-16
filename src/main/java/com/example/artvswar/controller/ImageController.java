@@ -1,7 +1,10 @@
 package com.example.artvswar.controller;
 
 import com.cloudinary.api.ApiResponse;
+import com.example.artvswar.dto.response.image.RejectAssetsResponse;
 import com.example.artvswar.dto.response.image.SignatureResponse;
+import com.example.artvswar.model.enumModel.ModerationStatus;
+import com.example.artvswar.service.ImageService;
 import com.example.artvswar.service.PaintingImageService;
 import com.example.artvswar.service.impl.CloudinaryImageService;
 import com.example.artvswar.util.image.CloudinaryClient;
@@ -16,12 +19,14 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
 import java.util.Map;
 
 @Log4j2
@@ -33,6 +38,7 @@ public class ImageController {
     private final CloudinaryImageService cloudinaryImageService;
     private final PaintingImageService paintingImageService;
     private final CloudinaryClient cloudinaryClient;
+    private final ImageService imageService;
 
     @PostMapping("/getSignature")
     public ResponseEntity<SignatureResponse> getSignature(@RequestBody Map<String, Object> params) {
@@ -40,7 +46,7 @@ public class ImageController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/changeToApproved")
+    @PutMapping("/setApproved")
     public ResponseEntity<String> changeModerationStatusToApproved(@RequestParam String publicId,
                                                                    @AuthenticationPrincipal Jwt jwt) {
         String username = jwt.getClaimAsString(USERNAME);
@@ -50,7 +56,7 @@ public class ImageController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/changeToRejected")
-    public ResponseEntity<String> changeModerationStatusToREjected(@RequestParam String publicId,
+    public ResponseEntity<String> changeModerationStatusToRejected(@RequestParam String publicId,
                                                                    @AuthenticationPrincipal Jwt jwt) {
         String username = jwt.getClaimAsString(USERNAME);
         cloudinaryImageService.changeModerationStatusToRejected(publicId, username);
@@ -59,8 +65,17 @@ public class ImageController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/rejectedAssets")
-    public ApiResponse ListRejectedAssets() {
-        return cloudinaryImageService.listRejectedAssets();
+    public ResponseEntity<List<RejectAssetsResponse>> listRejectedAssets() {
+        List<RejectAssetsResponse> rejectAssetsResponses = cloudinaryImageService.listRejectedAssets();
+        return new ResponseEntity<>(rejectAssetsResponses, HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/setRejected")
+    public ResponseEntity<String> changeStatusToRejectedInDB(@RequestParam String publicId) {
+        imageService.updateModerationStatus(publicId, ModerationStatus.REJECTED.name());
+        return new ResponseEntity<>(String.format("moderation status changed "
+                + "to rejected for public_id: '%s'", publicId), HttpStatus.OK);
     }
 
     @PostMapping("/moderation")
@@ -73,6 +88,11 @@ public class ImageController {
             cloudinaryImageService.handleModerationResponse(body);
         }
         return "ok";
+    }
+
+    @GetMapping("/asset")
+    public ApiResponse getAsset(@RequestParam String publicId) {
+        return cloudinaryImageService.getAssetDetails(publicId);
     }
 
     @DeleteMapping("/paintingImage")

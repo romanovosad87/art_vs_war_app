@@ -24,6 +24,9 @@ import java.util.Map;
 public class CloudinaryClient {
     private static final DateTimeFormatter DATE_TIME_FORMATTER =
             DateTimeFormatter.ofPattern("dd-MMM-yyyy HH:mm:ss.SSS", Locale.UK);
+    public static final String REJECTED = "rejected";
+    public static final String APPROVED = "approved";
+    public static final String MODERATION_STATUS = "moderation_status";
     private final Cloudinary cloudinary;
     @Value("${cloudinary.secret}")
     private String cloudinarySecret;
@@ -55,10 +58,8 @@ public class CloudinaryClient {
         try {
             cloudinary.api().update(publicId,
                     ObjectUtils.asMap(
-                            "moderation_status", "approved"));
-            cloudinary.uploader().addTag("moderator that approved - "
-                            + adminUsername + " time: " + now().format(DATE_TIME_FORMATTER),
-                    new String[] { publicId }, ObjectUtils.emptyMap());
+                            MODERATION_STATUS, APPROVED));
+            addTag(publicId, adminUsername,APPROVED);
         } catch (Exception e) {
             throw new RuntimeException(
                     String.format("Can't change moderation status to "
@@ -70,10 +71,8 @@ public class CloudinaryClient {
         try {
             cloudinary.api().update(publicId,
                     ObjectUtils.asMap(
-                            "moderation_status", "rejected"));
-            cloudinary.uploader().addTag("moderator that rejected "
-                    + adminUsername + " time:  " + now().format(DATE_TIME_FORMATTER),
-                    new String[] { publicId }, ObjectUtils.emptyMap());
+                            MODERATION_STATUS, REJECTED));
+            addTag(publicId, adminUsername, REJECTED);
         } catch (Exception e) {
             throw new RuntimeException(
                     String.format("Can't change moderation status to "
@@ -81,10 +80,16 @@ public class CloudinaryClient {
         }
     }
 
+    public void addTag(String publicId, String adminUsername, String operation) throws IOException {
+        cloudinary.uploader().addTag(String.format("moderator that %s: "
+                + adminUsername + " time:  " + now().format(DATE_TIME_FORMATTER), operation),
+                new String[] {publicId}, ObjectUtils.emptyMap());
+    }
+
     public ApiResponse listRejectedAssets() {
         try {
             return cloudinary.api()
-                    .resourcesByModeration("aws_rek", "rejected",
+                    .resourcesByModeration("aws_rek", REJECTED,
                             ObjectUtils.emptyMap());
         } catch (Exception e) {
             throw new RuntimeException("Can't list all assets rejected by aws-rekognition", e);
@@ -112,7 +117,7 @@ public class CloudinaryClient {
 
     public void addTagOnManualModeration(String body) throws JSONException {
         JSONObject object = new JSONObject(body);
-        String moderationStatus = object.getString("moderation_status");
+        String moderationStatus = object.getString(MODERATION_STATUS);
         String publicId = object.getString("public_id");
         String moderatedAt = object.getString("moderation_updated_at");
         String source = object.getJSONObject("notification_context").getJSONObject("triggered_by").getString("source");

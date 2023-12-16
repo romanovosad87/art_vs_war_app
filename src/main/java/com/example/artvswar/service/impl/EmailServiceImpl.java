@@ -16,9 +16,11 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class EmailServiceImpl implements EmailService {
+    public static final String CLOUDINARY_LINK = "https://console.cloudinary.com/console/c-1e98a800837a96a82947e8ca3b3fd0/"
+            + "media_library/moderation?type=aws_rek&q=&status=rejected";
+    public static final String MANUAL_MODERATION_LINK = "https://artvswar.gallery/images-validation";
     private final MailSender mailSender;
     private final AdminService adminService;
-
     private final AmazonSimpleEmailService amazonSimpleEmailService;
 
     @Override
@@ -32,17 +34,7 @@ public class EmailServiceImpl implements EmailService {
         simpleMailMessage.setFrom("Art vs War (moderation) <moderation@artvswar.gallery>");
         simpleMailMessage.setTo(adminEmails);
         simpleMailMessage.setSubject("AWS_REK moderation rejection");
-        simpleMailMessage.setText(String.format("Image with public_id - '%s' was rejected by AWS-Rekognition."
-                + System.lineSeparator()
-                + System.lineSeparator()
-                + "Moderation response:  %s."
-                + System.lineSeparator()
-                + System.lineSeparator()
-                + "Please make manual moderation in Cloudinary dashboard:"
-                + System.lineSeparator()
-                + "https://console.cloudinary.com/console/c-1e98a800837a96a82947e8ca3b3fd0/"
-                + "media_library/moderation?type=aws_rek&q=&status=rejected",
-                publicId, moderationResponse));
+        simpleMailMessage.setText(getMessage(publicId, moderationResponse));
         mailSender.send(simpleMailMessage);
     }
 
@@ -68,5 +60,26 @@ public class EmailServiceImpl implements EmailService {
         simpleMailMessage.setSubject("Email from: " + email);
         simpleMailMessage.setText(message);
         mailSender.send(simpleMailMessage);
+    }
+
+    private String getMessage(String publicId, String moderationResponse) {
+        return String.format("Image was rejected by AWS-Rekognition."
+                        + System.lineSeparator()
+                        + System.lineSeparator()
+                        + "public_id:  %s"
+                        + System.lineSeparator()
+                        + System.lineSeparator()
+                        + "Moderation response:  %s."
+                        + System.lineSeparator()
+                        + System.lineSeparator()
+                        + "The link to manual moderation:"
+                        + System.lineSeparator()
+                        + "%s"
+                        + System.lineSeparator()
+                        + System.lineSeparator()
+                        + "The link to Cloudinary dashboard:"
+                        + System.lineSeparator()
+                        + "%s",
+                publicId, moderationResponse, MANUAL_MODERATION_LINK, CLOUDINARY_LINK);
     }
 }

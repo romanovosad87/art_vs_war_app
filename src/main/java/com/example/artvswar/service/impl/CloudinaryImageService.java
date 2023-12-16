@@ -1,6 +1,7 @@
 package com.example.artvswar.service.impl;
 
 import com.cloudinary.api.ApiResponse;
+import com.example.artvswar.dto.response.image.RejectAssetsResponse;
 import com.example.artvswar.dto.response.image.SignatureResponse;
 import com.example.artvswar.dto.response.painingImage.PaintingImageResponseDto;
 import com.example.artvswar.exception.AppEntityNotFoundException;
@@ -12,13 +13,17 @@ import com.example.artvswar.service.ImageService;
 import com.example.artvswar.util.image.CloudinaryClient;
 import com.example.artvswar.util.image.roomView.RoomViewManager;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigInteger;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -29,8 +34,19 @@ import java.util.stream.Collectors;
 @Slf4j
 @Transactional(readOnly = true)
 public class CloudinaryImageService {
-    private static final DateTimeFormatter DATE_TIME_FORMATTER =
-            DateTimeFormatter.ofPattern("dd-MMM-yyyy HH:mm:ss.SSS", Locale.UK);
+
+    private static final String CLOUDINARY_URL = "https://console.cloudinary.com/console/"
+            + "c-1e98a800837a96a82947e8ca3b3fd0/media_library/moderation/asset/%s/manage/summary"
+            + "?view_mode=grid&q=&status=rejected&type=aws_rek&context=manage";
+    private static final DateTimeFormatter DATE_TIME_FORMATTER_PRETTY =
+            DateTimeFormatter.ofPattern("dd-MMMM-yyyy HH:mm:ss", Locale.UK);
+
+    private static final DateTimeFormatter DATE_TIME_FORMATTER
+            = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    public static final String RESOURCES = "resources";
+    public static final String PUBLIC_ID = "public_id";
+    public static final String CREATED_AT = "created_at";
+    public static final String ASSET_ID = "asset_id";
     private final CloudinaryClient cloudinaryClient;
     private final ImageService imageService;
     private final PaintingImageRepository paintingImageRepository;
@@ -64,8 +80,26 @@ public class CloudinaryImageService {
         cloudinaryClient.changeModerationStatusToRejected(publicId, adminUsername);
     }
 
-    public ApiResponse listRejectedAssets() {
-        return cloudinaryClient.listRejectedAssets();
+    @SneakyThrows
+    public List<RejectAssetsResponse> listRejectedAssets() {
+        List<RejectAssetsResponse> rejectAssetsResponses = new ArrayList<>();
+        ApiResponse rejectedAssets = cloudinaryClient.listRejectedAssets();
+        JSONObject jsonObject = new JSONObject(rejectedAssets);
+        JSONArray resources = jsonObject.getJSONArray(RESOURCES);
+        for (int i = 0; i < resources.length(); i++) {
+            JSONObject object = resources.getJSONObject(i);
+            String publicId = object.getString(PUBLIC_ID);
+            String createdAt = object.getString(CREATED_AT);
+            LocalDateTime localDateTime = LocalDateTime.parse(createdAt, DATE_TIME_FORMATTER);
+            String formattedCreatedAt = DATE_TIME_FORMATTER_PRETTY.format(localDateTime);
+            String assetId = object.getString(ASSET_ID);
+            String url = String.format(CLOUDINARY_URL, assetId);
+            imageService.getImage(publicId)
+                    .ifPresentOrElse(image -> rejectAssetsResponses.add(
+                            new RejectAssetsResponse(publicId, formattedCreatedAt, url, image.getModerationStatus())),
+                            () -> cloudinaryClient.delete(publicId));
+        }
+        return rejectAssetsResponses;
     }
 
     @Transactional
@@ -73,7 +107,7 @@ public class CloudinaryImageService {
         JSONObject object = new JSONObject(body);
         String moderationKind = object.getString("moderation_kind");
         String moderationStatus = object.getString("moderation_status");
-        String publicId = object.getString("public_id");
+        String publicId = object.getString(PUBLIC_ID);
         if (moderationKind.equals("aws_rek") && moderationStatus.equals("rejected")) {
             String moderationResponse = object.getString("moderation_response");
             emailService.sendImageRejectionMail(publicId, moderationResponse);
@@ -83,6 +117,10 @@ public class CloudinaryImageService {
             imageService.updateModerationStatus(publicId, moderationStatus);
             cloudinaryClient.addTagOnManualModeration(body);
         }
+    }
+
+    public ApiResponse getAssetDetails(String publicId) {
+        return cloudinaryClient.getDetailsByPublicId(publicId);
     }
 
     private List<PaintingImageResponseDto> parseObject(List<Object[]> response) {
