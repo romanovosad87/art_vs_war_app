@@ -221,6 +221,12 @@ public class PaintingMapper {
         paintingFromDB.setHeight(heightDto);
         paintingFromDB.setDepth(dto.getDepth());
         paintingFromDB.setDescription(dto.getDescription());
+
+        paintingFromDB.getStyles().clear();
+        paintingFromDB.getMediums().clear();
+        paintingFromDB.getSupports().clear();
+        paintingFromDB.getSubjects().clear();
+
         dto.getStyleIds().forEach(
                 styleId -> paintingFromDB.addStyle(styleService.getReferenceById(styleId)));
         dto.getMediumIds().forEach(
