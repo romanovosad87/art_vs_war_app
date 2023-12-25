@@ -68,6 +68,10 @@ public class Author extends User {
     @JsonBackReference
     private StripeProfile stripeProfile;
 
+    @OneToOne(mappedBy = "author", fetch = FetchType.LAZY)
+    @Cascade({CascadeType.ALL})
+    private AuthorShippingAddress authorShippingAddress;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
     @UpdateTimestamp

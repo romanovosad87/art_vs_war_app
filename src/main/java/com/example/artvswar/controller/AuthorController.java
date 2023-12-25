@@ -51,9 +51,10 @@ public class AuthorController {
 
     @PreAuthorize("hasRole('AUTHOR')")
     @GetMapping("/profile")
-    public AuthorProfileResponseDto getProfile(@AuthenticationPrincipal Jwt jwt) {
+    public ResponseEntity<AuthorProfileResponseDto> getProfile(@AuthenticationPrincipal Jwt jwt) {
         String subject = jwt.getClaimAsString(SUBJECT);
-        return authorService.getAuthorProfileDtoByCognitoSubject(subject);
+        AuthorProfileResponseDto dto = authorService.getAuthorProfileDtoByCognitoSubject(subject);
+        return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
     @GetMapping("/{cognitoSubject}")
@@ -108,7 +109,7 @@ public class AuthorController {
     @DeleteMapping
     public void delete(@AuthenticationPrincipal Jwt jwt) {
         String subject = jwt.getClaimAsString(SUBJECT);
-        authorService.delete(subject, jwt);
+        authorService.delete(subject);
     }
 
     @GetMapping("/check")
@@ -119,7 +120,7 @@ public class AuthorController {
 
     @PreAuthorize("hasRole('AUTHOR')")
     @PatchMapping("/unsubscribe")
-    public ResponseEntity<?> changeUnsubscribeEmail(@Valid @RequestBody
+    public ResponseEntity<Void> changeUnsubscribeEmail(@Valid @RequestBody
                                                     AuthorChangeUnsubscribeResponseDto dto,
                                                     @AuthenticationPrincipal Jwt jwt) {
         String authorSubject = jwt.getClaimAsString(SUBJECT);

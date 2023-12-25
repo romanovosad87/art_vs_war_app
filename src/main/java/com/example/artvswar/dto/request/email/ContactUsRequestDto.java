@@ -16,10 +16,10 @@ public class ContactUsRequestDto {
     @Email(message = "incorrectly formed email address",
             regexp = "^[\\w!#$%&’*+/=?`{|}~^-]+(?:\\.[\\w!#$%&’*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,15}$",
             groups = SecondOrder.class)
-    String email;
+    private String email;
 
     @NotBlank(message = "message field is required", groups = FirstOrder.class)
     @Size(min = 20, max = 10000,
             message = "message must be between 20 and 10 000 characters", groups = SecondOrder.class)
-    String message;
+    private String message;
 }

@@ -1,6 +1,7 @@
 package com.example.artvswar.controller;
 
 import com.example.artvswar.dto.request.email.ContactUsRequestDto;
+import com.example.artvswar.dto.request.email.RejectModerationEmailRequestDto;
 import com.example.artvswar.service.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,5 +26,10 @@ public class EmailController {
     @PostMapping("/contactUs")
     public void sendContactUsEmail(@Valid @RequestBody ContactUsRequestDto dto) {
         emailService.contactUsEmail(dto.getEmail(), dto.getMessage());
+    }
+
+    @PostMapping("/moderation")
+    public void sendRejectionEmail(@Valid @RequestBody RejectModerationEmailRequestDto dto) {
+        emailService.sendImageRejectionMail(dto.getPublicId(), dto.getMessage());
     }
 }

@@ -16,6 +16,8 @@ public class AuthorProfileResponseDto {
     private String country;
     private String city;
     private String aboutMe;
+    @SerializedName(value = "isDeactivated")
+    private boolean isDeleted;
     @SerializedName(value = "imagePublicId")
     private String authorPhotoImagePublicId;
     @SerializedName(value = "imageUrl")
@@ -25,7 +27,7 @@ public class AuthorProfileResponseDto {
     private Set<String> styles = new HashSet<>();
 
     public AuthorProfileResponseDto(String cognitoSubject, String prettyId, String fullName,
-                                    String country, String city, String aboutMe,
+                                    String country, String city, String aboutMe, boolean isDeleted,
                                     String authorPhotoImagePublicId, String authorPhotoImageUrl,
                                     ModerationStatus authorPhotoImageModerationStatus) {
         this.cognitoSubject = cognitoSubject;
@@ -34,6 +36,7 @@ public class AuthorProfileResponseDto {
         this.country = country;
         this.city = city;
         this.aboutMe = aboutMe;
+        this.isDeleted = isDeleted;
         this.authorPhotoImagePublicId = authorPhotoImagePublicId;
         this.authorPhotoImageUrl = authorPhotoImageUrl;
         this.authorPhotoImageModerationStatus = authorPhotoImageModerationStatus;

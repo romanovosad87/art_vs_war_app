@@ -10,18 +10,19 @@ import com.example.artvswar.dto.response.author.AuthorResponseDto;
 import com.example.artvswar.exception.AppEntityNotFoundException;
 import com.example.artvswar.model.Account;
 import com.example.artvswar.model.Author;
+import com.example.artvswar.model.enumModel.ModerationStatus;
 import com.example.artvswar.repository.author.AuthorRepository;
 import com.example.artvswar.service.AccountService;
 import com.example.artvswar.service.AuthorService;
 import com.example.artvswar.util.AwsCognitoClient;
 import com.example.artvswar.util.CloudinaryFolderCreator;
+import com.example.artvswar.util.ModerationMockImage;
 import com.example.artvswar.util.PrettyIdCreator;
 import com.example.artvswar.util.UrlParser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.Collections;
@@ -37,7 +38,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class AuthorServiceImpl implements AuthorService {
-    private final static String ROLE_AUTHOR = "ROLE_AUTHOR";
+    private static final String ROLE_AUTHOR = "ROLE_AUTHOR";
+    public static final String AUTHOR_CANT_FIND = "Can't find author by cognito subject = %s";
     private final AuthorRepository authorRepository;
     private final AwsCognitoClient awsCognitoClient;
     private final AuthorMapper authorMapper;
@@ -66,7 +68,7 @@ public class AuthorServiceImpl implements AuthorService {
     public AuthorProfileResponseDto update(AuthorUpdateRequestDto dto, String cognitoSubject) {
         Author authorFromDb = authorRepository.findByCognitoSubject(Author.class, cognitoSubject)
                 .orElseThrow(() -> new AppEntityNotFoundException(
-                        String.format("Can't find author by cognito subject = %s", cognitoSubject)));
+                        String.format(AUTHOR_CANT_FIND, cognitoSubject)));
         if (!dto.getFullName().equals(authorFromDb.getFullName())) {
             authorFromDb.setPrettyId(createPrettyId(dto.getFullName()));
         }
@@ -78,14 +80,14 @@ public class AuthorServiceImpl implements AuthorService {
     public Author getAuthorByCognitoSubject(String cognitoSubject) {
         return authorRepository.findByCognitoSubject(Author.class, cognitoSubject).orElseThrow(
                 () -> new AppEntityNotFoundException(
-                        String.format("Can't find author by cognito subject = %s", cognitoSubject)));
+                        String.format(AUTHOR_CANT_FIND, cognitoSubject)));
     }
 
     @Override
     public AuthorResponseDto getDtoByCognitoSubjectWithStyles(String cognitoSubject) {
         AuthorResponseDto dto = authorRepository.findByCognitoSubject(AuthorResponseDto.class, cognitoSubject)
                 .orElseThrow(() -> new AppEntityNotFoundException(
-                        String.format("Can't find author by cognito subject = %s", cognitoSubject)));
+                        String.format(AUTHOR_CANT_FIND, cognitoSubject)));
         return transformWithStyles(dto);
     }
 
@@ -94,8 +96,8 @@ public class AuthorServiceImpl implements AuthorService {
         AuthorProfileResponseDto dto = authorRepository.findByCognitoSubject(
                 AuthorProfileResponseDto.class, cognitoSubject)
                 .orElseThrow(() -> new AppEntityNotFoundException(
-                        String.format("Can't find author by cognito subject = %s", cognitoSubject)));
-        return transformWithStyles(dto);
+                        String.format(AUTHOR_CANT_FIND, cognitoSubject)));
+        return transformWithStylesAndModerationStatus(dto);
     }
 
     @Override
@@ -144,9 +146,8 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     @Transactional
-    public void delete(String cognitoSubject, Jwt jwt) {
+    public void delete(String cognitoSubject) {
         authorRepository.deleteByCognitoSubject(cognitoSubject);
-        awsCognitoClient.deleteUser(jwt);
     }
 
     @Override
@@ -187,11 +188,18 @@ public class AuthorServiceImpl implements AuthorService {
         return dto;
     }
 
-    private AuthorProfileResponseDto transformWithStyles(AuthorProfileResponseDto dto) {
+    private AuthorProfileResponseDto transformWithStylesAndModerationStatus(AuthorProfileResponseDto dto) {
         Map<String, Set<String>> authorsAllStyleMap = authorRepository
                 .authorsAllStyleMap(Collections.singletonList(dto.getCognitoSubject()));
         Set<String> styles = authorsAllStyleMap.get(dto.getCognitoSubject());
         dto.setStyles(Objects.requireNonNullElseGet(styles, HashSet::new));
+
+        ModerationStatus moderationStatus = dto.getAuthorPhotoImageModerationStatus();
+        if (moderationStatus == ModerationStatus.PENDING) {
+            dto.setAuthorPhotoImageUrl(ModerationMockImage.PENDING_URL);
+        } else if (moderationStatus == ModerationStatus.REJECTED) {
+            dto.setAuthorPhotoImageUrl(ModerationMockImage.REJECTED_URL);
+        }
         return dto;
     }
 }

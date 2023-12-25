@@ -11,10 +11,12 @@ import com.example.artvswar.dto.response.painting.PaintingDto;
 import com.example.artvswar.dto.response.painting.PaintingParametersForSearchResponseDto;
 import com.example.artvswar.dto.response.painting.PaintingShortResponseDto;
 import com.example.artvswar.model.Author;
+import com.example.artvswar.model.AuthorShippingAddress;
 import com.example.artvswar.model.Image;
 import com.example.artvswar.model.Medium;
 import com.example.artvswar.model.Painting;
 import com.example.artvswar.model.PaintingImage;
+import com.example.artvswar.model.StripeProfile;
 import com.example.artvswar.model.Style;
 import com.example.artvswar.model.Subject;
 import com.example.artvswar.model.Support;
@@ -56,6 +58,8 @@ public class CustomPaintingRepositoryImpl
             DateTimeFormatter.ofPattern("dd-MMM-yyyy", Locale.UK);
     private static final String RANDOM = "RAND";
     private static final String AUTHOR = "author";
+    public static final String STRIPE_PROFILE = "stripeProfile";
+    public static final String AUTHOR_SHIPPING_ADDRESS = "authorShippingAddress";
     private static final String COLLECTION = "collection";
     private static final String PAINTING_IMAGE = "paintingImage";
     private static final String IMAGE = "image";
@@ -65,7 +69,7 @@ public class CustomPaintingRepositoryImpl
     private static final String SUPPORTS = "supports";
     private static final String SUBJECTS = "subjects";
     private static final String ID = "id";
-    private static final String PUBLIC_iD = "publicId";
+    private static final String PUBLIC_ID = "publicId";
     private static final String TITLE = "title";
     private static final String DESCRIPTION = "description";
     private static final String PRICE = "price";
@@ -119,6 +123,7 @@ public class CustomPaintingRepositoryImpl
     private static final String SUPPORT_NAME = "support_name";
     private static final String SUBJECT_ID = "subject_id";
     private static final String SUBJECT_NAME = "subject_name";
+    public static final String DETAILS_SUBMITTED = "isDetailsSubmitted";
     private final EntityManager entityManager;
 
     @Override
@@ -308,7 +313,6 @@ public class CustomPaintingRepositoryImpl
         Root<Painting> root = countQuery.from(Painting.class);
         if (specification != null) {
             Predicate predicate = specification.toPredicate(root, countQuery, cb);
-//            countQuery.select(cb.count(root)).where(predicate);
             countQuery.select(root.get("id")).where(predicate);
         } else {
             countQuery.select(root.get("id"));
@@ -338,10 +342,14 @@ public class CustomPaintingRepositoryImpl
         CriteriaQuery<Tuple> query = cb.createTupleQuery();
         Root<Painting> painting = query.from(Painting.class);
         Join<Painting, Author> author = painting.join(AUTHOR);
+        Join<Author, StripeProfile> stripeProfile = author.join(STRIPE_PROFILE);
+        Join<Author, AuthorShippingAddress> authorShippingAddress = author.join(AUTHOR_SHIPPING_ADDRESS);
         Join<Painting, PaintingImage> paintingImage = painting.join(PAINTING_IMAGE);
         Join<PaintingImage, Image> image = paintingImage.join(IMAGE);
         Predicate authorIsDeleted = cb.equal(author.get(IS_DELETED), false);
         Predicate moderationStatus = cb.equal(image.get(MODERATION_STATUS), ModerationStatus.APPROVED);
+        Predicate stripeProfileSubmitted = cb.equal(stripeProfile.get(DETAILS_SUBMITTED), true);
+        Predicate isAddress = cb.isNotNull(authorShippingAddress.get(ID));
 
         if (specification != null) {
             Predicate specificationPredicate = specification.toPredicate(painting, query, cb);
@@ -357,9 +365,10 @@ public class CustomPaintingRepositoryImpl
                             author.get(PRETTY_ID).alias(AUTHOR_PRETTY_ID),
                             author.get(FULL_NAME).alias(AUTHOR_FULL_NAME),
                             author.get(COUNTRY).alias(AUTHOR_COUNTRY),
-                            image.get(PUBLIC_iD).alias(PAINTING_IMAGE_ID),
+                            image.get(PUBLIC_ID).alias(PAINTING_IMAGE_ID),
                             image.get(URL).alias(PAINTING_IMAGE_URL))
-                    .where(specificationPredicate, moderationStatus, authorIsDeleted)
+                    .where(specificationPredicate, moderationStatus, authorIsDeleted,
+                            stripeProfileSubmitted, isAddress)
                     .orderBy(QueryUtils.toOrders(sort, painting, cb))
                     .distinct(true);
 
@@ -376,9 +385,9 @@ public class CustomPaintingRepositoryImpl
                             author.get(PRETTY_ID).alias(AUTHOR_PRETTY_ID),
                             author.get(FULL_NAME).alias(AUTHOR_FULL_NAME),
                             author.get(COUNTRY).alias(AUTHOR_COUNTRY),
-                            image.get(PUBLIC_iD).alias(PAINTING_IMAGE_ID),
+                            image.get(PUBLIC_ID).alias(PAINTING_IMAGE_ID),
                             image.get(URL).alias(PAINTING_IMAGE_URL))
-                    .where(moderationStatus, authorIsDeleted)
+                    .where(moderationStatus, authorIsDeleted, stripeProfileSubmitted, isAddress)
                     .orderBy(QueryUtils.toOrders(sort, painting, cb));
         }
 
@@ -408,18 +417,23 @@ public class CustomPaintingRepositoryImpl
         CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
         Root<Painting> root = countQuery.from(Painting.class);
         author = root.join(AUTHOR);
+        stripeProfile = author.join(STRIPE_PROFILE);
+        authorShippingAddress = author.join(AUTHOR_SHIPPING_ADDRESS);
         paintingImage = root.join(PAINTING_IMAGE);
         image = paintingImage.join(IMAGE);
         authorIsDeleted = cb.equal(author.get(IS_DELETED), false);
         moderationStatus = cb.equal(image.get(MODERATION_STATUS), ModerationStatus.APPROVED);
+        stripeProfileSubmitted = cb.equal(stripeProfile.get(DETAILS_SUBMITTED), true);
+        isAddress = cb.isNotNull(authorShippingAddress.get(ID));
 
         if (specification != null) {
             Predicate predicate = specification.toPredicate(root, countQuery, cb);
-            countQuery.select(root.get(ID)).where(predicate,
-                            authorIsDeleted, moderationStatus)
+            countQuery.select(root.get(ID)).where(predicate, authorIsDeleted, moderationStatus,
+                            stripeProfileSubmitted, isAddress)
                     .distinct(true);
         } else {
-            countQuery.select(root.get(ID)).where(authorIsDeleted, moderationStatus);
+            countQuery.select(root.get(ID)).where(authorIsDeleted, moderationStatus,
+                    stripeProfileSubmitted, isAddress);
         }
         long total = entityManager.createQuery(countQuery).getResultStream().count();
 
@@ -527,6 +541,7 @@ public class CustomPaintingRepositoryImpl
                         + "inner join p.subjects sub "
                         + "inner join p.styles st "
                         + "where p.paymentStatus = 0 and a.isDeleted = false "
+                        + "and a.authorShippingAddress != null and a.stripeProfile.isDetailsSubmitted = true "
                         + "and p.paintingImage.image.moderationStatus = 20 "
                         + "and p.prettyId not in (?1) and (sub.id in (?2) or st.id in (?3)) "
                         + "order by rand()", PaintingShortResponseDto.class)
@@ -609,17 +624,25 @@ public class CustomPaintingRepositoryImpl
     @Override
     public MainPageDataResponseDto getDataForMainPage() {
         Long paintingsQuantity = entityManager.createQuery("select count(p.id) "
-                        + "from Painting p", Long.class).getSingleResult();
+                + "from Painting p "
+                + "where p.paintingImage.image.moderationStatus = 20 "
+                + "and p.author.isDeleted = false "
+                + "and p.author.stripeProfile.isDetailsSubmitted = true "
+                + "and p.author.authorShippingAddress.id != null", Long.class).getSingleResult();
         paintingsQuantity = paintingsQuantity == null ? 0L : paintingsQuantity;
 
         Long authorsQuantity = entityManager.createQuery("select count(a.id) "
-                        + "from Author a where a.isDeleted = false",
-                        Long.class).getSingleResult();
+                        + "from Author a "
+                        + "where a.isDeleted = false "
+                        + "and a.authorPhoto.image.moderationStatus = 20 "
+                        + "and a.stripeProfile.isDetailsSubmitted = true "
+                        + "and a.authorShippingAddress.id != null",
+                Long.class).getSingleResult();
         authorsQuantity = authorsQuantity == null ? 0L : authorsQuantity;
 
         BigDecimal sumOfSoldPaintings = entityManager.createQuery("select sum(p.price) "
                         + "from Painting p where p.paymentStatus = 20",
-                        BigDecimal.class).getSingleResult();
+                BigDecimal.class).getSingleResult();
         sumOfSoldPaintings = sumOfSoldPaintings == null ? BigDecimal.ZERO : sumOfSoldPaintings;
 
         return new MainPageDataResponseDto(authorsQuantity, paintingsQuantity, sumOfSoldPaintings);
@@ -627,7 +650,8 @@ public class CustomPaintingRepositoryImpl
     }
 
     @Override
-    public Page<PaintingShortResponseDto> findResentSelling(String authorSubject, Pageable pageable) {
+    public Page<PaintingShortResponseDto> findResentSelling(String authorSubject,
+                                                            Pageable pageable) {
         List<PaintingShortResponseDto> resultList = entityManager.createQuery("select new com.example.artvswar.dto.response.painting.PaintingShortResponseDto("
                                 + "p.id, "
                                 + "p.prettyId, "

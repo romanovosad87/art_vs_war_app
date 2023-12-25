@@ -9,7 +9,6 @@ import com.example.artvswar.dto.response.author.AuthorResponseDto;
 import com.example.artvswar.model.Author;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.oauth2.jwt.Jwt;
 import java.util.Map;
 
 public interface AuthorService {
@@ -34,7 +33,7 @@ public interface AuthorService {
     String createPrettyId(String fullName);
     FolderResponseDto createCloudinaryFolder(String cognitoSubject);
 
-    void delete(String cognitoSubject, Jwt jwt);
+    void delete(String cognitoSubject);
 
     AuthorCheckStripeAndAddressPresenceResponseDto checkAuthorProfile(String authorCognitoSubject);
 

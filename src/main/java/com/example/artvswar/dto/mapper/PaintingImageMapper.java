@@ -8,6 +8,7 @@ import com.example.artvswar.model.AdditionalImage;
 import com.example.artvswar.model.Image;
 import com.example.artvswar.model.PaintingImage;
 import com.example.artvswar.model.enumModel.ModerationStatus;
+import com.example.artvswar.util.ModerationMockImage;
 import com.example.artvswar.util.RatioHelper;
 import com.example.artvswar.util.image.CloudinaryClient;
 import com.example.artvswar.util.image.ImageTransformation;
@@ -28,11 +29,27 @@ public class PaintingImageMapper {
         PaintingImageResponseDto dto = new PaintingImageResponseDto();
         dto.setImagePublicId(paintingImage.getImage().getPublicId());
         dto.setImageUrl(paintingImage.getImage().getUrl());
-        dto.setImageModerationStatus(paintingImage.getImage().getModerationStatus());
+        ModerationStatus moderationStatus = paintingImage.getImage().getModerationStatus();
+        dto.setImageModerationStatus(moderationStatus);
         Set<String> views = dto.getViews();
-        views.add(paintingImage.getImage().getUrl());
-        additionalImages.forEach(image -> views.add(image.getImage().getUrl()));
-        paintingImage.getRoomViews().forEach(roomView -> views.add(roomView.getImageUrl()));
+        if (moderationStatus == ModerationStatus.APPROVED) {
+            views.add(paintingImage.getImage().getUrl());
+        } else if (moderationStatus == ModerationStatus.PENDING) {
+            views.add(ModerationMockImage.PENDING_URL);
+        } else if (moderationStatus == ModerationStatus.REJECTED) {
+            views.add(ModerationMockImage.REJECTED_URL);
+        }
+
+        additionalImages.forEach(image -> {
+            if (image.getImage().getModerationStatus() == ModerationStatus.APPROVED) {
+                views.add(image.getImage().getUrl());
+            }
+        });
+
+        if (moderationStatus == ModerationStatus.APPROVED) {
+            paintingImage.getRoomViews().forEach(roomView -> views.add(roomView.getImageUrl()));
+        }
+
         return dto;
     }
 
@@ -87,14 +104,15 @@ public class PaintingImageMapper {
         }
     }
 
-    public PaintingImage toImageModelSameImage(FullImageUpdateRequestDto dto, PaintingImage paintingImage) {
+    public PaintingImage toImageModelSameImage(FullImageUpdateRequestDto dto,
+                                               PaintingImage paintingImage) {
 
-            paintingImage.setHeight(dto.getHeight());
-            paintingImage.setWidth(dto.getWidth());
-            paintingImage.setInitialRatio(dto.getWidth() / (dto.getHeight()));
-            paintingImage.setTransformedRatio(ratioHelper.getTransformedRatio(
-                    dto.getWidth() / (dto.getHeight())));
+        paintingImage.setHeight(dto.getHeight());
+        paintingImage.setWidth(dto.getWidth());
+        paintingImage.setInitialRatio(dto.getWidth() / (dto.getHeight()));
+        paintingImage.setTransformedRatio(ratioHelper.getTransformedRatio(
+                dto.getWidth() / (dto.getHeight())));
 
-            return paintingImage;
+        return paintingImage;
     }
 }

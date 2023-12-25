@@ -51,21 +51,29 @@ public class PaintingUpdateRequestDto {
     @NotNull(message = "weight field is required", groups = FirstOrder.class)
     @Min(value = 1, message = "min weight is 1 gram", groups = ThirdOrder.class)
     @Max(value = 10_000, message = "max weight is 10_000 gram", groups = ThirdOrder.class)
+    @Digits(integer = 5, fraction = 0, message = "weight must have maximum 5 number of digits "
+            + "of integer numbers", groups = ThirdOrder.class)
     private Double weight;
 
     @NotNull(message = "width field is required", groups = FirstOrder.class)
     @Min(value = 1, message = "min width is 1 cm", groups = ThirdOrder.class)
-    @Max(value = 700, message = "max width is 700 cm", groups = ThirdOrder.class)
+    @Max(value = 200, message = "max width is 200 cm", groups = ThirdOrder.class)
+    @Digits(integer = 3, fraction = 0, message = "width must have maximum 3 number of digits "
+            + "of integer numbers", groups = ThirdOrder.class)
     private Double width;
 
     @NotNull(message = "height field is required", groups = FirstOrder.class)
     @Min(value = 1, message = "min height is 1 cm", groups = ThirdOrder.class)
-    @Max(value = 700, message = "max height is 700 cm", groups = ThirdOrder.class)
+    @Max(value = 200, message = "max height is 200 cm", groups = ThirdOrder.class)
+    @Digits(integer = 3, fraction = 0, message = "height must have maximum 3 number of digits "
+            + "of integer numbers", groups = ThirdOrder.class)
     private Double height;
 
     @NotNull(message = "depth field is required", groups = FirstOrder.class)
-    @Digits(integer = 1, fraction = 1, message = "depth must have maximum 1 number of digits "
-            + "in centimetres and 1 number of digits in millimeters", groups = ThirdOrder.class)
+    @Min(value = 1, message = "min depth is 1 cm", groups = ThirdOrder.class)
+    @Max(value = 10, message = "max depth is 10 cm", groups = ThirdOrder.class)
+    @Digits(integer = 2, fraction = 0, message = "depth must have maximum 2 number of digits "
+            + "of integer numbers", groups = ThirdOrder.class)
     private Double depth;
 
     @NotNull(message = "year of creation field is required", groups = FirstOrder.class)

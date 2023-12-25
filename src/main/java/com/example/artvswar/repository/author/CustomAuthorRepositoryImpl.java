@@ -7,8 +7,10 @@ import com.example.artvswar.dto.response.author.AuthorsAllStylesDto;
 import com.example.artvswar.dto.response.painting.PaintingForAllAuthorsDto;
 import com.example.artvswar.model.Author;
 import com.example.artvswar.model.AuthorPhoto;
+import com.example.artvswar.model.AuthorShippingAddress;
 import com.example.artvswar.model.Image;
 import com.example.artvswar.model.Painting;
+import com.example.artvswar.model.StripeProfile;
 import com.example.artvswar.model.Style;
 import com.example.artvswar.model.enumModel.ModerationStatus;
 import lombok.RequiredArgsConstructor;
@@ -65,6 +67,10 @@ public class CustomAuthorRepositoryImpl
     private static final String STYLE_NAME = "style_name";
     private static final String IMAGE_PUBLIC_ID = "image_publicId";
     private static final String IMAGE_URL = "image_url";
+    private static final String IS_DELETED = "isDeleted";
+    public static final String STRIPE_PROFILE = "stripeProfile";
+    public static final String DETAILS_SUBMITTED = "isDetailsSubmitted";
+    public static final String AUTHOR_SHIPPING_ADDRESS = "authorShippingAddress";
     private final EntityManager entityManager;
 
     @Override
@@ -148,10 +154,14 @@ public class CustomAuthorRepositoryImpl
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Tuple> query = cb.createTupleQuery();
         Root<Author> author = query.from(Author.class);
+        Join<Author, StripeProfile> stripeProfile = author.join(STRIPE_PROFILE);
+        Join<Author, AuthorShippingAddress> authorShippingAddress = author.join(AUTHOR_SHIPPING_ADDRESS);
         Join<Author, AuthorPhoto> authorPhoto = author.join(PHOTO);
         Join<AuthorPhoto, Image> image = authorPhoto.join(IMAGE);
         Predicate moderationStatus = cb.equal(image.get(MODERATION_STATUS), ModerationStatus.APPROVED);
-
+        Predicate authorIsDeleted = cb.equal(author.get(IS_DELETED), false);
+        Predicate stripeProfileSubmitted = cb.equal(stripeProfile.get(DETAILS_SUBMITTED), true);
+        Predicate isAddress = cb.isNotNull(authorShippingAddress.get(ID));
 
         if (specification != null) {
             Predicate specificationPredicate = specification.toPredicate(author, query, cb);
@@ -163,7 +173,7 @@ public class CustomAuthorRepositoryImpl
                             author.get(ABOUT_ME).alias(AUTHOR_ABOUT_ME),
                             image.get(PUBLIC_ID).alias(IMAGE_PUBLIC_ID),
                             image.get(URL).alias(IMAGE_URL))
-                    .where(specificationPredicate, moderationStatus)
+                    .where(specificationPredicate, authorIsDeleted, moderationStatus, stripeProfileSubmitted, isAddress)
                     .distinct(true)
                     .orderBy(QueryUtils.toOrders(pageable.getSort(), author, cb));
         } else {
@@ -175,7 +185,7 @@ public class CustomAuthorRepositoryImpl
                             author.get(ABOUT_ME).alias(AUTHOR_ABOUT_ME),
                             image.get(PUBLIC_ID).alias(IMAGE_PUBLIC_ID),
                             image.get(URL).alias(IMAGE_URL))
-                    .where(moderationStatus)
+                    .where(authorIsDeleted, moderationStatus, stripeProfileSubmitted, isAddress)
                     .orderBy(QueryUtils.toOrders(pageable.getSort(), author, cb));
         }
 
@@ -198,11 +208,22 @@ public class CustomAuthorRepositoryImpl
         cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
         Root<Author> root = countQuery.from(Author.class);
+        authorShippingAddress = root.join(AUTHOR_SHIPPING_ADDRESS);
+        stripeProfile = root.join(STRIPE_PROFILE);
+        authorPhoto = root.join(PHOTO);
+        image = authorPhoto.join(IMAGE);
+        moderationStatus = cb.equal(image.get(MODERATION_STATUS), ModerationStatus.APPROVED);
+        authorIsDeleted = cb.equal(root.get(IS_DELETED), false);
+        stripeProfileSubmitted = cb.equal(stripeProfile.get(DETAILS_SUBMITTED), true);
+        isAddress = cb.isNotNull(authorShippingAddress.get(ID));
         if (specification != null) {
             Predicate predicate = specification.toPredicate(root, countQuery, cb);
-            countQuery.select(root.get(COGNITO_SUBJECT)).where(predicate).distinct(true);
+            countQuery.select(root.get(ID))
+                    .where(predicate, authorIsDeleted, moderationStatus, stripeProfileSubmitted, isAddress)
+                    .distinct(true);
         } else {
-            countQuery.select(root.get(COGNITO_SUBJECT));
+            countQuery.select(root.get(ID))
+                    .where(authorIsDeleted, moderationStatus, stripeProfileSubmitted, isAddress);
         }
         long total = entityManager.createQuery(countQuery).getResultStream().count();
 
