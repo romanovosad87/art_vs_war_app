@@ -4,6 +4,8 @@ import com.example.artvswar.dto.request.shipping.AddressRequestDto;
 import com.example.artvswar.dto.request.shipping.ShippingRequestDto;
 import com.example.artvswar.dto.response.shipping.ShippingRateResponseDto;
 import com.example.artvswar.exception.ShippingNotProcessingException;
+import com.example.artvswar.model.Author;
+import com.example.artvswar.model.AuthorShippingAddress;
 import com.example.artvswar.model.Painting;
 import com.example.artvswar.service.PaintingService;
 import com.neovisionaries.i18n.CountryCode;
@@ -65,17 +67,14 @@ public class ShipEngineService {
                                                                      Set<Long> painingIds) {
         List<ShippingRateResponseDto> dtos = new ArrayList<>();
         for (Long id : painingIds) {
-            Painting painting = paintingService.get(id);
 
-            Map<String, Object> shipmentDetails = getShippingDetails(dto, painting);
+            Map<String, Object> shipmentDetails = getShippingDetails(dto, id);
             Map<String, String> result = shipEngine.getRatesWithShipmentDetails(shipmentDetails);
 
             if (result.isEmpty()) {
                 throw new ShippingNotProcessingException(String.format("It is not possible to "
                         + "provide shipping rates for address: %s", formAddress(dto)));
             }
-
-            System.out.println("Result from shipEngine: " + result);
 
             ShippingRateResponseDto responseDto = parseJsonResponse(result);
             responseDto.setPaintingId(id);
@@ -115,7 +114,10 @@ public class ShipEngineService {
         return result;
     }
 
-    private Map<String, Object> getShippingDetails(ShippingRequestDto dto, Painting painting) {
+    private Map<String, Object> getShippingDetails(ShippingRequestDto dto, Long id) {
+        Painting painting = paintingService.get(id);
+        Author author = painting.getAuthor();
+        AuthorShippingAddress authorShippingAddress = author.getAuthorShippingAddress();
         return Map.ofEntries(
                 Map.entry("shipment", Map.of(
                                 "validate_address", "validate_and_clean",
@@ -182,16 +184,16 @@ public class ShipEngineService {
                                         Map.entry("address_residential_indicator", "no")
                                 ),
                                 "ship_from", Map.ofEntries(
-                                        Map.entry("name", "Roman Novosad"),
-                                        Map.entry("phone", "111-111-1111"),
-                                        Map.entry("company_name", "Royal Museum of Fine Art"),
-                                        Map.entry("address_line1", "Rue de la Regence 3"),
-                                        Map.entry("", ""),
+                                        Map.entry("name", author.getFullName()),
+                                        Map.entry("phone", authorShippingAddress.getPhone()),
+//                                        Map.entry("company_name", ""),
+                                        Map.entry("address_line1", authorShippingAddress.getAddressLine1()),
+//                                        Map.entry("", ""),
 //                                        Map.entry("address_line3", "Building #7"),
-                                        Map.entry("city_locality", "Bruxelles"),
-                                        Map.entry("state_province", "Bruxelles-Capitale"),
-                                        Map.entry("postal_code", "1000"),
-                                        Map.entry("country_code", "BE"),
+                                        Map.entry("city_locality", authorShippingAddress.getCity()),
+                                        Map.entry("state_province", authorShippingAddress.getState()),
+                                        Map.entry("postal_code", authorShippingAddress.getPostalCode()),
+                                        Map.entry("country_code", authorShippingAddress.getCountryCode()),
                                         Map.entry("address_residential_indicator", "no")
                                 )
                         )

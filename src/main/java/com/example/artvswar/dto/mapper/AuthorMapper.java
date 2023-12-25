@@ -14,6 +14,7 @@ import com.example.artvswar.util.image.CloudinaryClient;
 import com.example.artvswar.util.image.ImageTransformation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Component
@@ -55,6 +56,7 @@ public class AuthorMapper {
         authorFromDB.setCountry(dto.getCountry().trim());
         authorFromDB.setCity(dto.getCity().trim());
         authorFromDB.setAboutMe(dto.getAboutMe().trim());
+        Optional.ofNullable(dto.isDeactivated()).ifPresent(authorFromDB::setDeleted);
         ImageUpdateRequestDto dtoImage = dto.getImage();
 
         if (!dtoImage.getPublicId().equals(authorFromDB.getAuthorPhoto().getImage().getPublicId())) {
@@ -83,6 +85,7 @@ public class AuthorMapper {
         String country = author.getCountry();
         String city = author.getCity();
         String aboutMe = author.getAboutMe();
+        boolean isDeleted = author.isDeleted();
         Image image = author.getAuthorPhoto().getImage();
         String publicId = image.getPublicId();
         String url = image.getUrl();
@@ -94,6 +97,7 @@ public class AuthorMapper {
                 country,
                 city,
                 aboutMe,
+                isDeleted,
                 publicId,
                 url,
                 moderationStatus

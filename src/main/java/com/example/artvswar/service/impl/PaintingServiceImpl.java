@@ -14,11 +14,13 @@ import com.example.artvswar.exception.AppEntityNotFoundException;
 import com.example.artvswar.exception.PaintingNotAvailableException;
 import com.example.artvswar.model.Author;
 import com.example.artvswar.model.Painting;
+import com.example.artvswar.model.enumModel.ModerationStatus;
 import com.example.artvswar.model.enumModel.PaymentStatus;
 import com.example.artvswar.repository.painting.PaintingRepository;
 import com.example.artvswar.service.AuthorService;
 import com.example.artvswar.service.PaintingService;
 import com.example.artvswar.util.CloudinaryFolderCreator;
+import com.example.artvswar.util.ModerationMockImage;
 import com.example.artvswar.util.PrettyIdCreator;
 import com.example.artvswar.util.UrlParser;
 import com.example.artvswar.util.image.CloudinaryClient;
@@ -114,7 +116,7 @@ public class PaintingServiceImpl implements PaintingService {
     public PaintingResponseDto getByPrettyId(String prettyId) {
         Painting painting = paintingRepository.findByPrettyId(prettyId)
                 .orElseThrow(() -> new AppEntityNotFoundException(
-                String.format("Can't find painting by prettyId: %s", prettyId)));
+                String.format(PAINTING, prettyId)));
         return paintingMapper.toPaintingResponseDto(painting);
     }
 
@@ -122,7 +124,7 @@ public class PaintingServiceImpl implements PaintingService {
     public PaintingProfileResponseDto getForProfileByPrettyId(String prettyId) {
         Painting painting = paintingRepository.findByPrettyId(prettyId)
                 .orElseThrow(() -> new AppEntityNotFoundException(
-                        String.format("Can't find painting by prettyId: %s", prettyId)));
+                        String.format(PAINTING, prettyId)));
         return paintingMapper.toPaintingProfileResponseDto(painting);
     }
 
@@ -131,7 +133,7 @@ public class PaintingServiceImpl implements PaintingService {
     public void deleteByPrettyId(String prettyId) {
         Painting painting = paintingRepository.findByPrettyId(prettyId)
                 .orElseThrow(() -> new AppEntityNotFoundException(
-                        String.format("Can't find painting by prettyId: %s", prettyId)));
+                        String.format(PAINTING, prettyId)));
 
         if (painting.getPaymentStatus() != PaymentStatus.AVAILABLE) {
             throw new PaintingNotAvailableException("Can't delete painting because it is sold "
@@ -210,7 +212,16 @@ public class PaintingServiceImpl implements PaintingService {
 
     @Override
     public List<AdditionalImageResponseDto> getAdditionalImagesByPrettyId(String prettyId) {
-        return paintingRepository.getAdditionalImagesByPrettyId(prettyId);
+        List<AdditionalImageResponseDto> images = paintingRepository.getAdditionalImagesByPrettyId(prettyId);
+        images.forEach(image -> {
+            ModerationStatus moderationStatus = image.getImageModerationStatus();
+            if (moderationStatus == ModerationStatus.PENDING) {
+                image.setImageUrl(ModerationMockImage.PENDING_URL);
+            } else if (moderationStatus == ModerationStatus.REJECTED) {
+                image.setImageUrl(ModerationMockImage.REJECTED_URL);
+            }
+        });
+        return images;
     }
 
     @Override

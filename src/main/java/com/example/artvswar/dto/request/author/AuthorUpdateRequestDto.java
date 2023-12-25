@@ -41,6 +41,9 @@ public class AuthorUpdateRequestDto {
     @Pattern(regexp = "[\\p{IsLatin}\\w\\s\\p{P}\\p{S}]+", message = "About Me except only Latin",
             groups = ThirdOrder.class)
     private String aboutMe;
+
+    private boolean isDeactivated;
+
     @NotNull(message = "image field is required", groups = FirstOrder.class)
     private ImageUpdateRequestDto image;
 }
