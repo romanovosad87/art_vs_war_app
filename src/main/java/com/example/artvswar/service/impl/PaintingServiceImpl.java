@@ -48,7 +48,7 @@ public class PaintingServiceImpl implements PaintingService {
     public static final String PAINTING = "Can't find painting by prettyId: %s";
     public static final double FIRST_RATIO = 0.75;
     public static final int FIRST_AMOUNT = 2;
-    public static final int SECOND_RATIO = 1;
+    public static final double SECOND_RATIO = 1.0;
     public static final int SECOND_AMOUNT = 4;
     public static final double THIRD_RATIO = 1.25;
     public static final int THIRD_AMOUNT = 3;
@@ -56,7 +56,7 @@ public class PaintingServiceImpl implements PaintingService {
     public static final int FOURTH_AMOUNT = 2;
     public static final double FIFTH_RATIO = 1.75;
     public static final int FIFTH_AMOUNT = 1;
-    public static final int SIXTH_RATIO = 2;
+    public static final double SIXTH_RATIO = 2.0;
     public static final int SIXTH_AMOUNT = 2;
     private final PaintingRepository paintingRepository;
     private final PaintingMapper paintingMapper;
@@ -65,7 +65,7 @@ public class PaintingServiceImpl implements PaintingService {
     private final PrettyIdCreator prettyIdCreator;
     private final CloudinaryClient cloudinaryClient;
     private final CloudinaryFolderCreator cloudinaryFolderCreator;
-    private Random random = new Random();
+    private final Random random = new Random();
 
     @Override
     @Transactional
@@ -268,23 +268,17 @@ public class PaintingServiceImpl implements PaintingService {
     private Map<Double, List<PaintingMainPageResponseDto>> parseObject(List<Object[]> response) {
         Map<Double, List<PaintingMainPageResponseDto>> map
                 = new HashMap<>(
-                Map.of(0.75, new ArrayList<>(),
-                        1.0, new ArrayList<>(),
-                        1.25, new ArrayList<>(),
-                        1.5, new ArrayList<>(),
-                        1.75, new ArrayList<>(),
-                        2.0, new ArrayList<>()));
+                Map.of(FIRST_RATIO, new ArrayList<>(),
+                        SECOND_RATIO, new ArrayList<>(),
+                        THIRD_RATIO, new ArrayList<>(),
+                        FOURTH_RATIO, new ArrayList<>(),
+                        FIFTH_RATIO, new ArrayList<>(),
+                        SIXTH_RATIO, new ArrayList<>()));
         response.forEach(obj -> {
             Double key = (Double) obj[1];
             map.computeIfAbsent(key, k -> new ArrayList<>())
                     .add(new PaintingMainPageResponseDto((String) obj[0], (String) obj[2], (String) obj[3]));
         });
-
-//        Map<Double, List<PaintingMainPageResponseDto>> map = response.stream()
-//                .collect(Collectors.groupingBy(obj -> (Double) obj[1],
-//                        Collectors.mapping(obj -> new PaintingMainPageResponseDto((String) obj[0],
-//                                        (String) obj[2], (String) obj[3]),
-//                                Collectors.toList())));
 
         map.forEach(this::populateWithDefaultImagesIfNeeded);
 
