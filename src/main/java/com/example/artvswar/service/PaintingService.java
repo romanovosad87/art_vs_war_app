@@ -25,7 +25,6 @@ public interface PaintingService {
     Painting get(Long id);
 
     Painting getReference(Long id);
-    Page<PaintingShortResponseDto> getAll(Map<String, String> params, Pageable pageable);
 
     PaintingResponseDto getDto(Long id);
 

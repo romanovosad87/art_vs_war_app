@@ -20,6 +20,7 @@ import com.example.artvswar.repository.painting.PaintingRepository;
 import com.example.artvswar.service.AuthorService;
 import com.example.artvswar.service.PaintingService;
 import com.example.artvswar.util.CloudinaryFolderCreator;
+import com.example.artvswar.util.MainPageDefaultImage;
 import com.example.artvswar.util.ModerationMockImage;
 import com.example.artvswar.util.PrettyIdCreator;
 import com.example.artvswar.util.UrlParser;
@@ -31,11 +32,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -43,6 +46,18 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class PaintingServiceImpl implements PaintingService {
     public static final String PAINTING = "Can't find painting by prettyId: %s";
+    public static final double FIRST_RATIO = 0.75;
+    public static final int FIRST_AMOUNT = 2;
+    public static final double SECOND_RATIO = 1.0;
+    public static final int SECOND_AMOUNT = 4;
+    public static final double THIRD_RATIO = 1.25;
+    public static final int THIRD_AMOUNT = 3;
+    public static final double FOURTH_RATIO = 1.5;
+    public static final int FOURTH_AMOUNT = 2;
+    public static final double FIFTH_RATIO = 1.75;
+    public static final int FIFTH_AMOUNT = 1;
+    public static final double SIXTH_RATIO = 2.0;
+    public static final int SIXTH_AMOUNT = 2;
     private final PaintingRepository paintingRepository;
     private final PaintingMapper paintingMapper;
     private final UrlParser urlParser;
@@ -50,6 +65,7 @@ public class PaintingServiceImpl implements PaintingService {
     private final PrettyIdCreator prettyIdCreator;
     private final CloudinaryClient cloudinaryClient;
     private final CloudinaryFolderCreator cloudinaryFolderCreator;
+    private final Random random = new Random();
 
     @Override
     @Transactional
@@ -64,7 +80,8 @@ public class PaintingServiceImpl implements PaintingService {
 
     @Override
     @Transactional
-    public PaintingResponseDto update(String prettyId, PaintingUpdateRequestDto dto, String cognitoSubject) {
+    public PaintingResponseDto update(String prettyId, PaintingUpdateRequestDto dto,
+                                      String cognitoSubject) {
         Painting paintingFromDB = paintingRepository.findByPrettyId(prettyId)
                 .orElseThrow(() -> new AppEntityNotFoundException(
                         String.format(PAINTING, prettyId)));
@@ -75,7 +92,7 @@ public class PaintingServiceImpl implements PaintingService {
         }
 
         if (paintingFromDB.getAuthor().getCognitoSubject().equals(cognitoSubject)) {
-            if(!dto.getTitle().equals(paintingFromDB.getTitle())) {
+            if (!dto.getTitle().equals(paintingFromDB.getTitle())) {
                 paintingFromDB.setPrettyId(createPrettyId(dto.getTitle()));
             }
             Painting painting = paintingMapper.updatePaintingModel(dto, paintingFromDB);
@@ -99,12 +116,6 @@ public class PaintingServiceImpl implements PaintingService {
     }
 
     @Override
-    public Page<PaintingShortResponseDto> getAll(Map<String, String> params, Pageable pageable) {
-        Specification<Painting> specification = urlParser.getPaintingSpecification(params);
-        return paintingRepository.getAllShortDtosBySpecification(specification, pageable);
-    }
-
-    @Override
     public PaintingResponseDto getDto(Long id) {
         Painting painting = paintingRepository.findById(id)
                 .orElseThrow(() -> new AppEntityNotFoundException(
@@ -116,7 +127,7 @@ public class PaintingServiceImpl implements PaintingService {
     public PaintingResponseDto getByPrettyId(String prettyId) {
         Painting painting = paintingRepository.findByPrettyId(prettyId)
                 .orElseThrow(() -> new AppEntityNotFoundException(
-                String.format(PAINTING, prettyId)));
+                        String.format(PAINTING, prettyId)));
         return paintingMapper.toPaintingResponseDto(painting);
     }
 
@@ -168,7 +179,7 @@ public class PaintingServiceImpl implements PaintingService {
 
     @Override
     public List<PaintingShortResponseDto> getAdditionalPaintings(String paintingPrettyId,
-                                                                                      int size) {
+                                                                 int size) {
         String authorPrettyId = paintingRepository.getAuthorPrettyId(paintingPrettyId);
         return paintingRepository
                 .getAdditionalPaintings(paintingPrettyId, authorPrettyId, size);
@@ -189,7 +200,7 @@ public class PaintingServiceImpl implements PaintingService {
 
     @Override
     public Page<PaintingShortResponseDto> getAllByParamsReturnDto(Map<String, String> params,
-                                                     Pageable pageable) {
+                                                                  Pageable pageable) {
         Specification<Painting> specification = urlParser.getPaintingSpecification(params);
         return paintingRepository.getAllShortDtosBySpecification(specification, pageable);
     }
@@ -206,7 +217,7 @@ public class PaintingServiceImpl implements PaintingService {
         if (repentance == 0) {
             return proposedPrettyId;
         } else {
-            return proposedPrettyId + "-" + new Random().nextInt(100000);
+            return proposedPrettyId + "-" + random.nextInt(100000);
         }
     }
 
@@ -232,12 +243,12 @@ public class PaintingServiceImpl implements PaintingService {
     @Override
     public Map<Double, List<PaintingMainPageResponseDto>> getPaintingsForMainPage() {
         return parseObject(paintingRepository.findPaintingsForMainPage(
-                0.75, 2,
-                1, 4,
-                1.25, 3,
-                1.5, 2,
-                1.75, 1,
-                2, 2));
+                FIRST_RATIO, FIRST_AMOUNT,
+                SECOND_RATIO, SECOND_AMOUNT,
+                THIRD_RATIO, THIRD_AMOUNT,
+                FOURTH_RATIO, FOURTH_AMOUNT,
+                FIFTH_RATIO, FIFTH_AMOUNT,
+                SIXTH_RATIO, SIXTH_AMOUNT));
     }
 
     @Override
@@ -255,10 +266,62 @@ public class PaintingServiceImpl implements PaintingService {
     }
 
     private Map<Double, List<PaintingMainPageResponseDto>> parseObject(List<Object[]> response) {
-        return response.stream()
-                .collect(Collectors.groupingBy(obj -> (Double) obj[1],
-                        Collectors.mapping(obj -> new PaintingMainPageResponseDto((String) obj[0],
-                                        (String) obj[2], (String) obj[3]),
-                                Collectors.toList())));
+        Map<Double, List<PaintingMainPageResponseDto>> map
+                = new HashMap<>(
+                Map.of(FIRST_RATIO, new ArrayList<>(),
+                        SECOND_RATIO, new ArrayList<>(),
+                        THIRD_RATIO, new ArrayList<>(),
+                        FOURTH_RATIO, new ArrayList<>(),
+                        FIFTH_RATIO, new ArrayList<>(),
+                        SIXTH_RATIO, new ArrayList<>()));
+        response.forEach(obj -> {
+            Double key = (Double) obj[1];
+            map.computeIfAbsent(key, k -> new ArrayList<>())
+                    .add(new PaintingMainPageResponseDto((String) obj[0], (String) obj[2], (String) obj[3]));
+        });
+
+        map.forEach(this::populateWithDefaultImagesIfNeeded);
+
+        return map;
+    }
+
+    private void populateWithDefaultImagesIfNeeded(double key,
+                                                   List<PaintingMainPageResponseDto> dtos) {
+        int expectedAmountOfImages = getAmount(key);
+        int actualAmountOfImages = dtos.size();
+        int difference = expectedAmountOfImages - actualAmountOfImages;
+        if (difference > 0) {
+            var dtoList = MainPageDefaultImage.getDefaultImageMap().get(key);
+            Collections.shuffle(dtoList);
+            dtos.addAll(dtoList.subList(0, difference));
+        }
+    }
+
+    private int getAmount(double key) {
+        String stringValue = String.valueOf(key);
+        int amountOfImages;
+        switch (stringValue) {
+            case "0.75":
+                amountOfImages = FIRST_AMOUNT;
+                break;
+            case "1.0":
+                amountOfImages = SECOND_AMOUNT;
+                break;
+            case "1.25":
+                amountOfImages = THIRD_AMOUNT;
+                break;
+            case "1.5":
+                amountOfImages = FOURTH_AMOUNT;
+                break;
+            case "1.75":
+                amountOfImages = FIFTH_AMOUNT;
+                break;
+            case "2.0":
+                amountOfImages = SIXTH_AMOUNT;
+                break;
+            default:
+                amountOfImages = 0;
+        }
+        return amountOfImages;
     }
 }

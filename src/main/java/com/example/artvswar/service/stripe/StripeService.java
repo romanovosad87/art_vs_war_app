@@ -92,6 +92,17 @@ public class StripeService {
         return stripeUtils.createCustomer(name, email);
     }
 
+    /**
+     * Scheduled method to provide transfers to authors for delivered paintings.
+     * Scheduled to run at 9:00 AM and 6:00 PM every day in the Europe/Paris time zone.
+     *
+     * The method retrieves orders delivered a day before that do not have a
+     * transfer initiated and processes them. For each eligible order, it calculates
+     * the transfer amount for the author (40% of the painting price) and initiates
+     * a separate transfer using Stripe API. The transfer details are then updated
+     * in the order object, including the transferred amount and income for the order.
+     *
+     */
     @Transactional
     @Scheduled(cron = "0 0 9,18 * * ?", zone = "ECT")
     public void provideTransferToAuthor() {
@@ -110,13 +121,15 @@ public class StripeService {
                     long amount = painting.getPrice().multiply(BigDecimal.valueOf(0.4 * 100)).longValue();
                     String chargeId = order.getChargeId();
                     Transfer transfer = stripeUtils.createSeparateTransfer(chargeId, stripeAccountId, amount);
-                    Long transferAmountLong = transfer.getAmount();
-                    BigDecimal transferAmount = BigDecimal.valueOf((double) transferAmountLong / 100);
-                    BigDecimal existingTransferAmount = Optional.ofNullable(order.getTransferAmount())
-                            .orElse(BigDecimal.ZERO);
-                    order.setTransferAmount(existingTransferAmount.add(transferAmount));
-                    BigDecimal income = order.getNetAmount().subtract(transferAmount);
-                    order.setIncome(income);
+                    if (transfer != null) {
+                        Long transferAmountLong = transfer.getAmount();
+                        BigDecimal transferAmount = BigDecimal.valueOf((double) transferAmountLong / 100);
+                        BigDecimal existingTransferAmount = Optional.ofNullable(order.getTransferAmount())
+                                .orElse(BigDecimal.ZERO);
+                        order.setTransferAmount(existingTransferAmount.add(transferAmount));
+                        BigDecimal income = order.getNetAmount().subtract(transferAmount);
+                        order.setIncome(income);
+                    }
                 }
             }
         }

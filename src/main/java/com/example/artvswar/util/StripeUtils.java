@@ -313,15 +313,17 @@ public class StripeUtils {
                         .setDestination(stripeProfileId)
                         .build();
 
+        Transfer transfer = null;
         try {
-            Transfer transfer = Transfer.create(params);
+            transfer = Transfer.create(params);
             log.info(String.format("Separate transfer with id: '%s', amount '%s' and destination '%s' was created",
                     transfer.getId(), transfer.getAmount()/100, transfer.getDestination()));
-            return transfer;
+
         } catch (StripeException e) {
-            throw new RuntimeException(String.format("Can't create transfer with charge: %s"
+            log.error(String.format("Can't create transfer with charge: %s"
                     + "for connected account id: %s", chargeId, stripeProfileId), e);
         }
+        return transfer;
     }
 
     public double getTotalBalanceAmount(RequestOptions requestOptions) {

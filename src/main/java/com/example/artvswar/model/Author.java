@@ -28,9 +28,9 @@ import javax.persistence.Table;
 @Entity
 @Getter
 @Setter
-@SQLDelete(sql = "UPDATE authors SET is_deleted = true where cognito_subject = ?",
-        check = ResultCheckStyle.COUNT)
-@Where(clause = "is_deleted = false")
+//@SQLDelete(sql = "UPDATE authors SET is_deleted = true where cognito_subject = ?",
+//        check = ResultCheckStyle.COUNT)
+//@Where(clause = "is_deleted = false")
 @Table(name = "authors")
 public class Author extends User {
     @Column(nullable = false)

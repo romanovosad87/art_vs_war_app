@@ -209,7 +209,8 @@ public class PaintingMapper {
         Double dbWidth = paintingFromDB.getWidth();
         Double dbHeight = paintingFromDB.getHeight();
 
-        boolean isNewImageNotDownloaded = dto.getImage().getPublicId().equals(paintingFromDB.getPaintingImage().getImage().getPublicId());
+        boolean isNewImageNotDownloaded = dto.getImage().getPublicId()
+                .equals(paintingFromDB.getPaintingImage().getImage().getPublicId());
 
         if ((!widthDto.equals(dbWidth) || !heightDto.equals(dbHeight))
         && isNewImageNotDownloaded) {
