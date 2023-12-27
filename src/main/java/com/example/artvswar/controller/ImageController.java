@@ -1,9 +1,9 @@
 package com.example.artvswar.controller;
 
 import com.cloudinary.api.ApiResponse;
-import com.example.artvswar.dto.response.image.RejectAssetsResponse;
+import com.example.artvswar.dto.request.image.ImageModerationStatusRequestDto;
+import com.example.artvswar.dto.response.image.PendingRejectImageResponse;
 import com.example.artvswar.dto.response.image.SignatureResponse;
-import com.example.artvswar.model.enumModel.ModerationStatus;
 import com.example.artvswar.service.ImageService;
 import com.example.artvswar.service.PaintingImageService;
 import com.example.artvswar.service.impl.CloudinaryImageService;
@@ -11,6 +11,9 @@ import com.example.artvswar.util.image.CloudinaryClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.json.JSONException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,7 +29,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import java.util.List;
 import java.util.Map;
 
 @Log4j2
@@ -35,6 +37,7 @@ import java.util.Map;
 @RequestMapping("/images")
 public class ImageController {
     private static final String USERNAME = "username";
+    private static final int DEFAULT_PAGE_SIZE = 20;
     private final CloudinaryImageService cloudinaryImageService;
     private final PaintingImageService paintingImageService;
     private final CloudinaryClient cloudinaryClient;
@@ -64,18 +67,29 @@ public class ImageController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/rejectedAssets")
-    public ResponseEntity<List<RejectAssetsResponse>> listRejectedAssets() {
-        List<RejectAssetsResponse> rejectAssetsResponses = cloudinaryImageService.listRejectedAssets();
-        return new ResponseEntity<>(rejectAssetsResponses, HttpStatus.OK);
+    @GetMapping("/rejected")
+    public ResponseEntity<Page<PendingRejectImageResponse>> listRejectedImages(
+            @PageableDefault(size = DEFAULT_PAGE_SIZE) Pageable pageable) {
+        Page<PendingRejectImageResponse> rejectedImages = imageService.getRejectedImages(pageable);
+        return new ResponseEntity<>(rejectedImages, HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/setRejected")
-    public ResponseEntity<String> changeStatusToRejectedInDB(@RequestParam String publicId) {
-        imageService.updateModerationStatus(publicId, ModerationStatus.REJECTED.name());
+    @GetMapping("/pending")
+    public ResponseEntity<Page<PendingRejectImageResponse>> listPendingImages(
+            @PageableDefault(size = DEFAULT_PAGE_SIZE) Pageable pageable) {
+        Page<PendingRejectImageResponse> pendingImages = imageService.getPendingImages(pageable);
+        return new ResponseEntity<>(pendingImages, HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/setStatus")
+    public ResponseEntity<String> changeStatusToRejectedInDB(@RequestBody ImageModerationStatusRequestDto dto,
+                                                             @AuthenticationPrincipal Jwt jwt) {
+        String username = jwt.getClaimAsString(USERNAME);
+        imageService.changeModerationStatus(dto.getPublicId(), username, dto.getStatus());
         return new ResponseEntity<>(String.format("moderation status changed "
-                + "to rejected for public_id: '%s'", publicId), HttpStatus.OK);
+                + "to %s for image public_id: '%s'", dto.getStatus(), dto.getPublicId()), HttpStatus.OK);
     }
 
     @PostMapping("/moderation")

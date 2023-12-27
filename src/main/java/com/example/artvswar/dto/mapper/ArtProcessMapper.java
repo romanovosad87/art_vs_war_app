@@ -57,11 +57,8 @@ public class ArtProcessMapper {
             image.setPublicId(dtoImage.getPublicId());
             ModerationStatus moderationStatus = ModerationStatus.valueOf(dtoImage.getModerationStatus());
             image.setModerationStatus(moderationStatus);
-            if (moderationStatus.equals(ModerationStatus.APPROVED)) {
-                image.setUrl(imageTransformation.paintingImageEagerTransformation(dtoImage.getPublicId()));
-            } else {
-                image.setUrl(dtoImage.getSecureUrl());
-            }
+            image.setUrl(imageTransformation.paintingImageEagerTransformation(dtoImage.getPublicId()));
+
             artProcessImage.setImage(image);
             artProcess.setArtProcessImage(artProcessImage);
         } else {
