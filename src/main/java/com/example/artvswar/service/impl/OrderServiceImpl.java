@@ -76,6 +76,12 @@ public class OrderServiceImpl implements OrderService {
         order.setDeliveredAt(LocalDateTime.now().atOffset(ZoneOffset.UTC).toLocalDateTime());
     }
 
+    /**
+     * Scheduled method to automatically mark orders as delivered if they
+     * were created more than five days ago and are not already marked as delivered.
+     * The method is scheduled to run at 8:00 AM and 5:00 PM every day in the
+     * Europe/Paris time zone.
+     */
     @Override
     @Transactional
     @Scheduled(cron = "0 0 8,17 * * ?", zone = "ECT")
