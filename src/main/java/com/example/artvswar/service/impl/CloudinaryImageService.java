@@ -1,7 +1,7 @@
 package com.example.artvswar.service.impl;
 
 import com.cloudinary.api.ApiResponse;
-import com.example.artvswar.dto.response.image.RejectAssetsResponse;
+import com.example.artvswar.dto.response.image.PendingRejectImageResponse;
 import com.example.artvswar.dto.response.image.SignatureResponse;
 import com.example.artvswar.dto.response.painingImage.PaintingImageResponseDto;
 import com.example.artvswar.exception.AppEntityNotFoundException;
@@ -81,8 +81,8 @@ public class CloudinaryImageService {
     }
 
     @SneakyThrows
-    public List<RejectAssetsResponse> listRejectedAssets() {
-        List<RejectAssetsResponse> rejectAssetsResponses = new ArrayList<>();
+    public List<PendingRejectImageResponse> listRejectedAssets() {
+        List<PendingRejectImageResponse> rejectAssetsResponses = new ArrayList<>();
         ApiResponse rejectedAssets = cloudinaryClient.listRejectedAssets();
         JSONObject jsonObject = new JSONObject(rejectedAssets);
         JSONArray resources = jsonObject.getJSONArray(RESOURCES);
@@ -91,12 +91,11 @@ public class CloudinaryImageService {
             String publicId = object.getString(PUBLIC_ID);
             String createdAt = object.getString(CREATED_AT);
             LocalDateTime localDateTime = LocalDateTime.parse(createdAt, DATE_TIME_FORMATTER);
-            String formattedCreatedAt = DATE_TIME_FORMATTER_PRETTY.format(localDateTime);
             String assetId = object.getString(ASSET_ID);
             String url = String.format(CLOUDINARY_URL, assetId);
             imageService.getImage(publicId)
                     .ifPresentOrElse(image -> rejectAssetsResponses.add(
-                            new RejectAssetsResponse(publicId, formattedCreatedAt, url, image.getModerationStatus())),
+                            new PendingRejectImageResponse(publicId, localDateTime, url, image.getModerationStatus())),
                             () -> cloudinaryClient.delete(publicId));
         }
         return rejectAssetsResponses;

@@ -27,7 +27,7 @@ public class PaintingCheckInputDto {
     private String title;
 
     @NotNull(message = "price field is required", groups = FirstOrder.class)
-    @Digits(integer = 5, fraction = 0, message = "price must have maximum 8 number of digits "
+    @Digits(integer = 5, fraction = 0, message = "price must have maximum 5 number of digits "
             + "without cents", groups = ThirdOrder.class)
     private BigDecimal price;
 
@@ -68,8 +68,10 @@ public class PaintingCheckInputDto {
     private Double height;
 
     @NotNull(message = "depth field is required", groups = FirstOrder.class)
-    @Digits(integer = 1, fraction = 1, message = "depth must have maximum 1 number of digits "
-            + "in centimetres and 1 number of digits in millimeters", groups = ThirdOrder.class)
+    @Min(value = 1, message = "min depth is 1 cm", groups = ThirdOrder.class)
+    @Max(value = 10, message = "max depth is 10 cm", groups = ThirdOrder.class)
+    @Digits(integer = 2, fraction = 0, message = "depth must have maximum 2 number of digits "
+            + "of integer numbers", groups = ThirdOrder.class)
     private Double depth;
 
     @NotNull(message = "year of creation field is required", groups = FirstOrder.class)

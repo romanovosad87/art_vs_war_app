@@ -8,6 +8,7 @@ import com.cloudinary.api.signing.ApiResponseSignatureVerifier;
 import com.cloudinary.api.signing.NotificationRequestSignatureVerifier;
 import com.cloudinary.utils.ObjectUtils;
 import com.example.artvswar.dto.response.image.SignatureResponse;
+import com.example.artvswar.exception.CloudinaryClientException;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -61,7 +62,7 @@ public class CloudinaryClient {
                             MODERATION_STATUS, APPROVED));
             addTag(publicId, adminUsername,APPROVED);
         } catch (Exception e) {
-            throw new RuntimeException(
+            throw new CloudinaryClientException(
                     String.format("Can't change moderation status to "
                             + "approved of the image with id = %s", publicId), e);
         }
@@ -74,16 +75,21 @@ public class CloudinaryClient {
                             MODERATION_STATUS, REJECTED));
             addTag(publicId, adminUsername, REJECTED);
         } catch (Exception e) {
-            throw new RuntimeException(
+            throw new CloudinaryClientException(
                     String.format("Can't change moderation status to "
                             + "rejected of the image with id = %s", publicId), e);
         }
     }
 
-    public void addTag(String publicId, String adminUsername, String operation) throws IOException {
-        cloudinary.uploader().addTag(String.format("moderator that %s: "
-                + adminUsername + " time:  " + now().format(DATE_TIME_FORMATTER), operation),
-                new String[] {publicId}, ObjectUtils.emptyMap());
+    public void addTag(String publicId, String adminUsername, String operation) {
+        try {
+            cloudinary.uploader().addTag(String.format("moderator that %s: %s time: %s",
+                            operation, adminUsername, now().format(DATE_TIME_FORMATTER)),
+                    new String[] {publicId}, ObjectUtils.emptyMap());
+        } catch (IOException e) {
+            throw new CloudinaryClientException(
+                    String.format("Can't add tag to image with public_id: '%s'", publicId), e);
+        }
     }
 
     public ApiResponse listRejectedAssets() {
@@ -92,7 +98,7 @@ public class CloudinaryClient {
                     .resourcesByModeration("aws_rek", REJECTED,
                             ObjectUtils.emptyMap());
         } catch (Exception e) {
-            throw new RuntimeException("Can't list all assets rejected by aws-rekognition", e);
+            throw new CloudinaryClientException("Can't list all assets rejected by aws-rekognition", e);
         }
     }
 
@@ -100,7 +106,7 @@ public class CloudinaryClient {
         try {
              return cloudinary.api().resource(publicId, ObjectUtils.emptyMap());
         } catch (Exception e) {
-            throw new RuntimeException(
+            throw new CloudinaryClientException(
                     String.format("Can't find resource by public_id = %s", publicId), e);
         }
     }
@@ -110,7 +116,7 @@ public class CloudinaryClient {
             Map<String, String> destroy = cloudinary.uploader().destroy(publicId, ObjectUtils.asMap("invalidate", true));
             return destroy.get("result");
         } catch (IOException e) {
-            throw new RuntimeException(
+            throw new CloudinaryClientException(
                     String.format("Can't delete asset from Cloudinary with id: %s", publicId), e);
         }
     }
@@ -129,7 +135,7 @@ public class CloudinaryClient {
                             + " time: " + moderatedAt,
                     new String[] { publicId }, ObjectUtils.emptyMap());
         } catch (IOException e) {
-            throw new RuntimeException(
+            throw new CloudinaryClientException(
                     String.format("Can't add tag to "
                             + " the image with id = %s", publicId), e);
         }
