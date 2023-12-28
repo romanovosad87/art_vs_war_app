@@ -19,7 +19,6 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -34,12 +33,11 @@ public class OrderServiceImpl implements OrderService {
         Account account = accountService.getAccountByCognitoSubject(cognitoSubject);
         Page<OrderShortResponseDto> orders = orderRepository
                 .findAllByAccount_CognitoSubject(cognitoSubject, pageable);
-        List<OrderShortResponseDto> ordersList = orders.getContent().stream()
-                .peek(order -> order.setOrderCreatedAt(adjustOffset(order.getCreatedAt(),
-                        account.getOffset())))
-                .collect(Collectors.toList());
+        List<OrderShortResponseDto> content = orders.getContent();
+        content.forEach(order -> order.setOrderCreatedAt(adjustOffset(order.getCreatedAt(),
+                        account.getOffset())));
 
-        return new PageImpl<>(ordersList, orders.getPageable(), orders.getTotalElements());
+        return new PageImpl<>(content, orders.getPageable(), orders.getTotalElements());
     }
 
     @Override
@@ -52,12 +50,17 @@ public class OrderServiceImpl implements OrderService {
                                                             Pageable pageable) {
         Account account = accountService.getAccountByCognitoSubject(cognitoSubject);
         Page<OrderResponseDto> orders = orderRepository.getAllOrdersByAccount(cognitoSubject, pageable);
-        List<OrderResponseDto> ordersList = orders.getContent().stream()
-                .peek(order -> order.setOrderCreatedAt(adjustOffset(order.getCreatedAt(),
-                        account.getOffset())))
-                .collect(Collectors.toList());
+        List<OrderResponseDto> content = orders.getContent();
+        content.forEach(order -> {
+                    order.setOrderCreatedAt(adjustOffset(order.getCreatedAt(),
+                            account.getOffset()));
+            if (order.isDelivered()) {
+                order.setOrderDeliveredAt(adjustOffset(order.getDeliveredAt(),
+                        account.getOffset()));
+            }
+                });
 
-        return new PageImpl<>(ordersList, orders.getPageable(), orders.getTotalElements());
+        return new PageImpl<>(content, orders.getPageable(), orders.getTotalElements());
 
     }
 

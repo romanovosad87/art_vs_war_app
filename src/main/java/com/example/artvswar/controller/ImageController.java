@@ -13,7 +13,9 @@ import lombok.extern.log4j.Log4j2;
 import org.json.JSONException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,6 +23,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,6 +41,7 @@ import java.util.Map;
 public class ImageController {
     private static final String USERNAME = "username";
     private static final int DEFAULT_PAGE_SIZE = 20;
+    private static final String CREATED_AT = "createdAt";
     private final CloudinaryImageService cloudinaryImageService;
     private final PaintingImageService paintingImageService;
     private final CloudinaryClient cloudinaryClient;
@@ -67,19 +71,14 @@ public class ImageController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/rejected")
-    public ResponseEntity<Page<PendingRejectImageResponse>> listRejectedImages(
+    @GetMapping("/{status}")
+    public ResponseEntity<Page<PendingRejectImageResponse>> getImagesByStatus(
+            @PathVariable String status,
+            @SortDefault(sort = CREATED_AT, direction = Sort.Direction.DESC)
             @PageableDefault(size = DEFAULT_PAGE_SIZE) Pageable pageable) {
-        Page<PendingRejectImageResponse> rejectedImages = imageService.getRejectedImages(pageable);
+        Page<PendingRejectImageResponse> rejectedImages = imageService
+                .getImagesByStatus(pageable, status);
         return new ResponseEntity<>(rejectedImages, HttpStatus.OK);
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/pending")
-    public ResponseEntity<Page<PendingRejectImageResponse>> listPendingImages(
-            @PageableDefault(size = DEFAULT_PAGE_SIZE) Pageable pageable) {
-        Page<PendingRejectImageResponse> pendingImages = imageService.getPendingImages(pageable);
-        return new ResponseEntity<>(pendingImages, HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
