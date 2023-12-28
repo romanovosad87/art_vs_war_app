@@ -46,7 +46,13 @@ public class CustomOrderRepositoryImpl
                 .getResultList();
 
         OrderResponseDto responseDto = entityManager.createQuery("select new com.example.artvswar.dto.response.order.OrderResponseDto("
-                        + "o.id, o.totalAmount, o.subtotalAmount, o.shippingAmount, o.isDelivered, o.createdAt) "
+                        + "o.id, "
+                        + "o.totalAmount, "
+                        + "o.subtotalAmount, "
+                        + "o.shippingAmount, "
+                        + "o.isDelivered, "
+                        + "o.deliveredAt, "
+                        + "o.createdAt) "
                         + "from Order o where o.id = ?1", OrderResponseDto.class)
                 .setParameter(1, id)
                 .getSingleResult();
@@ -60,7 +66,13 @@ public class CustomOrderRepositoryImpl
     public Page<OrderResponseDto> getAllOrdersByAccount(String cognitoSubject, Pageable pageable) {
 
         List<OrderResponseDto> responseDtoList = entityManager.createQuery("select new com.example.artvswar.dto.response.order.OrderResponseDto("
-                        + "o.id, o.totalAmount, o.subtotalAmount, o.shippingAmount, o.isDelivered, o.createdAt) "
+                        + "o.id, "
+                        + "o.totalAmount, "
+                        + "o.subtotalAmount, "
+                        + "o.shippingAmount, "
+                        + "o.isDelivered, "
+                        + "o.deliveredAt, "
+                        + "o.createdAt) "
                         + "from Order o where o.account.cognitoSubject = ?1", OrderResponseDto.class)
                 .setParameter(1, cognitoSubject)
                 .setFirstResult((int) pageable.getOffset())

@@ -4,6 +4,7 @@ import com.example.artvswar.dto.request.author.AuthorCreateRequestDto;
 import com.example.artvswar.dto.request.author.AuthorUpdateRequestDto;
 import com.example.artvswar.dto.response.FolderResponseDto;
 import com.example.artvswar.dto.response.author.AuthorCheckStripeAndAddressPresenceResponseDto;
+import com.example.artvswar.dto.response.author.AuthorImageModerationResponseDto;
 import com.example.artvswar.dto.response.author.AuthorProfileResponseDto;
 import com.example.artvswar.dto.response.author.AuthorResponseDto;
 import com.example.artvswar.model.Author;
@@ -21,6 +22,8 @@ public interface AuthorService {
 
     AuthorResponseDto getDtoByCognitoSubjectWithStyles(String cognitoSubject);
     AuthorProfileResponseDto getAuthorProfileDtoByCognitoSubject(String cognitoSubject);
+
+    AuthorImageModerationResponseDto getAuthorDataForImageModeration(String cognitoSubject);
 
     AuthorResponseDto getDtoByPrettyIdWithStyles(String prettyId);
 

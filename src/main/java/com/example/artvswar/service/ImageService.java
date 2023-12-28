@@ -12,9 +12,7 @@ public interface ImageService {
 
     Optional<Image> getImage(String publicId);
 
-    Page<PendingRejectImageResponse> getRejectedImages(Pageable pageable);
-
-    Page<PendingRejectImageResponse> getPendingImages(Pageable pageable);
+    Page<PendingRejectImageResponse> getImagesByStatus(Pageable pageable, String status);
 
     void changeModerationStatus(String publicId, String adminUsername, String status);
 }

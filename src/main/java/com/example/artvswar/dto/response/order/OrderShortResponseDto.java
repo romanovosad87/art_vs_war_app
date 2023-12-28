@@ -1,6 +1,6 @@
 package com.example.artvswar.dto.response.order;
 
-import com.example.artvswar.util.gson.JsonLocalDateTimeOrderAdapter;
+import com.example.artvswar.util.gson.JsonLocalDateTimeOrderCreatedAtAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import lombok.Data;
 import java.math.BigDecimal;
@@ -14,7 +14,7 @@ public class OrderShortResponseDto {
     private BigDecimal totalAmount;
     private transient LocalDateTime createdAt;
 
-    @JsonAdapter(JsonLocalDateTimeOrderAdapter.class)
+    @JsonAdapter(JsonLocalDateTimeOrderCreatedAtAdapter.class)
     private OffsetDateTime orderCreatedAt;
 
     public OrderShortResponseDto(Long id, BigDecimal totalAmount, LocalDateTime createdAt) {

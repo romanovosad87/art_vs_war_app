@@ -5,6 +5,7 @@ import com.example.artvswar.dto.request.author.AuthorCreateRequestDto;
 import com.example.artvswar.dto.request.author.AuthorUpdateRequestDto;
 import com.example.artvswar.dto.response.FolderResponseDto;
 import com.example.artvswar.dto.response.author.AuthorCheckStripeAndAddressPresenceResponseDto;
+import com.example.artvswar.dto.response.author.AuthorImageModerationResponseDto;
 import com.example.artvswar.dto.response.author.AuthorProfileResponseDto;
 import com.example.artvswar.dto.response.author.AuthorResponseDto;
 import com.example.artvswar.exception.AppEntityNotFoundException;
@@ -98,6 +99,14 @@ public class AuthorServiceImpl implements AuthorService {
                 .orElseThrow(() -> new AppEntityNotFoundException(
                         String.format(AUTHOR_CANT_FIND, cognitoSubject)));
         return transformWithStylesAndModerationStatus(dto);
+    }
+
+    @Override
+    public AuthorImageModerationResponseDto getAuthorDataForImageModeration(String cognitoSubject) {
+        return authorRepository.findByCognitoSubject(AuthorImageModerationResponseDto.class, cognitoSubject)
+                .orElseThrow(
+                () -> new AppEntityNotFoundException(
+                        String.format(AUTHOR_CANT_FIND, cognitoSubject)));
     }
 
     @Override
