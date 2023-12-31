@@ -1,4 +1,4 @@
-package com.example.artvswar.dto.response.painingImage;
+package com.example.artvswar.dto.response.painingimage;
 
 public interface PaintingImageViewDto {
     Long getId();

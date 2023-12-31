@@ -1,6 +1,6 @@
 package com.example.artvswar.controller;
 
-import com.example.artvswar.dto.response.stripeProfile.CheckStripeAccountDetailsSubmittedResponseDto;
+import com.example.artvswar.dto.response.stripeprofile.CheckStripeAccountDetailsSubmittedResponseDto;
 import com.example.artvswar.service.StripeProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

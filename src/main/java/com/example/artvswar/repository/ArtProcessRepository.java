@@ -1,6 +1,6 @@
 package com.example.artvswar.repository;
 
-import com.example.artvswar.dto.response.artProcess.ArtProcessResponseDto;
+import com.example.artvswar.dto.response.artprocess.ArtProcessResponseDto;
 import com.example.artvswar.model.ArtProcess;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface ArtProcessRepository extends JpaRepository<ArtProcess, Long> {
 
-    @Query("select new com.example.artvswar.dto.response.artProcess.ArtProcessResponseDto("
+    @Query("select new com.example.artvswar.dto.response.artprocess.ArtProcessResponseDto("
             + "ap.id, "
             + "ap.description, "
             + "ap.artProcessImage.image.publicId, "

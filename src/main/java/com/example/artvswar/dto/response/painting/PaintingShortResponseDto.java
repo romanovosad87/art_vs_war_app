@@ -1,6 +1,7 @@
 package com.example.artvswar.dto.response.painting;
 
-import com.example.artvswar.model.enumModel.PaymentStatus;
+import com.example.artvswar.model.enummodel.ModerationStatus;
+import com.example.artvswar.model.enummodel.PaymentStatus;
 import com.google.gson.annotations.SerializedName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,6 +25,8 @@ public class PaintingShortResponseDto {
     private String paintingImageImagePublicId;
     @SerializedName(value = "imageUrl")
     private String paintingImageImageUrl;
+    @SerializedName(value = "imageModerationStatus")
+    private ModerationStatus paintingImageImageModerationStatus;
     private String authorFullName;
     private String authorPrettyId;
     private String authorCountry;

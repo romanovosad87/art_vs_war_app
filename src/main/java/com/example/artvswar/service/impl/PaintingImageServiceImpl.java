@@ -2,7 +2,7 @@ package com.example.artvswar.service.impl;
 
 import com.example.artvswar.exception.AppEntityNotFoundException;
 import com.example.artvswar.model.PaintingImage;
-import com.example.artvswar.repository.paintingImage.PaintingImageRepository;
+import com.example.artvswar.repository.paintingimage.PaintingImageRepository;
 import com.example.artvswar.service.PaintingImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

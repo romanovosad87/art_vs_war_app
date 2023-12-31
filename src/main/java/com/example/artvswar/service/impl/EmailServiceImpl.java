@@ -16,8 +16,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class EmailServiceImpl implements EmailService {
-    public static final String CLOUDINARY_LINK = "https://console.cloudinary.com/console/c-1e98a800837a96a82947e8ca3b3fd0/"
-            + "media_library/moderation?type=aws_rek&q=&status=rejected";
+    public static final String CLOUDINARY_LINK = "https://console.cloudinary.com/console"
+            + "/c-1e98a800837a96a82947e8ca3b3fd0/media_library/search?q=&view_mode=grid";
     public static final String MANUAL_MODERATION_LINK = "https://artvswar.gallery/images-validation";
     private final MailSender mailSender;
     private final AdminService adminService;

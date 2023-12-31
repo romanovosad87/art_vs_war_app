@@ -44,6 +44,8 @@ public class PaintingController {
     private static final String SUBJECT = "sub";
     private static final String ADDED_TO_DATABASE = "entityCreatedAt";
     private static final int DEFAULT_PAGE_SIZE = 6;
+    public static final int DEFAULT_PAINTINGS_SIZE = 16;
+    public static final int ALL_PAINTINGS_SIZE = 8;
     private final PaintingService paintingService;
 
     @GetMapping("/{id}")
@@ -80,7 +82,7 @@ public class PaintingController {
     public ResponseEntity<Page<PaintingShortResponseDto>> getAllByAuthorCognitoSubject(
             @AuthenticationPrincipal Jwt jwt,
             @SortDefault(sort = ADDED_TO_DATABASE, direction = Sort.Direction.DESC)
-            @PageableDefault(size = 4) Pageable pageable) {
+            @PageableDefault(size = ALL_PAINTINGS_SIZE) Pageable pageable) {
         String subject = jwt.getClaimAsString(SUBJECT);
         Page<PaintingShortResponseDto> allPaintings = paintingService
                 .findAllByAuthorCognitoSubject(subject, pageable);
@@ -144,7 +146,7 @@ public class PaintingController {
     @GetMapping("/search")
     public ResponseEntity<Page<PaintingShortResponseDto>> getAllByParamsReturnDto(
             @RequestParam Map<String, String> params,
-            @PageableDefault(size = 16) Pageable pageable) {
+            @PageableDefault(size = DEFAULT_PAINTINGS_SIZE) Pageable pageable) {
         Page<PaintingShortResponseDto> paintingsDto = paintingService.getAllByParamsReturnDto(params, pageable);
         return new ResponseEntity<>(paintingsDto, HttpStatus.OK);
     }

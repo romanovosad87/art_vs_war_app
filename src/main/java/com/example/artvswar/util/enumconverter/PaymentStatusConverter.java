@@ -1,6 +1,6 @@
-package com.example.artvswar.util.enumConverter;
+package com.example.artvswar.util.enumconverter;
 
-import com.example.artvswar.model.enumModel.PaymentStatus;
+import com.example.artvswar.model.enummodel.PaymentStatus;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 

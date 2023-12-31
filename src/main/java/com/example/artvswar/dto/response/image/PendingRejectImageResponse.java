@@ -1,7 +1,7 @@
 package com.example.artvswar.dto.response.image;
 
 import com.example.artvswar.dto.response.author.AuthorImageModerationResponseDto;
-import com.example.artvswar.model.enumModel.ModerationStatus;
+import com.example.artvswar.model.enummodel.ModerationStatus;
 import com.example.artvswar.util.gson.JsonLocalDateTimeImageAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import lombok.Data;

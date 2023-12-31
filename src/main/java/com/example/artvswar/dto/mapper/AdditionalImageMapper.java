@@ -5,7 +5,7 @@ import com.example.artvswar.dto.response.image.AdditionalImageResponseDto;
 import com.example.artvswar.exception.CloudinaryCredentialException;
 import com.example.artvswar.model.AdditionalImage;
 import com.example.artvswar.model.Image;
-import com.example.artvswar.model.enumModel.ModerationStatus;
+import com.example.artvswar.model.enummodel.ModerationStatus;
 import com.example.artvswar.service.PaintingService;
 import com.example.artvswar.util.image.CloudinaryClient;
 import com.example.artvswar.util.image.ImageTransformation;

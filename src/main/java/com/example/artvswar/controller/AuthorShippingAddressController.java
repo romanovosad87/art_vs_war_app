@@ -1,6 +1,6 @@
 package com.example.artvswar.controller;
 
-import com.example.artvswar.dto.request.authorShippingAddress.AuthorShippingAddressRequestDto;
+import com.example.artvswar.dto.request.authorshippingaddress.AuthorShippingAddressRequestDto;
 import com.example.artvswar.dto.response.shipping.ShippingAddressResponseDto;
 import com.example.artvswar.service.AuthorShippingAddressService;
 import lombok.RequiredArgsConstructor;

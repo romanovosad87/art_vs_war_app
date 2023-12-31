@@ -12,7 +12,9 @@ import com.example.artvswar.service.AuthorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -38,12 +40,14 @@ import javax.validation.Valid;
 public class AuthorController {
     private static final String SUBJECT = "sub";
     private static final String USERNAME = "username";
-    private static final int DEFAULT_PAGE_SIZE = 4;
+    private static final int DEFAULT_PAGE_SIZE = 8;
+    public static final String CREATED_AT = "createdAt";
     private final AuthorService authorService;
 
     @GetMapping()
     public ResponseEntity<Page<AuthorResponseDto>> getAllAuthorsByParams(
             @RequestParam Map<String, String> params,
+            @SortDefault(value = CREATED_AT, direction = Sort.Direction.DESC)
             @PageableDefault(size = DEFAULT_PAGE_SIZE) Pageable pageable) {
         Page<AuthorResponseDto> allAuthors = authorService.getAll(params, pageable);
         return new ResponseEntity<>(allAuthors, HttpStatus.OK);

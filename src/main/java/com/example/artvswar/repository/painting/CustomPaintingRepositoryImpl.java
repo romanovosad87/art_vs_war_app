@@ -20,8 +20,8 @@ import com.example.artvswar.model.StripeProfile;
 import com.example.artvswar.model.Style;
 import com.example.artvswar.model.Subject;
 import com.example.artvswar.model.Support;
-import com.example.artvswar.model.enumModel.ModerationStatus;
-import com.example.artvswar.model.enumModel.PaymentStatus;
+import com.example.artvswar.model.enummodel.ModerationStatus;
+import com.example.artvswar.model.enummodel.PaymentStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -111,6 +111,7 @@ public class CustomPaintingRepositoryImpl
     private static final String COLLECTION_PRETTY_ID = "collection_prettyId";
     private static final String COLLECTION_TITLE = "collection_title";
     private static final String PAINTING_IMAGE_ID = "painting_image_id";
+    private static final String PAINTING_IMAGE_MODERATION_STATUS = "painting_moderation_status";
     private static final String IMAGE_RATIO = "image_ratio";
     private static final String PAINTING_IMAGE_URL = "image_url";
     private static final String IMAGE_ROOM_VIEWS_URL = "image_roomViews_url";
@@ -354,23 +355,24 @@ public class CustomPaintingRepositoryImpl
         if (specification != null) {
             Predicate specificationPredicate = specification.toPredicate(painting, query, cb);
             query.multiselect(painting.get(ID).alias(PAINTING_ID),
-                            painting.get(PRETTY_ID).alias(PAINTING_PRETTY_ID),
-                            painting.get(TITLE).alias(PAINTING_TITLE),
-                            painting.get(PRICE).alias(PAINTING_PRICE),
-                            painting.get(WIDTH).alias(PAINTING_WIDTH),
-                            painting.get(HEIGHT).alias(PAINTING_HEIGHT),
-                            painting.get(DEPTH).alias(PAINTING_DEPTH),
-                            painting.get(YEAR_OF_CREATION).alias(PAINTING_YEAR_OF_CREATION),
-                            painting.get(PAYMENT_STATUS).alias(PAINTING_PAYMENT_STATUS),
-                            author.get(PRETTY_ID).alias(AUTHOR_PRETTY_ID),
-                            author.get(FULL_NAME).alias(AUTHOR_FULL_NAME),
-                            author.get(COUNTRY).alias(AUTHOR_COUNTRY),
-                            image.get(PUBLIC_ID).alias(PAINTING_IMAGE_ID),
-                            image.get(URL).alias(PAINTING_IMAGE_URL))
-                    .where(specificationPredicate, moderationStatus, authorIsDeleted,
-                            stripeProfileSubmitted, isAddress)
-                    .orderBy(QueryUtils.toOrders(sort, painting, cb))
-                    .distinct(true);
+                    painting.get(PRETTY_ID).alias(PAINTING_PRETTY_ID),
+                    painting.get(TITLE).alias(PAINTING_TITLE),
+                    painting.get(PRICE).alias(PAINTING_PRICE),
+                    painting.get(WIDTH).alias(PAINTING_WIDTH),
+                    painting.get(HEIGHT).alias(PAINTING_HEIGHT),
+                    painting.get(DEPTH).alias(PAINTING_DEPTH),
+                    painting.get(YEAR_OF_CREATION).alias(PAINTING_YEAR_OF_CREATION),
+                    painting.get(PAYMENT_STATUS).alias(PAINTING_PAYMENT_STATUS),
+                    author.get(PRETTY_ID).alias(AUTHOR_PRETTY_ID),
+                    author.get(FULL_NAME).alias(AUTHOR_FULL_NAME),
+                    author.get(COUNTRY).alias(AUTHOR_COUNTRY),
+                    image.get(PUBLIC_ID).alias(PAINTING_IMAGE_ID),
+                    image.get(URL).alias(PAINTING_IMAGE_URL),
+                    image.get(MODERATION_STATUS).alias(PAINTING_IMAGE_MODERATION_STATUS))
+                            .where(specificationPredicate, moderationStatus, authorIsDeleted,
+                                    stripeProfileSubmitted, isAddress)
+                            .orderBy(QueryUtils.toOrders(sort, painting, cb))
+                            .distinct(true);
 
         } else {
             query.multiselect(painting.get(ID).alias(PAINTING_ID),
@@ -386,7 +388,8 @@ public class CustomPaintingRepositoryImpl
                             author.get(FULL_NAME).alias(AUTHOR_FULL_NAME),
                             author.get(COUNTRY).alias(AUTHOR_COUNTRY),
                             image.get(PUBLIC_ID).alias(PAINTING_IMAGE_ID),
-                            image.get(URL).alias(PAINTING_IMAGE_URL))
+                            image.get(URL).alias(PAINTING_IMAGE_URL),
+                            image.get(MODERATION_STATUS).alias(PAINTING_IMAGE_MODERATION_STATUS))
                     .where(moderationStatus, authorIsDeleted, stripeProfileSubmitted, isAddress)
                     .orderBy(QueryUtils.toOrders(sort, painting, cb));
         }
@@ -409,6 +412,7 @@ public class CustomPaintingRepositoryImpl
                                 tuple.get(PAINTING_PAYMENT_STATUS, PaymentStatus.class),
                                 tuple.get(PAINTING_IMAGE_ID, String.class),
                                 tuple.get(PAINTING_IMAGE_URL, String.class),
+                                tuple.get(PAINTING_IMAGE_MODERATION_STATUS, ModerationStatus.class),
                                 tuple.get(AUTHOR_FULL_NAME, String.class),
                                 tuple.get(AUTHOR_PRETTY_ID, String.class),
                                 tuple.get(AUTHOR_COUNTRY, String.class))))
@@ -455,6 +459,7 @@ public class CustomPaintingRepositoryImpl
                                 + "p.paymentStatus, "
                                 + "p.paintingImage.image.publicId, "
                                 + "p.paintingImage.image.url, "
+                                + "p.paintingImage.image.moderationStatus, "
                                 + "p.author.fullName,"
                                 + "p.author.prettyId, "
                                 + "p.author.country) "
@@ -494,6 +499,7 @@ public class CustomPaintingRepositoryImpl
                         + "p.paymentStatus, "
                         + "p.paintingImage.image.publicId, "
                         + "p.paintingImage.image.url, "
+                        + "p.paintingImage.image.moderationStatus, "
                         + "p.author.fullName,"
                         + "p.author.prettyId, "
                         + "p.author.country) "
@@ -533,6 +539,7 @@ public class CustomPaintingRepositoryImpl
                         + "p.paymentStatus, "
                         + "p.paintingImage.image.publicId, "
                         + "p.paintingImage.image.url, "
+                        + "p.paintingImage.image.moderationStatus, "
                         + "p.author.fullName,"
                         + "p.author.prettyId, "
                         + "p.author.country) "
@@ -598,6 +605,7 @@ public class CustomPaintingRepositoryImpl
                                 + "p.paymentStatus, "
                                 + "p.paintingImage.image.publicId, "
                                 + "p.paintingImage.image.url, "
+                                + "p.paintingImage.image.moderationStatus, "
                                 + "p.author.fullName,"
                                 + "p.author.prettyId, "
                                 + "p.author.country) "
@@ -664,6 +672,7 @@ public class CustomPaintingRepositoryImpl
                                 + "p.paymentStatus, "
                                 + "p.paintingImage.image.publicId, "
                                 + "p.paintingImage.image.url, "
+                                + "p.paintingImage.image.moderationStatus, "
                                 + "p.author.fullName,"
                                 + "p.author.prettyId, "
                                 + "p.author.country) "

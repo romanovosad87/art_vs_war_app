@@ -1,20 +1,19 @@
 package com.example.artvswar.dto.mapper;
 
-import com.example.artvswar.dto.request.image.ImageCreateRequestDto;
-import com.example.artvswar.dto.request.image.ImageUpdateRequestDto;
 import com.example.artvswar.dto.request.author.AuthorCreateRequestDto;
 import com.example.artvswar.dto.request.author.AuthorUpdateRequestDto;
+import com.example.artvswar.dto.request.image.ImageCreateRequestDto;
+import com.example.artvswar.dto.request.image.ImageUpdateRequestDto;
 import com.example.artvswar.dto.response.author.AuthorProfileResponseDto;
 import com.example.artvswar.exception.CloudinaryCredentialException;
 import com.example.artvswar.model.Author;
 import com.example.artvswar.model.AuthorPhoto;
 import com.example.artvswar.model.Image;
-import com.example.artvswar.model.enumModel.ModerationStatus;
+import com.example.artvswar.model.enummodel.ModerationStatus;
 import com.example.artvswar.util.image.CloudinaryClient;
 import com.example.artvswar.util.image.ImageTransformation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Component
@@ -56,7 +55,7 @@ public class AuthorMapper {
         authorFromDB.setCountry(dto.getCountry().trim());
         authorFromDB.setCity(dto.getCity().trim());
         authorFromDB.setAboutMe(dto.getAboutMe().trim());
-        Optional.ofNullable(dto.isDeactivated()).ifPresent(authorFromDB::setDeleted);
+        authorFromDB.setDeleted(dto.isDeactivated());
         ImageUpdateRequestDto dtoImage = dto.getImage();
 
         if (!dtoImage.getPublicId().equals(authorFromDB.getAuthorPhoto().getImage().getPublicId())) {

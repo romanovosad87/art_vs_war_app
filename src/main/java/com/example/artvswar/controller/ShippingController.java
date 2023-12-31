@@ -1,8 +1,12 @@
 package com.example.artvswar.controller;
 
+import com.easypost.exception.EasyPostException;
+import com.easypost.model.Address;
+import com.easypost.model.Rate;
 import com.example.artvswar.dto.request.shipping.AddressRequestDto;
 import com.example.artvswar.dto.request.shipping.ShippingRequestDto;
 import com.example.artvswar.dto.response.shipping.ShippingRateResponseDto;
+import com.example.artvswar.service.shipping.EasyPostService;
 import com.example.artvswar.service.shipping.ShipEngineService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,6 +30,8 @@ import javax.validation.Valid;
 public class ShippingController {
     private final ShipEngineService shipEngineService;
 
+    private final EasyPostService easyPostService;
+
     @GetMapping("/getCarriers")
     public ResponseEntity<Map<String, String>> listCarriers() {
         Map<String, String> stringStringMap = shipEngineService.listCarriers();
@@ -37,11 +43,22 @@ public class ShippingController {
         return shipEngineService.validateAddresses(dto);
     }
 
+    @PostMapping("/validateAddress/easyPost")
+    public Address validateAddressEasyPost(@RequestBody @Valid AddressRequestDto dto)
+            throws EasyPostException {
+        return easyPostService.validateAddress(dto);
+    }
+
     @PostMapping("/getRates")
     public List<ShippingRateResponseDto> getRates(@RequestParam Set<Long> paintingIds, @RequestBody @Valid ShippingRequestDto dto) {
         return shipEngineService.getRatesWithShipmentDetails(dto, paintingIds);
     }
 
+
+    @PostMapping("/getRates/easyPost")
+    public List<Rate> getRatesEasyPost(@RequestParam Set<Long> paintingIds, @RequestBody @Valid ShippingRequestDto dto) {
+        return easyPostService.calculateRate(dto, paintingIds);
+    }
     @PostMapping("/createLabel")
     public Map<String, String> getLabelFromShipmentDetails(@RequestBody @Valid ShippingRequestDto dto) {
         return shipEngineService.createLabelFromShipmentDetails(dto);

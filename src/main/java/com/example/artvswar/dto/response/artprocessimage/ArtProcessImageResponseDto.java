@@ -1,6 +1,6 @@
-package com.example.artvswar.dto.response.artProcessImage;
+package com.example.artvswar.dto.response.artprocessimage;
 
-import com.example.artvswar.model.enumModel.ModerationStatus;
+import com.example.artvswar.model.enummodel.ModerationStatus;
 import lombok.Data;
 
 @Data

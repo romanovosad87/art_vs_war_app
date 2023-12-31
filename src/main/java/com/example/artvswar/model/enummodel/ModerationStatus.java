@@ -1,4 +1,4 @@
-package com.example.artvswar.model.enumModel;
+package com.example.artvswar.model.enummodel;
 
 public enum ModerationStatus {
     REJECTED(0), PENDING(10), APPROVED(20);

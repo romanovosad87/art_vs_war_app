@@ -1,7 +1,7 @@
 package com.example.artvswar.repository.specification.painting;
 
 import com.example.artvswar.model.Painting;
-import com.example.artvswar.model.enumModel.PaymentStatus;
+import com.example.artvswar.model.enummodel.PaymentStatus;
 import com.example.artvswar.repository.specification.SpecificationProvider;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;

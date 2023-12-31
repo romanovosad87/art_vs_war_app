@@ -1,9 +1,9 @@
 package com.example.artvswar.service;
 
-import com.example.artvswar.dto.request.artProcess.ArtProcessCreateRequestDto;
-import com.example.artvswar.dto.request.artProcess.ArtProcessUpdateRequestDto;
+import com.example.artvswar.dto.request.artprocess.ArtProcessCreateRequestDto;
+import com.example.artvswar.dto.request.artprocess.ArtProcessUpdateRequestDto;
 import com.example.artvswar.dto.response.FolderResponseDto;
-import com.example.artvswar.dto.response.artProcess.ArtProcessResponseDto;
+import com.example.artvswar.dto.response.artprocess.ArtProcessResponseDto;
 import java.util.List;
 
 public interface ArtProcessService {

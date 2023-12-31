@@ -1,4 +1,4 @@
-package com.example.artvswar.model.enumModel;
+package com.example.artvswar.model.enummodel;
 
 public enum PaymentStatus {
     AVAILABLE(0), PROCESSING(10), SOLD(20);

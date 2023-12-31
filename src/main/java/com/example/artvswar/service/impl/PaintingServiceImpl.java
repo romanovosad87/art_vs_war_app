@@ -14,8 +14,8 @@ import com.example.artvswar.exception.AppEntityNotFoundException;
 import com.example.artvswar.exception.PaintingNotAvailableException;
 import com.example.artvswar.model.Author;
 import com.example.artvswar.model.Painting;
-import com.example.artvswar.model.enumModel.ModerationStatus;
-import com.example.artvswar.model.enumModel.PaymentStatus;
+import com.example.artvswar.model.enummodel.ModerationStatus;
+import com.example.artvswar.model.enummodel.PaymentStatus;
 import com.example.artvswar.repository.painting.PaintingRepository;
 import com.example.artvswar.service.AuthorService;
 import com.example.artvswar.service.PaintingService;
@@ -28,6 +28,7 @@ import com.example.artvswar.util.image.CloudinaryClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -106,7 +107,8 @@ public class PaintingServiceImpl implements PaintingService {
 
     @Override
     public Painting get(Long id) {
-        return paintingRepository.findById(id).orElseThrow(() -> new AppEntityNotFoundException(
+        return paintingRepository.findById(id)
+                .orElseThrow(() -> new AppEntityNotFoundException(
                 String.format("Can't find painting by id: %s", id)));
     }
 
@@ -173,8 +175,18 @@ public class PaintingServiceImpl implements PaintingService {
     @Override
     public Page<PaintingShortResponseDto> findAllByAuthorCognitoSubject(String cognitoSubject,
                                                                         Pageable pageable) {
-        return paintingRepository.findAllByAuthorCognitoSubject(PaintingShortResponseDto.class,
+        Page<PaintingShortResponseDto> all = paintingRepository.findAllByAuthorCognitoSubject(PaintingShortResponseDto.class,
                 cognitoSubject, pageable);
+        List<PaintingShortResponseDto> content = all.getContent();
+        content.forEach(painting -> {
+            ModerationStatus status = painting.getPaintingImageImageModerationStatus();
+            if (status == ModerationStatus.PENDING) {
+                painting.setPaintingImageImageUrl(ModerationMockImage.PENDING_URL);
+            } else if (status == ModerationStatus.REJECTED) {
+                painting.setPaintingImageImageUrl(ModerationMockImage.REJECTED_URL);
+            }
+        });
+        return new PageImpl<>(content, all.getPageable(), all.getTotalElements());
     }
 
     @Override

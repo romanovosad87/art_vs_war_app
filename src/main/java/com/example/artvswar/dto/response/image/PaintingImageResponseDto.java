@@ -1,6 +1,6 @@
 package com.example.artvswar.dto.response.image;
 
-import com.example.artvswar.model.enumModel.ModerationStatus;
+import com.example.artvswar.model.enummodel.ModerationStatus;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.util.LinkedHashSet;

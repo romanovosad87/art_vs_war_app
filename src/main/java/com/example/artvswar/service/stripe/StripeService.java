@@ -6,7 +6,7 @@ import com.example.artvswar.model.Author;
 import com.example.artvswar.model.Order;
 import com.example.artvswar.model.Painting;
 import com.example.artvswar.model.StripeProfile;
-import com.example.artvswar.model.enumModel.PaymentStatus;
+import com.example.artvswar.model.enummodel.PaymentStatus;
 import com.example.artvswar.service.AuthorService;
 import com.example.artvswar.service.OrderService;
 import com.example.artvswar.service.PaintingService;

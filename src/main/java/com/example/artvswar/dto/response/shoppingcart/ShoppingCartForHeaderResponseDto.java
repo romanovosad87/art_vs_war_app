@@ -1,4 +1,4 @@
-package com.example.artvswar.dto.response.shoppingCart;
+package com.example.artvswar.dto.response.shoppingcart;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

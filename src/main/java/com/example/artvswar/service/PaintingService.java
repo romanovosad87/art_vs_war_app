@@ -10,7 +10,7 @@ import com.example.artvswar.dto.response.painting.PaintingProfileResponseDto;
 import com.example.artvswar.dto.response.painting.PaintingResponseDto;
 import com.example.artvswar.dto.response.painting.PaintingShortResponseDto;
 import com.example.artvswar.model.Painting;
-import com.example.artvswar.model.enumModel.PaymentStatus;
+import com.example.artvswar.model.enummodel.PaymentStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import java.util.List;

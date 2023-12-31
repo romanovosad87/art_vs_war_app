@@ -1,6 +1,6 @@
 package com.example.artvswar.dto.mapper;
 
-import com.example.artvswar.dto.request.authorShippingAddress.AuthorShippingAddressRequestDto;
+import com.example.artvswar.dto.request.authorshippingaddress.AuthorShippingAddressRequestDto;
 import com.example.artvswar.dto.response.shipping.ShippingAddressResponseDto;
 import com.example.artvswar.model.AuthorShippingAddress;
 import com.neovisionaries.i18n.CountryCode;

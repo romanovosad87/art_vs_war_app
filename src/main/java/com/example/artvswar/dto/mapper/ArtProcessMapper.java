@@ -1,15 +1,15 @@
 package com.example.artvswar.dto.mapper;
 
-import com.example.artvswar.dto.request.artProcess.ArtProcessCreateRequestDto;
-import com.example.artvswar.dto.request.artProcess.ArtProcessUpdateRequestDto;
+import com.example.artvswar.dto.request.artprocess.ArtProcessCreateRequestDto;
+import com.example.artvswar.dto.request.artprocess.ArtProcessUpdateRequestDto;
 import com.example.artvswar.dto.request.image.FullImageCreateRequestDto;
 import com.example.artvswar.dto.request.image.FullImageUpdateRequestDto;
-import com.example.artvswar.dto.response.artProcess.ArtProcessResponseDto;
+import com.example.artvswar.dto.response.artprocess.ArtProcessResponseDto;
 import com.example.artvswar.exception.CloudinaryCredentialException;
 import com.example.artvswar.model.ArtProcess;
 import com.example.artvswar.model.ArtProcessImage;
 import com.example.artvswar.model.Image;
-import com.example.artvswar.model.enumModel.ModerationStatus;
+import com.example.artvswar.model.enummodel.ModerationStatus;
 import com.example.artvswar.util.ModerationMockImage;
 import com.example.artvswar.util.image.CloudinaryClient;
 import com.example.artvswar.util.image.ImageTransformation;

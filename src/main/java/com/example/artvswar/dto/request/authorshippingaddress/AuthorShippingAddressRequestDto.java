@@ -1,4 +1,4 @@
-package com.example.artvswar.dto.request.authorShippingAddress;
+package com.example.artvswar.dto.request.authorshippingaddress;
 
 import lombok.Data;
 import javax.validation.constraints.NotBlank;
