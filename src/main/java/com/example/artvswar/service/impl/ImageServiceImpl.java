@@ -4,7 +4,7 @@ import com.example.artvswar.dto.response.author.AuthorImageModerationResponseDto
 import com.example.artvswar.dto.response.image.PendingRejectImageResponse;
 import com.example.artvswar.exception.AppEntityNotFoundException;
 import com.example.artvswar.model.Image;
-import com.example.artvswar.model.enumModel.ModerationStatus;
+import com.example.artvswar.model.enummodel.ModerationStatus;
 import com.example.artvswar.repository.ImagesRepository;
 import com.example.artvswar.service.AuthorService;
 import com.example.artvswar.service.ImageService;

@@ -1,6 +1,6 @@
-package com.example.artvswar.repository.shoppingCart;
+package com.example.artvswar.repository.shoppingcart;
 
-import com.example.artvswar.dto.response.shoppingCart.ShoppingCartResponseDto;
+import com.example.artvswar.dto.response.shoppingcart.ShoppingCartResponseDto;
 import com.example.artvswar.dto.response.painting.PaintingShortResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -31,6 +31,7 @@ public class CustomShoppingCartRepositoryImpl
                         + "p.paymentStatus, "
                         + "p.paintingImage.image.publicId, "
                         + "p.paintingImage.image.url, "
+                        + "p.paintingImage.image.moderationStatus, "
                         + "a.fullName, "
                         + "a.prettyId, "
                         + "a.country) "

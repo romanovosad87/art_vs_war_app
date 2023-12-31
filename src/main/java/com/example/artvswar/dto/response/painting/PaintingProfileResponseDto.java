@@ -3,7 +3,7 @@ package com.example.artvswar.dto.response.painting;
 import com.example.artvswar.dto.response.author.AuthorForPaintingResponseDto;
 import com.example.artvswar.dto.response.collection.CollectionInPaintingResponseDto;
 import com.example.artvswar.dto.response.image.PaintingImageResponseDto;
-import com.example.artvswar.model.enumModel.PaymentStatus;
+import com.example.artvswar.model.enummodel.PaymentStatus;
 import com.example.artvswar.util.gson.JsonLocalDateTimePaintingAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;

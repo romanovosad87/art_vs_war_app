@@ -1,6 +1,6 @@
 package com.example.artvswar.dto.response.author;
 
-import com.example.artvswar.model.enumModel.ModerationStatus;
+import com.example.artvswar.model.enummodel.ModerationStatus;
 import com.google.gson.annotations.SerializedName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

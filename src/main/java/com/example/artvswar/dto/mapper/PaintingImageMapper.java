@@ -7,7 +7,7 @@ import com.example.artvswar.exception.CloudinaryCredentialException;
 import com.example.artvswar.model.AdditionalImage;
 import com.example.artvswar.model.Image;
 import com.example.artvswar.model.PaintingImage;
-import com.example.artvswar.model.enumModel.ModerationStatus;
+import com.example.artvswar.model.enummodel.ModerationStatus;
 import com.example.artvswar.util.ModerationMockImage;
 import com.example.artvswar.util.RatioHelper;
 import com.example.artvswar.util.image.CloudinaryClient;
@@ -28,17 +28,18 @@ public class PaintingImageMapper {
                                                        List<AdditionalImage> additionalImages) {
         PaintingImageResponseDto dto = new PaintingImageResponseDto();
         dto.setImagePublicId(paintingImage.getImage().getPublicId());
-        dto.setImageUrl(paintingImage.getImage().getUrl());
         ModerationStatus moderationStatus = paintingImage.getImage().getModerationStatus();
         dto.setImageModerationStatus(moderationStatus);
         Set<String> views = dto.getViews();
         if (moderationStatus == ModerationStatus.APPROVED) {
-            views.add(paintingImage.getImage().getUrl());
+            dto.setImageUrl(paintingImage.getImage().getUrl());
         } else if (moderationStatus == ModerationStatus.PENDING) {
-            views.add(ModerationMockImage.PENDING_URL);
+            dto.setImageUrl(ModerationMockImage.PENDING_URL);
         } else if (moderationStatus == ModerationStatus.REJECTED) {
-            views.add(ModerationMockImage.REJECTED_URL);
+            dto.setImageUrl(ModerationMockImage.REJECTED_URL);
         }
+
+        views.add(dto.getImageUrl());
 
         additionalImages.forEach(image -> {
             if (image.getImage().getModerationStatus() == ModerationStatus.APPROVED) {

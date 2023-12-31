@@ -1,6 +1,6 @@
 package com.example.artvswar.service;
 
-import com.example.artvswar.dto.request.authorShippingAddress.AuthorShippingAddressRequestDto;
+import com.example.artvswar.dto.request.authorshippingaddress.AuthorShippingAddressRequestDto;
 import com.example.artvswar.dto.response.shipping.ShippingAddressResponseDto;
 
 public interface AuthorShippingAddressService {

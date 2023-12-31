@@ -1,6 +1,6 @@
 package com.example.artvswar.controller;
 
-import com.example.artvswar.dto.response.shoppingCart.ShoppingCartResponseDto;
+import com.example.artvswar.dto.response.shoppingcart.ShoppingCartResponseDto;
 import com.example.artvswar.service.ShoppingCartPaintingService;
 import com.example.artvswar.service.ShoppingCartService;
 import lombok.RequiredArgsConstructor;

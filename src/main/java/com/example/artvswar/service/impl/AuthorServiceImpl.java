@@ -11,7 +11,7 @@ import com.example.artvswar.dto.response.author.AuthorResponseDto;
 import com.example.artvswar.exception.AppEntityNotFoundException;
 import com.example.artvswar.model.Account;
 import com.example.artvswar.model.Author;
-import com.example.artvswar.model.enumModel.ModerationStatus;
+import com.example.artvswar.model.enummodel.ModerationStatus;
 import com.example.artvswar.repository.author.AuthorRepository;
 import com.example.artvswar.service.AccountService;
 import com.example.artvswar.service.AuthorService;
@@ -60,7 +60,8 @@ public class AuthorServiceImpl implements AuthorService {
         author.setAccount(account);
         Author savedUser = authorRepository.save(author);
         awsCognitoClient.addUserToGroup(cognitoUsername, ROLE_AUTHOR);
-        return authorMapper.toDto(savedUser);
+        AuthorProfileResponseDto responseDto = authorMapper.toDto(savedUser);
+        return transformWithStylesAndModerationStatus(responseDto);
     }
 
 
@@ -74,7 +75,8 @@ public class AuthorServiceImpl implements AuthorService {
             authorFromDb.setPrettyId(createPrettyId(dto.getFullName()));
         }
         Author author = authorMapper.updateAuthorModel(dto, authorFromDb);
-        return authorMapper.toDto(author);
+        AuthorProfileResponseDto responseDto = authorMapper.toDto(author);
+        return transformWithStylesAndModerationStatus(responseDto);
     }
 
     @Override

@@ -17,7 +17,7 @@ import com.example.artvswar.model.RoomView;
 import com.example.artvswar.model.Style;
 import com.example.artvswar.model.Subject;
 import com.example.artvswar.model.Support;
-import com.example.artvswar.model.enumModel.PaymentStatus;
+import com.example.artvswar.model.enummodel.PaymentStatus;
 import com.example.artvswar.service.MediumService;
 import com.example.artvswar.service.StyleService;
 import com.example.artvswar.service.SubjectService;

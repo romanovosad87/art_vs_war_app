@@ -1,4 +1,4 @@
-package com.example.artvswar.dto.response.painingImage;
+package com.example.artvswar.dto.response.painingimage;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

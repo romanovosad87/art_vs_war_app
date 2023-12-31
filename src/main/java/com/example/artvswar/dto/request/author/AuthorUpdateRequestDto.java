@@ -42,6 +42,7 @@ public class AuthorUpdateRequestDto {
             groups = ThirdOrder.class)
     private String aboutMe;
 
+    @NotNull(message = "field isDeactivated is required")
     private boolean isDeactivated;
 
     @NotNull(message = "image field is required", groups = FirstOrder.class)

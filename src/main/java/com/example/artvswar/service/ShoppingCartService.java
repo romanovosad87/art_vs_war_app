@@ -1,6 +1,6 @@
 package com.example.artvswar.service;
 
-import com.example.artvswar.dto.response.shoppingCart.ShoppingCartResponseDto;
+import com.example.artvswar.dto.response.shoppingcart.ShoppingCartResponseDto;
 import com.example.artvswar.model.Account;
 import com.example.artvswar.model.ShoppingCart;
 

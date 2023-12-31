@@ -1,4 +1,4 @@
-package com.example.artvswar.dto.response.stripeProfile;
+package com.example.artvswar.dto.response.stripeprofile;
 
 import lombok.Data;
 

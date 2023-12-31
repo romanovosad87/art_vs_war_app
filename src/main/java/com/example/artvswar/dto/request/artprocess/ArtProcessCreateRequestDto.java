@@ -1,4 +1,4 @@
-package com.example.artvswar.dto.request.artProcess;
+package com.example.artvswar.dto.request.artprocess;
 
 import com.example.artvswar.dto.request.image.FullImageCreateRequestDto;
 import lombok.Data;

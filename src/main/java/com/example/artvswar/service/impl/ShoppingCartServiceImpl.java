@@ -1,10 +1,10 @@
 package com.example.artvswar.service.impl;
 
-import com.example.artvswar.dto.response.shoppingCart.ShoppingCartResponseDto;
+import com.example.artvswar.dto.response.shoppingcart.ShoppingCartResponseDto;
 import com.example.artvswar.exception.AppEntityNotFoundException;
 import com.example.artvswar.model.Account;
 import com.example.artvswar.model.ShoppingCart;
-import com.example.artvswar.repository.shoppingCart.ShoppingCartRepository;
+import com.example.artvswar.repository.shoppingcart.ShoppingCartRepository;
 import com.example.artvswar.service.ShoppingCartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -1,13 +1,13 @@
 package com.example.artvswar.service.impl;
 
 import com.example.artvswar.dto.mapper.ArtProcessMapper;
-import com.example.artvswar.dto.request.artProcess.ArtProcessCreateRequestDto;
-import com.example.artvswar.dto.request.artProcess.ArtProcessUpdateRequestDto;
+import com.example.artvswar.dto.request.artprocess.ArtProcessCreateRequestDto;
+import com.example.artvswar.dto.request.artprocess.ArtProcessUpdateRequestDto;
 import com.example.artvswar.dto.response.FolderResponseDto;
-import com.example.artvswar.dto.response.artProcess.ArtProcessResponseDto;
+import com.example.artvswar.dto.response.artprocess.ArtProcessResponseDto;
 import com.example.artvswar.exception.AppEntityNotFoundException;
 import com.example.artvswar.model.ArtProcess;
-import com.example.artvswar.model.enumModel.ModerationStatus;
+import com.example.artvswar.model.enummodel.ModerationStatus;
 import com.example.artvswar.repository.ArtProcessRepository;
 import com.example.artvswar.service.ArtProcessService;
 import com.example.artvswar.service.AuthorService;

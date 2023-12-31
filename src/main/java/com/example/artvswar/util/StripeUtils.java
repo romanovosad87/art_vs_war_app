@@ -6,7 +6,7 @@ import com.example.artvswar.dto.request.stripe.StripeCheckoutSessionRequestDto;
 import com.example.artvswar.exception.PaintingNotAvailableException;
 import com.example.artvswar.model.Author;
 import com.example.artvswar.model.Painting;
-import com.example.artvswar.model.enumModel.PaymentStatus;
+import com.example.artvswar.model.enummodel.PaymentStatus;
 import com.neovisionaries.i18n.CountryCode;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Account;
@@ -58,6 +58,7 @@ public class StripeUtils {
     public static final String CANCEL_URL = "https://artvswar.gallery/cart";
     public static final String PAID = "paid";
     public static final String PRODUCT_DESCRIPTION = "paintings made by hand";
+    public static final String PAINTING_NOT_AVAILABLE = "Painting '%s' by %s is not available for buying";
 
 
     public Account createExpressAccount(Author author) {
@@ -144,8 +145,8 @@ public class StripeUtils {
     }
 
     public Session getCheckoutSessionUrl(List<Painting> paintings,
-                                        StripeCheckoutSessionRequestDto dto,
-                                        String stripeCustomerId) {
+                                         StripeCheckoutSessionRequestDto dto,
+                                         String stripeCustomerId) {
 
         Customer customer = updateCustomerShipping(stripeCustomerId, dto.getShippingAddress());
 
@@ -296,7 +297,7 @@ public class StripeUtils {
         try {
             BalanceTransaction balanceTransaction = BalanceTransaction.retrieve(id);
             log.info(String.format("Balance Transaction with id: '%s' and amount: '%s' was retrieved",
-                    balanceTransaction.getId(), balanceTransaction.getAmount()/100));
+                    balanceTransaction.getId(), balanceTransaction.getAmount() / 100));
             return balanceTransaction;
         } catch (StripeException e) {
             throw new RuntimeException(String.format("Can't retrieve balanceTransaction "
@@ -317,7 +318,7 @@ public class StripeUtils {
         try {
             transfer = Transfer.create(params);
             log.info(String.format("Separate transfer with id: '%s', amount '%s' and destination '%s' was created",
-                    transfer.getId(), transfer.getAmount()/100, transfer.getDestination()));
+                    transfer.getId(), transfer.getAmount() / 100, transfer.getDestination()));
 
         } catch (StripeException e) {
             log.error(String.format("Can't create transfer with charge: %s"
@@ -334,7 +335,7 @@ public class StripeUtils {
 //            long balanceAmount = availableBalance.stream()
 //                    .mapToLong(Balance.Available::getAmount)
 //                    .sum();
-            return (double)collection.getData().stream()
+            return (double) collection.getData().stream()
                     .mapToLong(BalanceTransaction::getAmount)
                     .sum() / 100;
 
@@ -365,7 +366,7 @@ public class StripeUtils {
         try {
             Refund refund = Refund.create(params);
             log.info(String.format("Refund with id: '%s', amount: '%s', chargeId: '%s' was created",
-                    refund.getId(), refund.getAmount() /100, refund.getCharge()));
+                    refund.getId(), refund.getAmount() / 100, refund.getCharge()));
             return refund;
         } catch (StripeException e) {
             throw new RuntimeException(String.format("Can't create Refund for chargeId: %s", chargeId), e);
@@ -377,6 +378,7 @@ public class StripeUtils {
         List<SessionCreateParams.LineItem> itemList = new ArrayList<>();
         List<Painting> paintingsInProcessingStatus = new ArrayList<>();
         List<Painting> paintingsInSoldStatus = new ArrayList<>();
+        List<Painting> paintingsDeactivatedAuthorProfile = new ArrayList<>();
 
         for (Painting painting : paintings) {
             if (painting.getPaymentStatus().equals(PaymentStatus.PROCESSING)) {
@@ -385,6 +387,9 @@ public class StripeUtils {
                 paintingsInSoldStatus.add(painting);
             }
 
+            if (painting.getAuthor().isDeleted()) {
+                paintingsDeactivatedAuthorProfile.add(painting);
+            }
             BigDecimal price = painting.getPrice().multiply(BigDecimal.valueOf(100));
 
             SessionCreateParams.LineItem item = SessionCreateParams.LineItem.builder()
@@ -403,8 +408,11 @@ public class StripeUtils {
             itemList.add(item);
         }
 
-        if (!paintingsInProcessingStatus.isEmpty() || !paintingsInSoldStatus.isEmpty()) {
-            String message = createErrorMessage(paintingsInProcessingStatus, paintingsInSoldStatus);
+        if (!paintingsInProcessingStatus.isEmpty()
+                || !paintingsInSoldStatus.isEmpty()
+                || !paintingsDeactivatedAuthorProfile.isEmpty()) {
+            String message = createErrorMessage(paintingsInProcessingStatus, paintingsInSoldStatus,
+                    paintingsDeactivatedAuthorProfile);
             throw new PaintingNotAvailableException(message);
         }
         return itemList;
@@ -459,13 +467,14 @@ public class StripeUtils {
     }
 
     private String createErrorMessage(List<Painting> paintingsInProcessingStatus,
-                                      List<Painting> paintingsInSoldStatus) {
+                                      List<Painting> paintingsInSoldStatus,
+                                      List<Painting> paintingsDeactivatedAuthorProfile) {
         String paintingInProcessingMessage = "";
         String paintingInSoldMessage = "";
+        String paintingOfDeactivatedProfile = "";
         if (paintingsInProcessingStatus.size() == 1) {
             Painting painting = paintingsInProcessingStatus.get(0);
-            paintingInProcessingMessage = String.format("Painting '%s' by %s is not "
-                            + "available for buying. It is in process of payment. ",
+            paintingInProcessingMessage = String.format(PAINTING_NOT_AVAILABLE + ". It is in process of payment. ",
                     painting.getTitle(), painting.getAuthor().getFullName());
         } else if (paintingsInProcessingStatus.size() > 1) {
             StringBuilder builder = getStringBuilderForSeveralPaintings(paintingsInProcessingStatus);
@@ -475,15 +484,27 @@ public class StripeUtils {
 
         if (paintingsInSoldStatus.size() == 1) {
             Painting painting = paintingsInSoldStatus.get(0);
-            paintingInSoldMessage = String.format("Painting '%s' by %s is not "
-                            + "available for buying. It is already sold. ",
+            paintingInSoldMessage = String.format(PAINTING_NOT_AVAILABLE + ". It is already sold. ",
                     painting.getTitle(), painting.getAuthor().getFullName());
         } else if (paintingsInSoldStatus.size() > 1) {
             StringBuilder builder = getStringBuilderForSeveralPaintings(paintingsInSoldStatus);
             builder.append(" are not available for buying. They are already sold. ");
             paintingInSoldMessage = builder.toString();
         }
-        return paintingInSoldMessage + System.lineSeparator() + paintingInProcessingMessage;
+
+        if (paintingsDeactivatedAuthorProfile.size() == 1) {
+            Painting painting = paintingsDeactivatedAuthorProfile.get(0);
+            paintingOfDeactivatedProfile = String.format(PAINTING_NOT_AVAILABLE,
+                    painting.getTitle(), painting.getAuthor().getFullName());
+        } else if (paintingsDeactivatedAuthorProfile.size() > 1) {
+            StringBuilder builder = getStringBuilderForSeveralPaintings(paintingsDeactivatedAuthorProfile);
+            builder.append(" are not available for buying. ");
+            paintingOfDeactivatedProfile = builder.toString();
+        }
+
+        return paintingInSoldMessage + System.lineSeparator()
+                + paintingInProcessingMessage + System.lineSeparator()
+                + paintingOfDeactivatedProfile;
     }
 
     private StringBuilder getStringBuilderForSeveralPaintings(List<Painting> paintings) {

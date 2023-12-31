@@ -1,6 +1,6 @@
 package com.example.artvswar.model;
 
-import com.example.artvswar.model.enumModel.PaymentStatus;
+import com.example.artvswar.model.enummodel.PaymentStatus;
 import com.example.artvswar.util.DateTimePatternUtil;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
