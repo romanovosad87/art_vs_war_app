@@ -10,6 +10,7 @@ import com.example.artvswar.dto.response.painting.PaintingParametersForSearchRes
 import com.example.artvswar.dto.response.painting.PaintingProfileResponseDto;
 import com.example.artvswar.dto.response.painting.PaintingResponseDto;
 import com.example.artvswar.dto.response.painting.PaintingShortResponseDto;
+import com.example.artvswar.exception.AccessNotAllowedException;
 import com.example.artvswar.exception.AppEntityNotFoundException;
 import com.example.artvswar.exception.PaintingNotAvailableException;
 import com.example.artvswar.model.Author;
@@ -99,7 +100,7 @@ public class PaintingServiceImpl implements PaintingService {
             Painting painting = paintingMapper.updatePaintingModel(dto, paintingFromDB);
             return paintingMapper.toPaintingResponseDto(painting);
         } else {
-            throw new RuntimeException(
+            throw new AccessNotAllowedException(
                     String.format("Author with cognitoSubject: %s is not allowed "
                             + "to update painting with prettyId: %s", cognitoSubject, prettyId));
         }

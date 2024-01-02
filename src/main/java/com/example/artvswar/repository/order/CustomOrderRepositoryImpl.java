@@ -74,7 +74,8 @@ public class CustomOrderRepositoryImpl
                         + "o.isDelivered, "
                         + "o.deliveredAt, "
                         + "o.createdAt) "
-                        + "from Order o where o.account.cognitoSubject = ?1", OrderResponseDto.class)
+                        + "from Order o where o.account.cognitoSubject = ?1 "
+                        + "order by o.createdAt desc", OrderResponseDto.class)
                 .setParameter(1, cognitoSubject)
                 .setFirstResult((int) pageable.getOffset())
                 .setMaxResults(pageable.getPageSize())

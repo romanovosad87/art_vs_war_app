@@ -240,10 +240,11 @@ public class PaintingMapper {
 
 
         if (!isNewImageNotDownloaded) {
-            createMockRooms(dto, paintingFromDB);
-
             PaintingImage paintingImageFromDB = paintingFromDB.getPaintingImage();
             String publicId = paintingImageFromDB.getImage().getPublicId();
+
+            createMockRooms(dto, paintingFromDB);
+
             cloudinaryClient.delete(publicId);
         }
         return paintingFromDB;
