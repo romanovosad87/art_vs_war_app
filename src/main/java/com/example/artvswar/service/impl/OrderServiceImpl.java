@@ -25,6 +25,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class OrderServiceImpl implements OrderService {
     public static final long DAYS_BEFORE = 5L;
+    public static final int ESTAMATED_DELIVERY = 5;
     private final OrderRepository orderRepository;
     private final AccountService accountService;
 
@@ -52,10 +53,15 @@ public class OrderServiceImpl implements OrderService {
         Page<OrderResponseDto> orders = orderRepository.getAllOrdersByAccount(cognitoSubject, pageable);
         List<OrderResponseDto> content = orders.getContent();
         content.forEach(order -> {
-                    order.setOrderCreatedAt(adjustOffset(order.getCreatedAt(),
+            LocalDateTime createdAt = order.getCreatedAt();
+            order.setOrderCreatedAt(adjustOffset(createdAt,
                             account.getOffset()));
             if (order.isDelivered()) {
                 order.setOrderDeliveredAt(adjustOffset(order.getDeliveredAt(),
+                        account.getOffset()));
+            } else {
+                LocalDateTime estimatedDeliveryAt = createdAt.plusDays(ESTAMATED_DELIVERY);
+                order.setOrderEstimatedDeliveryAt(adjustOffset(estimatedDeliveryAt,
                         account.getOffset()));
             }
                 });

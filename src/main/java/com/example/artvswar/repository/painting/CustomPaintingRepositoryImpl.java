@@ -548,7 +548,7 @@ public class CustomPaintingRepositoryImpl
                         + "inner join p.subjects sub "
                         + "inner join p.styles st "
                         + "where p.paymentStatus = 0 and a.isDeleted = false "
-                        + "and a.authorShippingAddress != null and a.stripeProfile.isDetailsSubmitted = true "
+                        + "and a.authorShippingAddress.id != null and a.stripeProfile.isDetailsSubmitted = true "
                         + "and p.paintingImage.image.moderationStatus = 20 "
                         + "and p.prettyId not in (?1) and (sub.id in (?2) or st.id in (?3)) "
                         + "order by rand()", PaintingShortResponseDto.class)
