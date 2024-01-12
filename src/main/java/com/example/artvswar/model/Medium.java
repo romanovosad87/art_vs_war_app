@@ -30,8 +30,4 @@ public class Medium {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @Setter(AccessLevel.PRIVATE)
-    @ManyToMany(mappedBy = "mediums")
-    @ToString.Exclude
-    private Set<Painting> paintings = new HashSet<>();
 }

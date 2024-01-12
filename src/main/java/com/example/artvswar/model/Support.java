@@ -29,9 +29,4 @@ public class Support {
     private Long id;
     @Column(nullable = false, unique = true)
     private String name;
-
-    @Setter(AccessLevel.PRIVATE)
-    @ManyToMany(mappedBy = "supports")
-    @ToString.Exclude
-    private Set<Painting> paintings = new HashSet<>();
 }

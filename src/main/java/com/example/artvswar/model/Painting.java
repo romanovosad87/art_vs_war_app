@@ -147,43 +147,19 @@ public class Painting {
     }
 
     public void addStyle(Style style) {
-        style.getPaintings().add(this);
         styles.add(style);
     }
 
-    public void removeStyle(Style style) {
-        style.getPaintings().remove(this);
-        styles.remove(style);
-    }
-
     public void addMedium(Medium medium) {
-        medium.getPaintings().add(this);
         mediums.add(medium);
     }
 
-    public void removeMedium(Medium medium) {
-        medium.getPaintings().remove(this);
-        mediums.remove(medium);
-    }
-
     public void addSupport(Support support) {
-        support.getPaintings().add(this);
         supports.add(support);
     }
 
-    public void removeSupport(Support support) {
-        support.getPaintings().remove(this);
-        supports.remove(support);
-    }
-
     public void addSubject(Subject subject) {
-        subject.getPaintings().add(this);
         subjects.add(subject);
-    }
-
-    public void removeSubject(Subject subject) {
-        subject.getPaintings().remove(this);
-        subjects.remove(subject);
     }
 
     public void addAdditionalImage(AdditionalImage image) {
