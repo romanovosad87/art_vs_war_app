@@ -30,9 +30,4 @@ public class Style {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @Setter(AccessLevel.PRIVATE)
-    @ManyToMany(mappedBy = "styles")
-    @ToString.Exclude
-    private Set<Painting> paintings = new HashSet<>();
-
 }
