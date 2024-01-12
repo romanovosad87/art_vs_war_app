@@ -1,18 +1,14 @@
 package com.example.artvswar.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.ResultCheckStyle;
-import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.hibernate.annotations.Where;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +24,7 @@ import javax.persistence.Table;
 @Entity
 @Getter
 @Setter
+@EqualsAndHashCode(callSuper = true)
 //@SQLDelete(sql = "UPDATE authors SET is_deleted = true where cognito_subject = ?",
 //        check = ResultCheckStyle.COUNT)
 //@Where(clause = "is_deleted = false")
@@ -54,18 +51,15 @@ public class Author extends User {
     @Setter(AccessLevel.PRIVATE)
     @OneToMany(mappedBy = "author", orphanRemoval = true)
     @Cascade({CascadeType.SAVE_UPDATE})
-    @JsonManagedReference
     private List<ArtProcess> artProcesses = new ArrayList<>();
 
     @Setter(AccessLevel.PRIVATE)
     @OneToMany(mappedBy = "author")
-    @JsonBackReference
     @ToString.Exclude
     private List<Painting> paintings = new ArrayList<>();
 
     @OneToOne(mappedBy = "author", fetch = FetchType.LAZY)
     @Cascade({CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})
-    @JsonBackReference
     private StripeProfile stripeProfile;
 
     @OneToOne(mappedBy = "author", fetch = FetchType.LAZY)

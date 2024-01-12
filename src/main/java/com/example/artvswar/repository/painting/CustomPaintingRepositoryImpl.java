@@ -568,23 +568,47 @@ public class CustomPaintingRepositoryImpl
                         + "min(p.price), max(p.price), "
                         + "min(p.width), max(p.width), "
                         + "min (p.height), max(p.height)) "
-                        + "from Painting p", PaintingParametersForSearchResponseDto.class)
+                        + "from Painting p "
+                        + "join p.author a "
+                        + "where p.paymentStatus != 10 and a.isDeleted = false "
+                        + "and a.authorShippingAddress.id != null and a.stripeProfile.isDetailsSubmitted = true "
+                        + "and p.paintingImage.image.moderationStatus = 20", PaintingParametersForSearchResponseDto.class)
                 .getSingleResult();
 
         dto.setStyles(entityManager
-                .createQuery("select distinct st.name from Painting p join p.styles st", String.class)
+                .createQuery("select distinct st.name from Painting p "
+                        + "join p.styles st "
+                        + "join p.author a "
+                        + "where p.paymentStatus != 10 and a.isDeleted = false "
+                        + "and a.authorShippingAddress.id != null and a.stripeProfile.isDetailsSubmitted = true "
+                        + "and p.paintingImage.image.moderationStatus = 20", String.class)
                 .getResultList());
 
         dto.setMediums(entityManager
-                .createQuery("select distinct md.name from Painting p join p.mediums md", String.class)
+                .createQuery("select distinct md.name from Painting p "
+                        + "join p.mediums md "
+                        + "join p.author a "
+                        + "where p.paymentStatus != 10 and a.isDeleted = false "
+                        + "and a.authorShippingAddress.id != null and a.stripeProfile.isDetailsSubmitted = true "
+                        + "and p.paintingImage.image.moderationStatus = 20", String.class)
                 .getResultList());
 
         dto.setSupports(entityManager
-                .createQuery("select distinct sp.name from Painting p join p.supports sp", String.class)
+                .createQuery("select distinct sp.name from Painting p "
+                        + "join p.supports sp "
+                        + "join p.author a "
+                        + "where p.paymentStatus != 10 and a.isDeleted = false "
+                        + "and a.authorShippingAddress.id != null and a.stripeProfile.isDetailsSubmitted = true "
+                        + "and p.paintingImage.image.moderationStatus = 20", String.class)
                 .getResultList());
 
         dto.setSubjects(entityManager
-                .createQuery("select distinct sb.name from Painting p join p.subjects sb", String.class)
+                .createQuery("select distinct sb.name from Painting p "
+                        + "join p.subjects sb "
+                        + "join p.author a "
+                        + "where p.paymentStatus != 10 and a.isDeleted = false "
+                        + "and a.authorShippingAddress.id != null and a.stripeProfile.isDetailsSubmitted = true "
+                        + "and p.paintingImage.image.moderationStatus = 20", String.class)
                 .getResultList());
 
         return dto;

@@ -2,9 +2,7 @@ package com.example.artvswar.model;
 
 import com.example.artvswar.model.enummodel.PaymentStatus;
 import com.example.artvswar.util.DateTimePatternUtil;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -72,17 +70,14 @@ public class Painting {
     private Integer yearOfCreation;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "author_id", foreignKey = @ForeignKey(name = "painting_author_fk"))
-    @JsonManagedReference
     private Author author;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "collection_id")
-    @JsonBackReference
     private Collection collection;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
-    @JsonBackReference
     private Order order;
 
     @Setter(AccessLevel.PRIVATE)
@@ -92,7 +87,6 @@ public class Painting {
             joinColumns = @JoinColumn(name = "painting_id"),
             inverseJoinColumns = @JoinColumn(name = "style_id")
     )
-    @JsonManagedReference
     private Set<Style> styles = new HashSet<>();
 
     @ManyToMany
@@ -102,7 +96,6 @@ public class Painting {
             joinColumns = @JoinColumn(name = "painting_id"),
             inverseJoinColumns = @JoinColumn(name = "medium_id")
     )
-    @JsonManagedReference
     private Set<Medium> mediums = new HashSet<>();
 
     @ManyToMany
@@ -112,7 +105,6 @@ public class Painting {
             joinColumns = @JoinColumn(name = "painting_id"),
             inverseJoinColumns = @JoinColumn(name = "support_id")
     )
-    @JsonManagedReference
     private Set<Support> supports = new HashSet<>();
 
     @ManyToMany
@@ -122,7 +114,6 @@ public class Painting {
             joinColumns = @JoinColumn(name = "painting_id"),
             inverseJoinColumns = @JoinColumn(name = "subject_id")
     )
-    @JsonManagedReference
     private Set<Subject> subjects = new HashSet<>();
 
     @OneToOne(mappedBy = "painting")
@@ -133,7 +124,6 @@ public class Painting {
     @Setter(AccessLevel.PRIVATE)
     @OneToMany(mappedBy = "painting", orphanRemoval = true)
     @Cascade({CascadeType.ALL})
-    @JsonManagedReference
     private List<AdditionalImage> additionalImages = new ArrayList<>();
 
     @CreationTimestamp

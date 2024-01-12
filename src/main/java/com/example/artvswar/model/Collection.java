@@ -1,6 +1,5 @@
 package com.example.artvswar.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,7 +38,6 @@ public class Collection {
 
     @Setter(AccessLevel.PRIVATE)
     @OneToMany(mappedBy = "collection")
-    @JsonManagedReference
     private Set<Painting> paintings = new HashSet<>();
 
     public void addPainting(Painting painting) {

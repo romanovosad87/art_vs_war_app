@@ -1,6 +1,5 @@
 package com.example.artvswar.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -27,7 +26,6 @@ public class AdditionalImage {
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "painting_id")
-    @JsonBackReference
     @ToString.Exclude
     private Painting painting;
 

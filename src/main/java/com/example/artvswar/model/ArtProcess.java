@@ -1,6 +1,5 @@
 package com.example.artvswar.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -29,11 +28,9 @@ public class ArtProcess {
 
     @OneToOne(mappedBy = "artProcess")
     @Cascade(CascadeType.ALL)
-    @JoinColumn(name = "art_process_image_id")
     private ArtProcessImage artProcessImage;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "author_id")
-    @JsonBackReference
     @ToString.Exclude
     private Author author;
 }
