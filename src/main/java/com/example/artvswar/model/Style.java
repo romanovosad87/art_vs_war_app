@@ -1,14 +1,13 @@
 package com.example.artvswar.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -33,21 +32,7 @@ public class Style {
 
     @Setter(AccessLevel.PRIVATE)
     @ManyToMany(mappedBy = "styles")
-    @JsonBackReference
     @ToString.Exclude
-    private List<Painting> paintings = new ArrayList<>();
+    private Set<Painting> paintings = new HashSet<>();
 
-    public Style(String name) {
-        this.name = name;
-    }
-
-    public void addPainting(Painting painting) {
-        painting.getStyles().add(this);
-        paintings.add(painting);
-    }
-
-    public void removePainting(Painting painting) {
-        painting.getStyles().remove(this);
-        paintings.remove(painting);
-    }
 }

@@ -1,6 +1,5 @@
 package com.example.artvswar.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
@@ -30,7 +29,6 @@ public class StripeProfile {
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
     @JoinColumn(name = "id")
-    @JsonManagedReference
     private Author author;
 
     @CreationTimestamp

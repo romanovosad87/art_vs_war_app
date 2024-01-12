@@ -12,7 +12,6 @@ public class GsonConfig {
     public Gson getGson() {
         return new GsonBuilder()
                 .registerTypeAdapterFactory(new PageAdapterFactory())
-//                .registerTypeAdapter(LocalDateTime.class, new JsonLocalDateTimePaintingAdapter())
                 .create();
     }
 }

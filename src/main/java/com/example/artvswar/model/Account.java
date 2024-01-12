@@ -1,6 +1,5 @@
 package com.example.artvswar.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -62,7 +61,6 @@ public class Account {
 
     @Setter(AccessLevel.PRIVATE)
     @OneToMany(mappedBy = "account")
-    @JsonBackReference
     private List<Order> orders = new ArrayList<>();
 
     @Column(nullable = false, columnDefinition = "TINYINT default false")
