@@ -1,5 +1,6 @@
 package com.example.artvswar.service;
 
+import com.example.artvswar.dto.response.order.OrderDeliveredAtDto;
 import com.example.artvswar.dto.response.order.OrderResponseDto;
 import com.example.artvswar.dto.response.order.OrderShortResponseDto;
 import com.example.artvswar.model.Order;
@@ -17,7 +18,7 @@ public interface OrderService {
 
     Order save(Order order);
 
-    void setOrderDelivered(Long id);
+    OrderDeliveredAtDto setOrderDelivered(Long id);
 
     void setOrderDeliveredForMoreThanFiveDays();
 

@@ -1,5 +1,6 @@
 package com.example.artvswar.service.impl;
 
+import com.example.artvswar.dto.response.order.OrderDeliveredAtDto;
 import com.example.artvswar.dto.response.order.OrderResponseDto;
 import com.example.artvswar.dto.response.order.OrderShortResponseDto;
 import com.example.artvswar.exception.AppEntityNotFoundException;
@@ -25,7 +26,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class OrderServiceImpl implements OrderService {
     public static final long DAYS_BEFORE = 5L;
-    public static final int ESTAMATED_DELIVERY = 5;
+    public static final int ESTIMATED_DELIVERY = 5;
     private final OrderRepository orderRepository;
     private final AccountService accountService;
 
@@ -60,7 +61,7 @@ public class OrderServiceImpl implements OrderService {
                 order.setOrderDeliveredAt(adjustOffset(order.getDeliveredAt(),
                         account.getOffset()));
             } else {
-                LocalDateTime estimatedDeliveryAt = createdAt.plusDays(ESTAMATED_DELIVERY);
+                LocalDateTime estimatedDeliveryAt = createdAt.plusDays(ESTIMATED_DELIVERY);
                 order.setOrderEstimatedDeliveryAt(adjustOffset(estimatedDeliveryAt,
                         account.getOffset()));
             }
@@ -78,11 +79,17 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public void setOrderDelivered(Long id) {
+    public OrderDeliveredAtDto setOrderDelivered(Long id) {
         Order order = orderRepository.findById(id).orElseThrow(() -> new AppEntityNotFoundException(
                 String.format("Can't find order by id: %s", id)));
         order.setDelivered(true);
         order.setDeliveredAt(LocalDateTime.now().atOffset(ZoneOffset.UTC).toLocalDateTime());
+        LocalDateTime deliveredAt = order.getDeliveredAt();
+
+        Account account = order.getAccount();
+
+        OffsetDateTime deliveredOffsetAt = adjustOffset(deliveredAt, account.getOffset());
+        return new OrderDeliveredAtDto(deliveredOffsetAt);
     }
 
     /**

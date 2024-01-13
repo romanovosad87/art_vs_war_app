@@ -14,9 +14,12 @@ import com.example.artvswar.service.StripeProfileService;
 import com.example.artvswar.util.StripeUtils;
 import com.stripe.model.Account;
 import com.stripe.model.AccountLink;
+import com.stripe.model.Charge;
 import com.stripe.model.Customer;
 import com.stripe.model.LoginLink;
+import com.stripe.model.PaymentIntent;
 import com.stripe.model.Refund;
+import com.stripe.model.ShippingDetails;
 import com.stripe.model.Transfer;
 import com.stripe.model.checkout.Session;
 import com.stripe.net.RequestOptions;
@@ -149,5 +152,20 @@ public class StripeService {
 
     public Refund createRefund(String chargeId) {
         return stripeUtils.createRefund(chargeId);
+    }
+
+    public ShippingDetails getShippingDetailsOfOrder(String sessionId) {
+        Session session = stripeUtils.retrieveCheckoutSession(sessionId);
+        String customerId = session.getCustomer();
+        Customer customer = stripeUtils.retrieveCustomer(customerId);
+        return customer.getShipping();
+    }
+
+    public PaymentIntent getPaymentIntent(String paymentIntentId) {
+        return stripeUtils.retrievePaymentIntent(paymentIntentId);
+    }
+
+    public Charge getCharge(String chargeId) {
+        return stripeUtils.retrieveCharge(chargeId);
     }
 }

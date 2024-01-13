@@ -240,7 +240,8 @@ public class StripeUtils {
             CustomerUpdateParams updateParams = CustomerUpdateParams.builder().setShipping(CustomerUpdateParams.Shipping.builder()
                             .setName(dto.getFirstName() + " " + dto.getLastName())
                             .setPhone(dto.getPhone())
-                            .setAddress(CustomerUpdateParams.Shipping.Address.builder().setLine1(dto.getAddressLine1())
+                            .setAddress(CustomerUpdateParams.Shipping.Address.builder()
+                                    .setLine1(dto.getAddressLine1())
                                     .setLine2(dto.getAddressLine2())
                                     .setCity(dto.getCity())
                                     .setState(dto.getState())
@@ -268,6 +269,16 @@ public class StripeUtils {
         } catch (StripeException e) {
             throw new RuntimeException(
                     String.format("Can't retrieve Account with id %s", accountId), e);
+        }
+    }
+
+    public Session retrieveCheckoutSession(String id) {
+        try {
+            Session session = Session.retrieve(id);
+            log.info(String.format("Checkout Session with id: '%s' was retrieved", session.getId()));
+            return session;
+        } catch (StripeException e) {
+            throw new RuntimeException(e);
         }
     }
 

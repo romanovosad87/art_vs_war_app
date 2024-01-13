@@ -1,5 +1,6 @@
 package com.example.artvswar.controller;
 
+import com.example.artvswar.dto.response.order.OrderDeliveredAtDto;
 import com.example.artvswar.dto.response.order.OrderResponseDto;
 import com.example.artvswar.dto.response.order.OrderShortResponseDto;
 import com.example.artvswar.service.OrderService;
@@ -54,8 +55,8 @@ public class OrderController {
     }
 
     @PatchMapping("/delivered/{id}")
-    public ResponseEntity<Void> setOrderDelivered(@PathVariable Long id) {
-        orderService.setOrderDelivered(id);
-        return ResponseEntity.status(HttpStatus.OK).build();
+    public ResponseEntity<OrderDeliveredAtDto> setOrderDelivered(@PathVariable Long id) {
+        OrderDeliveredAtDto orderDeliveredAt = orderService.setOrderDelivered(id);
+        return new ResponseEntity<>(orderDeliveredAt, HttpStatus.OK);
     }
 }

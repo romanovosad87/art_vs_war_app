@@ -38,8 +38,8 @@ public class AccountController {
                                                      @AuthenticationPrincipal Jwt jwt) {
         String subject = jwt.getClaimAsString(SUBJECT);
         String username = jwt.getClaimAsString(USERNAME);
-        String name = dto.getFirstName() + " " + dto.getLastName();
-        String email = dto.getEmail();
+        String name = dto.getFirstName().trim() + " " + dto.getLastName().trim();
+        String email = dto.getEmail().trim();
         Customer customer = stripeService.createCustomer(name, email);
         AccountResponseDto savedAccount = accountService.save(dto, subject, username, customer.getId());
         return new ResponseEntity<>(savedAccount, HttpStatus.CREATED);
