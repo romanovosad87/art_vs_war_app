@@ -3,7 +3,8 @@
 
  ## Description
  Online platform for selling artworks with charitable mission **[link](https://artvswar.gallery)**
- Presentation video **[link](https://www.youtube.com/watch?v=zgugyUkIdVw&t=2s)**
+ 
+ Presentation video **[link](https://www.youtube.com/watch?v=zgugyUkIdVw&t)**
 
 ## Technologies
 Java,  Spring Boot, Spring WEB, Spring Data JPA, Liquibase, Log4j2, GSON, MySQL, AWS RDS, AWS Cognito, AWS SES, AWS Lambda, Cloudinary, Stripe, ShipEngine
