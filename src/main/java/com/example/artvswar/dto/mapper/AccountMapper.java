@@ -17,10 +17,10 @@ public class AccountMapper {
         Account account = new Account();
         account.setCognitoSubject(cognitoSubject);
         account.setCognitoUsername(cognitoUsername);
-        account.setFirstName(dto.getFirstName());
-        account.setLastName(dto.getLastName());
-        account.setEmail(dto.getEmail());
-        account.setPhone(dto.getPhone());
+        account.setFirstName(dto.getFirstName().trim());
+        account.setLastName(dto.getLastName().trim());
+        account.setEmail(dto.getEmail().trim());
+        account.setPhone(dto.getPhone().trim());
         account.setStripeCustomerId(stripeCustomerId);
         return account;
     }

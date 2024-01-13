@@ -7,6 +7,7 @@ import com.example.artvswar.model.Painting;
 import com.example.artvswar.model.enummodel.PaymentStatus;
 import com.example.artvswar.service.AccountService;
 import com.example.artvswar.service.DonateService;
+import com.example.artvswar.service.EmailService;
 import com.example.artvswar.service.OrderService;
 import com.example.artvswar.service.PaintingService;
 import com.example.artvswar.service.ShoppingCartPaintingService;
@@ -43,6 +44,7 @@ public class StripeWebhookService {
     private final StripeUtils stripeUtils;
     private final DonateService donateService;
     private final StripeProfileService stripeProfileService;
+    private final EmailService emailService;
 
     @Transactional
     public void handleCheckOutSessionEvent(Event event) {
@@ -104,8 +106,16 @@ public class StripeWebhookService {
         System.out.println("After parsing metadata, paintings: " + paintings);
 
         paintings.forEach(painting -> paintingService.changePaymentStatus(painting, PaymentStatus.SOLD));
+        var account = accountService.getAccountByStripeCustomerId(customerId);
+        Order order = createOrder(session, account, paymentIntent, paintings, timeOfEvent);
 
-        createOrder(session, paymentIntent, paintings, timeOfEvent);
+        String titleWithAuthor = paintings.stream().map(painting -> {
+            String authorFullName = painting.getAuthor().getFullName();
+            String paintingTitle = painting.getTitle();
+            return "'" + paintingTitle + "' by " + authorFullName;
+        }).collect(Collectors.joining(", "));
+
+        emailService.purchasePaintingToCustomerEmail(order, account, titleWithAuthor);
 
         String accountCognitoSubject = accountService.getCognitoSubjectByStripeId(customerId);
         paintings.forEach(painting -> shoppingCartPaintingService.remove(painting.getId(), accountCognitoSubject));
@@ -163,16 +173,17 @@ public class StripeWebhookService {
         donateService.save(donate);
     }
 
-    private void createOrder(Session session, PaymentIntent paymentIntent, List<Painting> paintings, LocalDateTime timeOfEvent) {
+    private Order createOrder(Session session, com.example.artvswar.model.Account account,
+                              PaymentIntent paymentIntent, List<Painting> paintings,
+                              LocalDateTime timeOfEvent) {
         Order order = orderMapper.toModel(session, timeOfEvent);
-        String customerId = session.getCustomer();
-        order.setAccount(accountService.getAccountByStripeCustomerId(customerId));
+        order.setAccount(account);
         paintings.forEach(order::addPainting);
         String latestCharge = paymentIntent.getLatestCharge();
         order.setChargeId(latestCharge);
         BigDecimal netAmount = getNetAmount(paymentIntent.getId());
         order.setNetAmount(netAmount);
-        orderService.save(order);
+        return orderService.save(order);
     }
 
     private BigDecimal getNetAmount(String paymentIntentId) {
