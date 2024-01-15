@@ -9,6 +9,7 @@ import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.Where;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,19 +22,21 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 @Entity
 @Getter
 @Setter
 @EqualsAndHashCode(of = "cognitoSubject")
+@Where(clause = "is_deleted = false")
+@Table(name = "accounts")
 public class Account {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NaturalId
-    @Column(nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false, unique = true)
     private String cognitoSubject;
 
     @Column(nullable = false, updatable = false)
@@ -56,7 +59,7 @@ public class Account {
     @ElementCollection
     @Setter(AccessLevel.PRIVATE)
     @CollectionTable(name = "account_shipping_addresses", joinColumns = @JoinColumn(name = "account_id"))
-    @Cascade(CascadeType.ALL)
+    @Cascade({CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})
     private List<AccountShippingAddress> shippingAddresses = new ArrayList<>();
 
     @Setter(AccessLevel.PRIVATE)

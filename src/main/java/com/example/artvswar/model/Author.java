@@ -8,6 +8,8 @@ import lombok.ToString;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.ResultCheckStyle;
+import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -25,8 +27,8 @@ import javax.persistence.Table;
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = true)
-//@SQLDelete(sql = "UPDATE authors SET is_deleted = true where cognito_subject = ?",
-//        check = ResultCheckStyle.COUNT)
+@SQLDelete(sql = "UPDATE authors SET is_deleted = true where id = ?",
+        check = ResultCheckStyle.COUNT)
 //@Where(clause = "is_deleted = false")
 @Table(name = "authors")
 public class Author extends User {
@@ -45,12 +47,12 @@ public class Author extends User {
     private Account account;
 
     @OneToOne(mappedBy = "author", fetch = FetchType.LAZY)
-    @Cascade({CascadeType.ALL})
+    @Cascade({CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})
     private AuthorPhoto authorPhoto;
 
     @Setter(AccessLevel.PRIVATE)
     @OneToMany(mappedBy = "author", orphanRemoval = true)
-    @Cascade({CascadeType.SAVE_UPDATE})
+    @Cascade({CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})
     private List<ArtProcess> artProcesses = new ArrayList<>();
 
     @Setter(AccessLevel.PRIVATE)
@@ -63,7 +65,7 @@ public class Author extends User {
     private StripeProfile stripeProfile;
 
     @OneToOne(mappedBy = "author", fetch = FetchType.LAZY)
-    @Cascade({CascadeType.ALL})
+    @Cascade({CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})
     private AuthorShippingAddress authorShippingAddress;
 
     @CreationTimestamp

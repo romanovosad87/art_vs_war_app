@@ -25,6 +25,7 @@ public class OrderResponseDto {
     private transient LocalDateTime createdAt;
     @JsonAdapter(JsonLocalDateTimeOrderAdapter.class)
     private OffsetDateTime orderCreatedAt;
+    private String daysForAutomaticConfirm;
     private Set<PaintingShortResponseDto> paintings = new LinkedHashSet<>();
 
     public OrderResponseDto(Long id, BigDecimal totalAmount, BigDecimal subtotalAmount,
