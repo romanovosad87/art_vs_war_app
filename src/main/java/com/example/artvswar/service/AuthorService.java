@@ -29,6 +29,8 @@ public interface AuthorService {
 
     Author getReference(Long id);
 
+    Author getAuthor(Long id);
+
     Page<AuthorResponseDto> getAll(Map<String, String> params, Pageable pageable);
 
     long getNumberOfAllAuthors();
@@ -36,7 +38,7 @@ public interface AuthorService {
     String createPrettyId(String fullName);
     FolderResponseDto createCloudinaryFolder(String cognitoSubject);
 
-    void delete(String cognitoSubject);
+    void delete(Long id);
 
     AuthorCheckStripeAndAddressPresenceResponseDto checkAuthorProfile(String authorCognitoSubject);
 

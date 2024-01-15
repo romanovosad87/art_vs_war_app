@@ -8,8 +8,6 @@ import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
@@ -20,7 +18,6 @@ import javax.persistence.MappedSuperclass;
 public abstract class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NaturalId

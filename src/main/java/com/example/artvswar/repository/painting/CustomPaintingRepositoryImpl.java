@@ -54,16 +54,11 @@ import javax.persistence.criteria.Root;
 @Transactional(readOnly = true)
 public class CustomPaintingRepositoryImpl
         implements CustomPaintingRepository {
-    private static final DateTimeFormatter DATE_TIME_FORMATTER =
-            DateTimeFormatter.ofPattern("dd-MMM-yyyy", Locale.UK);
-    private static final String RANDOM = "RAND";
     private static final String AUTHOR = "author";
     public static final String STRIPE_PROFILE = "stripeProfile";
     public static final String AUTHOR_SHIPPING_ADDRESS = "authorShippingAddress";
-    private static final String COLLECTION = "collection";
     private static final String PAINTING_IMAGE = "paintingImage";
     private static final String IMAGE = "image";
-    private static final String ADDITIONAL_IMAGES = "additionalImages";
     private static final String STYLES = "styles";
     private static final String MEDIUMS = "mediums";
     private static final String SUPPORTS = "supports";
@@ -73,7 +68,6 @@ public class CustomPaintingRepositoryImpl
     private static final String TITLE = "title";
     private static final String DESCRIPTION = "description";
     private static final String PRICE = "price";
-    private static final String WEIGHT = "weight";
     private static final String WIDTH = "width";
     private static final String HEIGHT = "height";
     private static final String DEPTH = "depth";
@@ -88,7 +82,6 @@ public class CustomPaintingRepositoryImpl
     private static final String URL = "url";
     private static final String MODERATION_STATUS = "moderationStatus";
     private static final String PAYMENT_STATUS = "paymentStatus";
-    private static final String ROOM_VIEWS = "roomViews";
     private static final String TRANSFORMED_RATIO = "transformedRatio";
     private static final String NAME = "name";
     private static final String PAINTING_ID = "painting_id";
@@ -96,26 +89,19 @@ public class CustomPaintingRepositoryImpl
     private static final String PAINTING_TITLE = "painting_title";
     private static final String PAINTING_DESCRIPTION = "painting_description";
     private static final String PAINTING_PRICE = "painting_price";
-    private static final String PAINTING_WEIGHT = "painting_weight";
     private static final String PAINTING_HEIGHT = "painting_height";
     private static final String PAINTING_WIDTH = "painting_width";
     private static final String PAINTING_DEPTH = "painting_depth";
     private static final String PAINTING_YEAR_OF_CREATION = "painting_yearOfCreation";
     private static final String PAINTING_PAYMENT_STATUS = "painting_payment_status";
-    private static final String PAINTING_ADDED_TO_DATABASE = "painting_addedToDatabase";
     private static final String AUTHOR_ID = "author_id";
     private static final String AUTHOR_PRETTY_ID = "author_pretty_id";
     private static final String AUTHOR_FULL_NAME = "author_fullName";
     private static final String AUTHOR_COUNTRY = "author_country";
-    private static final String COLLECTION_ID = "collection_id";
-    private static final String COLLECTION_PRETTY_ID = "collection_prettyId";
-    private static final String COLLECTION_TITLE = "collection_title";
     private static final String PAINTING_IMAGE_ID = "painting_image_id";
     private static final String PAINTING_IMAGE_MODERATION_STATUS = "painting_moderation_status";
     private static final String IMAGE_RATIO = "image_ratio";
     private static final String PAINTING_IMAGE_URL = "image_url";
-    private static final String IMAGE_ROOM_VIEWS_URL = "image_roomViews_url";
-    private static final String ADDITIONAL_IMAGE_URL = "additional_image_url";
     private static final String STYLE_ID = "style_id";
     private static final String STYLE_NAME = "style_name";
     private static final String MEDIUM_ID = "medium_id";

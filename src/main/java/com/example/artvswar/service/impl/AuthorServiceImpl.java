@@ -124,6 +124,13 @@ public class AuthorServiceImpl implements AuthorService {
         return authorRepository.getReferenceById(id);
     }
 
+    @Override
+    public Author getAuthor(Long id) {
+        return authorRepository.findById(id)
+                .orElseThrow(() -> new AppEntityNotFoundException(
+                        String.format("Can't find author by id = %s", id)));
+    }
+
 
     @Override
     public Page<AuthorResponseDto> getAll(Map<String, String> params, Pageable pageable) {
@@ -157,8 +164,8 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     @Transactional
-    public void delete(String cognitoSubject) {
-        authorRepository.deleteByCognitoSubject(cognitoSubject);
+    public void delete(Long id) {
+        authorRepository.deleteById(id);
     }
 
     @Override

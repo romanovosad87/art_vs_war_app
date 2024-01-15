@@ -5,6 +5,7 @@ import com.example.artvswar.dto.request.account.AccountShippingRequestDto;
 import com.example.artvswar.dto.response.account.AccountResponseDto;
 import com.example.artvswar.dto.response.account.AccountShippingResponseDto;
 import com.example.artvswar.model.Account;
+import org.springframework.security.oauth2.jwt.Jwt;
 import java.util.List;
 
 public interface AccountService {
@@ -29,9 +30,9 @@ public interface AccountService {
 
     List<AccountShippingResponseDto> getAccountShippingAddresses(String cognitoSubject);
 
-    Long getIdByCognitoSubject(String cognitoSubject);
-
     String getCognitoSubjectByStripeId(String stripeCustomerId);
 
     void changeUnsubscribeEmailStatus(String accountSubject, boolean unsubscribe);
+
+    void delete(Long id, Jwt jwt);
 }

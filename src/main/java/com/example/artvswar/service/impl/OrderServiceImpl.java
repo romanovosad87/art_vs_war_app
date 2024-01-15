@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.Period;
 import java.time.ZoneOffset;
 import java.util.List;
 
@@ -25,19 +26,20 @@ import java.util.List;
 @Service
 @Transactional(readOnly = true)
 public class OrderServiceImpl implements OrderService {
-    public static final long DAYS_BEFORE = 5L;
+    public static final long DAYS_TO_AUTOMATIC_CONFIRM = 7;
     public static final int ESTIMATED_DELIVERY = 5;
     private final OrderRepository orderRepository;
     private final AccountService accountService;
 
     @Override
-    public Page<OrderShortResponseDto> getAllShortOrdersByAccount(String cognitoSubject, Pageable pageable) {
+    public Page<OrderShortResponseDto> getAllShortOrdersByAccount(String cognitoSubject,
+                                                                  Pageable pageable) {
         Account account = accountService.getAccountByCognitoSubject(cognitoSubject);
         Page<OrderShortResponseDto> orders = orderRepository
                 .findAllByAccount_CognitoSubject(cognitoSubject, pageable);
         List<OrderShortResponseDto> content = orders.getContent();
         content.forEach(order -> order.setOrderCreatedAt(adjustOffset(order.getCreatedAt(),
-                        account.getOffset())));
+                account.getOffset())));
 
         return new PageImpl<>(content, orders.getPageable(), orders.getTotalElements());
     }
@@ -53,19 +55,28 @@ public class OrderServiceImpl implements OrderService {
         Account account = accountService.getAccountByCognitoSubject(cognitoSubject);
         Page<OrderResponseDto> orders = orderRepository.getAllOrdersByAccount(cognitoSubject, pageable);
         List<OrderResponseDto> content = orders.getContent();
-        content.forEach(order -> {
-            LocalDateTime createdAt = order.getCreatedAt();
-            order.setOrderCreatedAt(adjustOffset(createdAt,
-                            account.getOffset()));
-            if (order.isDelivered()) {
-                order.setOrderDeliveredAt(adjustOffset(order.getDeliveredAt(),
+        content.forEach(orderDto -> {
+            LocalDateTime createdAt = orderDto.getCreatedAt();
+            orderDto.setOrderCreatedAt(adjustOffset(createdAt,
+                    account.getOffset()));
+            if (orderDto.isDelivered()) {
+                orderDto.setOrderDeliveredAt(adjustOffset(orderDto.getDeliveredAt(),
                         account.getOffset()));
             } else {
                 LocalDateTime estimatedDeliveryAt = createdAt.plusDays(ESTIMATED_DELIVERY);
-                order.setOrderEstimatedDeliveryAt(adjustOffset(estimatedDeliveryAt,
+                orderDto.setOrderEstimatedDeliveryAt(adjustOffset(estimatedDeliveryAt,
                         account.getOffset()));
+
+                LocalDateTime now = LocalDateTime.now();
+                Period difference = Period.between(createdAt.toLocalDate(), now.toLocalDate());
+                int passedDays = difference.getDays();
+                if (passedDays < DAYS_TO_AUTOMATIC_CONFIRM) {
+                    int remainingDays = (int) DAYS_TO_AUTOMATIC_CONFIRM - passedDays;
+                    String message = remainingDays == 1 ? "1 day" : remainingDays + " days";
+                    orderDto.setDaysForAutomaticConfirm(message);
+                }
             }
-                });
+        });
 
         return new PageImpl<>(content, orders.getPageable(), orders.getTotalElements());
 
@@ -94,7 +105,7 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * Scheduled method to automatically mark orders as delivered if they
-     * were created more than five days ago and are not already marked as delivered.
+     * were created more than 7 (seven) days ago and are not already marked as delivered.
      * The method is scheduled to run at 8:00 AM and 5:00 PM every day in the
      * Europe/Paris time zone.
      */
@@ -103,7 +114,7 @@ public class OrderServiceImpl implements OrderService {
     @Scheduled(cron = "0 0 8,17 * * ?", zone = "ECT")
     public void setOrderDeliveredForMoreThanFiveDays() {
         LocalDateTime fiveDaysBefore = LocalDateTime.now()
-                .minusDays(DAYS_BEFORE)
+                .minusDays(DAYS_TO_AUTOMATIC_CONFIRM)
                 .atOffset(ZoneOffset.UTC)
                 .toLocalDateTime();
         List<Order> orders = orderRepository

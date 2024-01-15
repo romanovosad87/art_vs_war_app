@@ -8,19 +8,23 @@ import com.example.artvswar.dto.response.account.AccountShippingResponseDto;
 import com.example.artvswar.exception.AppEntityNotFoundException;
 import com.example.artvswar.model.Account;
 import com.example.artvswar.model.AccountShippingAddress;
+import com.example.artvswar.model.Author;
 import com.example.artvswar.repository.AccountRepository;
 import com.example.artvswar.service.AccountService;
+import com.example.artvswar.service.AuthorService;
 import com.example.artvswar.service.ShoppingCartService;
 import com.example.artvswar.util.AwsCognitoClient;
 import com.example.artvswar.util.TimeZoneAPI;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
+@RequiredArgsConstructor(onConstructor_ = {@Lazy})
 @Service
 @Transactional(readOnly = true)
 public class AccountServiceImpl implements AccountService {
@@ -29,8 +33,9 @@ public class AccountServiceImpl implements AccountService {
     private final AccountMapper accountMapper;
     private final AwsCognitoClient awsCognitoClient;
     private final ShoppingCartService shoppingCartService;
-
     private final TimeZoneAPI timeZoneAPI;
+    @Lazy
+    private final AuthorService authorService;
 
     @Override
     @Transactional
@@ -90,15 +95,16 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public List<AccountShippingResponseDto> saveAccountShippingAddresses(List<AccountShippingRequestDto> dtos,
-                                                                         String cognitoSubject) {
+    public List<AccountShippingResponseDto> saveAccountShippingAddresses(
+            List<AccountShippingRequestDto> dtos,
+            String cognitoSubject) {
         Account account = accountRepository.findByCognitoSubject(Account.class, cognitoSubject)
                 .orElseThrow(() -> new AppEntityNotFoundException(
                         String.format("Can't find account by Cognito Subject : %s", cognitoSubject)));
 
         List<AccountShippingAddress> shippingAddresses = account.getShippingAddresses();
 
-         dtos.stream()
+        dtos.stream()
                 .map(accountMapper::toAccountShippingModel)
                 .filter(address -> !shippingAddresses.contains(address))
                 .forEach(shippingAddresses::add);
@@ -129,11 +135,6 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Long getIdByCognitoSubject(String cognitoSubject) {
-        return accountRepository.getIdByCognitoSubject(cognitoSubject);
-    }
-
-    @Override
     public String getCognitoSubjectByStripeId(String stripeCustomerId) {
         return accountRepository.getAccountCognitoSubjectByStripeCustomerId(stripeCustomerId);
     }
@@ -145,5 +146,18 @@ public class AccountServiceImpl implements AccountService {
                 .orElseThrow(() -> new AppEntityNotFoundException(
                         String.format("Can't find account by subject: %s", accountSubject)));
         account.setUnsubscribedEmail(unsubscribe);
+    }
+
+    @Override
+    @Transactional
+    public void delete(Long id, Jwt jwt) {
+        accountRepository.findById(id)
+                .ifPresent(account -> {
+                    account.setDeleted(true);
+                    Author author = authorService.getAuthor(id);
+                    author.setDeleted(true);
+                });
+
+        awsCognitoClient.deleteUser(jwt);
     }
 }

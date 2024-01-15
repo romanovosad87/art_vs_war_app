@@ -9,6 +9,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
@@ -17,7 +18,9 @@ import javax.persistence.Table;
 @Entity
 @Getter
 @Setter
-@Table(name = "stripe_profiles")
+@Table(name = "stripe_profiles", indexes = {
+        @Index(name = "detail_submitted_idx", columnList = "isDetailsSubmitted")
+})
 public class StripeProfile {
     @Id
     private Long id;
