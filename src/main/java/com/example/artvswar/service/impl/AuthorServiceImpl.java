@@ -31,6 +31,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -84,6 +85,11 @@ public class AuthorServiceImpl implements AuthorService {
         return authorRepository.findByCognitoSubject(Author.class, cognitoSubject).orElseThrow(
                 () -> new AppEntityNotFoundException(
                         String.format(AUTHOR_CANT_FIND, cognitoSubject)));
+    }
+
+    @Override
+    public Optional<Author> getOptionalAuthorByCognitoSubject(String cognitoSubject) {
+        return authorRepository.findByCognitoSubject(Author.class, cognitoSubject);
     }
 
     @Override

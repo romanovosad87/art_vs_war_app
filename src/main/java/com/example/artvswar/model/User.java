@@ -27,8 +27,6 @@ public abstract class User {
     @Column(nullable = false, updatable = false)
     private String cognitoUsername;
 
-    @Column(nullable = false, unique = true)
-    private String prettyId;
     @Column(nullable = false)
     private String email;
 
@@ -36,7 +34,6 @@ public abstract class User {
     private boolean isDeleted;
 
     @CreationTimestamp
-    @Column(updatable = false, columnDefinition = "TIMESTAMP default now()")
     private LocalDateTime createdAt;
     @UpdateTimestamp
     private LocalDateTime updatedAt;

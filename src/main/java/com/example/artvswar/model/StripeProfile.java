@@ -19,7 +19,7 @@ import javax.persistence.Table;
 @Getter
 @Setter
 @Table(name = "stripe_profiles", indexes = {
-        @Index(name = "detail_submitted_idx", columnList = "isDetailsSubmitted")
+        @Index(name = "IDX_is_detail_submitted", columnList = "isDetailsSubmitted")
 })
 public class StripeProfile {
     @Id

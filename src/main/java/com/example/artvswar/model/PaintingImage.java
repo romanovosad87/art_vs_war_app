@@ -45,7 +45,7 @@ public class PaintingImage {
     private Image image;
     @ElementCollection
     @CollectionTable(name = "room_views", joinColumns = @JoinColumn(name = "painting_image_id"),
-    indexes = @Index(name = "image_roomView_image_id_idx", columnList = "painting_image_id"))
+    indexes = @Index(name = "IDX_painting_image_room_view", columnList = "painting_image_id"))
     @Cascade(CascadeType.ALL)
     private List<RoomView> roomViews = new ArrayList<>();
 }

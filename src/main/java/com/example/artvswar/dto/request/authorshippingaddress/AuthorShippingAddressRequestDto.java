@@ -12,7 +12,6 @@ public class AuthorShippingAddressRequestDto {
     private String addressLine3;
     @NotBlank(message = "city field is required")
     private String city;
-    @NotBlank(message = "state field is required")
     private String state;
     @NotBlank(message = "country field is required")
     private String country;

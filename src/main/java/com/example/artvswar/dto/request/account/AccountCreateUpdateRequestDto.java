@@ -15,14 +15,16 @@ public class AccountCreateUpdateRequestDto {
     @NotBlank(message = "first name field is required", groups = FirstOrder.class)
     @Size(min = 1, max = 30,
             message = "first name must be between 1 and 30 characters", groups = SecondOrder.class)
-    @Pattern(regexp = "[\\p{IsLatin}\\s'-]+", message = "first name except only Latin, space, ' and -",
+    @Pattern(regexp = "\\b[A-Z][\\p{IsLatin}\\w\\s\\p{P}\\p{S}]*", message = "first name must start "
+            + "with capital letter and except only Latin",
             groups = ThirdOrder.class)
     private String firstName;
 
     @NotBlank(message = "last name field is required", groups = FirstOrder.class)
     @Size(min = 1, max = 30,
             message = "last name must be between 1 and 30 characters", groups = SecondOrder.class)
-    @Pattern(regexp = "[\\p{IsLatin}\\s'-]+", message = "last name except only Latin, space, ' and -",
+    @Pattern(regexp = "\\b[A-Z][\\p{IsLatin}\\w\\s\\p{P}\\p{S}]*", message = "last name must start "
+            + "with capital letter except only Latin",
             groups = ThirdOrder.class)
     private String lastName;
 

@@ -7,11 +7,8 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.ResultCheckStyle;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.UpdateTimestamp;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
@@ -34,6 +31,8 @@ import javax.persistence.Table;
 public class Author extends User {
     @Column(nullable = false)
     private String fullName;
+    @Column(nullable = false, unique = true)
+    private String prettyId;
     @Column(nullable = false)
     private String country;
     @Column(nullable = false)
@@ -67,11 +66,6 @@ public class Author extends User {
     @OneToOne(mappedBy = "author", fetch = FetchType.LAZY)
     @Cascade({CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})
     private AuthorShippingAddress authorShippingAddress;
-
-    @CreationTimestamp
-    private LocalDateTime createdAt;
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
 
     @Column(columnDefinition = "TINYINT not null default false")
     private boolean unsubscribedEmail;

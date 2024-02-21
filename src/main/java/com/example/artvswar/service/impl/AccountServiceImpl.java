@@ -7,8 +7,8 @@ import com.example.artvswar.dto.response.account.AccountResponseDto;
 import com.example.artvswar.dto.response.account.AccountShippingResponseDto;
 import com.example.artvswar.exception.AppEntityNotFoundException;
 import com.example.artvswar.model.Account;
+import com.example.artvswar.model.AccountEmailData;
 import com.example.artvswar.model.AccountShippingAddress;
-import com.example.artvswar.model.Author;
 import com.example.artvswar.repository.AccountRepository;
 import com.example.artvswar.service.AccountService;
 import com.example.artvswar.service.AuthorService;
@@ -145,17 +145,18 @@ public class AccountServiceImpl implements AccountService {
         Account account = accountRepository.findByCognitoSubject(Account.class, accountSubject)
                 .orElseThrow(() -> new AppEntityNotFoundException(
                         String.format("Can't find account by subject: %s", accountSubject)));
-        account.setUnsubscribedEmail(unsubscribe);
+        AccountEmailData accountEmailData = account.getAccountEmailData();
+        accountEmailData.setUnsubscribed(unsubscribe);
     }
 
     @Override
     @Transactional
-    public void delete(Long id, Jwt jwt) {
-        accountRepository.findById(id)
+    public void delete(String cognitoSubject, Jwt jwt) {
+        accountRepository.findByCognitoSubject(Account.class, cognitoSubject)
                 .ifPresent(account -> {
                     account.setDeleted(true);
-                    Author author = authorService.getAuthor(id);
-                    author.setDeleted(true);
+                    authorService.getOptionalAuthorByCognitoSubject(cognitoSubject)
+                                    .ifPresent(author -> author.setDeleted(true));
                 });
 
         awsCognitoClient.deleteUser(jwt);

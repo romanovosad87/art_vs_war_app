@@ -51,10 +51,12 @@ public class Order {
     @Setter(AccessLevel.PRIVATE)
     @Cascade(CascadeType.SAVE_UPDATE)
     @OneToMany(mappedBy = "order")
+    @ToString.Exclude
     private List<Painting> paintings = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "account_id")
+    @ToString.Exclude
     private Account account;
 
     @NaturalId

@@ -17,11 +17,13 @@ import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -34,7 +36,6 @@ public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @NaturalId
     @Column(nullable = false, updatable = false, unique = true)
     private String cognitoSubject;
@@ -50,9 +51,6 @@ public class Account {
 
     @Column(nullable = false)
     private String phone;
-
-    @Column(nullable = false)
-    private String email;
     @Column(unique = true)
     private String stripeCustomerId;
 
@@ -66,6 +64,10 @@ public class Account {
     @OneToMany(mappedBy = "account")
     private List<Order> orders = new ArrayList<>();
 
+    @OneToOne(mappedBy = "account", fetch = FetchType.LAZY)
+    @Cascade(value = {CascadeType.PERSIST})
+    private AccountEmailData accountEmailData;
+
     @Column(nullable = false, columnDefinition = "TINYINT default false")
     private boolean isDeleted;
 
@@ -77,11 +79,26 @@ public class Account {
     @Column(columnDefinition = "INT default 0")
     private int offset;
 
-    @Column(columnDefinition = "TINYINT not null default false")
-    private boolean unsubscribedEmail;
-
     public void addOrder(Order order) {
         orders.add(order);
         order.setAccount(this);
+    }
+
+    public void addAccountEmailData(AccountEmailData data) {
+        this.setAccountEmailData(data);
+        data.setAccount(this);
+    }
+
+    @Override
+    public String toString() {
+        return "Account {"
+                + "id=" + id
+                + ", cognitoSubject='" + cognitoSubject + '\''
+                + ", firstName='" + firstName + '\''
+                + ", lastName='" + lastName + '\''
+                + ", phone='" + phone + '\''
+                + ", createdAt=" + createdAt
+                + ", updatedAt=" + updatedAt
+                + '}';
     }
 }

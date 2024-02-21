@@ -22,7 +22,6 @@ import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -41,10 +40,10 @@ import javax.persistence.Table;
 @EqualsAndHashCode(of = "prettyId")
 @Entity
 @Table(name = "paintings", indexes = {
-        @Index(name = "price_idx", columnList = "price"),
-        @Index(name = "width_idx", columnList = "width"),
-        @Index(name = "height_idx", columnList = "height"),
-        @Index(name = "payment_status", columnList = "paymentStatus")
+            @Index(name = "IDX_price", columnList = "price"),
+        @Index(name = "IDX_width", columnList = "width"),
+        @Index(name = "IDX_height", columnList = "height"),
+        @Index(name = "IDX_payment_status", columnList = "paymentStatus")
 })
 public class Painting {
     @Id
@@ -69,7 +68,7 @@ public class Painting {
     @Column(nullable = false)
     private Integer yearOfCreation;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "author_id", foreignKey = @ForeignKey(name = "painting_author_fk"))
+    @JoinColumn(name = "author_id")
     private Author author;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -132,9 +131,6 @@ public class Painting {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
-
-    @Column(columnDefinition = "TINYINT NOT NULL default false")
-    private boolean isSold;
 
     @Column(columnDefinition = "TINYINT NOT NULL DEFAULT 0")
     private PaymentStatus paymentStatus;

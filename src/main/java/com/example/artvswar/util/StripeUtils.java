@@ -10,11 +10,13 @@ import com.example.artvswar.model.enummodel.PaymentStatus;
 import com.neovisionaries.i18n.CountryCode;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Account;
+import com.stripe.model.AccountCollection;
 import com.stripe.model.AccountLink;
 import com.stripe.model.BalanceTransaction;
 import com.stripe.model.BalanceTransactionCollection;
 import com.stripe.model.Charge;
 import com.stripe.model.Customer;
+import com.stripe.model.CustomerCollection;
 import com.stripe.model.LoginLink;
 import com.stripe.model.PaymentIntent;
 import com.stripe.model.Payout;
@@ -26,8 +28,10 @@ import com.stripe.model.checkout.Session;
 import com.stripe.net.RequestOptions;
 import com.stripe.param.AccountCreateParams;
 import com.stripe.param.AccountLinkCreateParams;
+import com.stripe.param.AccountListParams;
 import com.stripe.param.BalanceTransactionListParams;
 import com.stripe.param.CustomerCreateParams;
+import com.stripe.param.CustomerListParams;
 import com.stripe.param.CustomerUpdateParams;
 import com.stripe.param.PayoutListParams;
 import com.stripe.param.RefundCreateParams;
@@ -233,6 +237,33 @@ public class StripeUtils {
         }
     }
 
+    public CustomerCollection getAllCustomers() {
+        CustomerListParams params = CustomerListParams.builder().setLimit(100L).build();
+        try {
+            var list = Customer.list(params);
+            log.info("Get all (100) customers");
+            return list;
+        } catch (StripeException e) {
+            throw new RuntimeException("Can't get all customers", e);
+        }
+    }
+
+    public String deleteCustomer(String customerId) {
+        try {
+            Customer customer = Customer.retrieve(customerId);
+            Customer deletedCustomer = customer.delete();
+            log.info(String.format("Stripe Customer with id: '%s' and name: '%s' was deleted",
+                    customerId, customer.getName()));
+            if (Boolean.TRUE.equals(deletedCustomer.getDeleted())) {
+                return String.format("Account with id: %s was deleted", customerId);
+            } else {
+                return String.format("Account with id: %s was NOT deleted", customerId);
+            }
+        } catch (StripeException e) {
+            throw new RuntimeException("Can't delete customer", e);
+        }
+    }
+
     public Customer updateCustomerShipping(String customerId, AccountShippingRequestDto dto) {
         try {
             Customer customer = retrieveCustomer(customerId);
@@ -341,11 +372,6 @@ public class StripeUtils {
     public double getTotalBalanceAmount(RequestOptions requestOptions) {
         try {
             BalanceTransactionCollection collection = BalanceTransaction.list(BalanceTransactionListParams.builder().build(), requestOptions);
-//            Balance balance = Balance.retrieve(requestOptions);
-//            List<Balance.Available> availableBalance = balance.getAvailable();
-//            long balanceAmount = availableBalance.stream()
-//                    .mapToLong(Balance.Available::getAmount)
-//                    .sum();
             return (double) collection.getData().stream()
                     .mapToLong(BalanceTransaction::getAmount)
                     .sum() / 100;
@@ -381,6 +407,17 @@ public class StripeUtils {
             return refund;
         } catch (StripeException e) {
             throw new RuntimeException(String.format("Can't create Refund for chargeId: %s", chargeId), e);
+        }
+    }
+
+    public AccountCollection getAllConnectedAccounts() {
+        AccountListParams params = AccountListParams.builder().setLimit(100L).build();
+        try {
+            var list = Account.list(params);
+            log.info("Get all (100) Connected Accounts");
+            return list;
+        } catch (StripeException e) {
+            throw new RuntimeException("Can't list all connected accounts", e);
         }
     }
 
