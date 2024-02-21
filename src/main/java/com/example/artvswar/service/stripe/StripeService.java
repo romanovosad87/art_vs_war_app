@@ -13,9 +13,11 @@ import com.example.artvswar.service.PaintingService;
 import com.example.artvswar.service.StripeProfileService;
 import com.example.artvswar.util.StripeUtils;
 import com.stripe.model.Account;
+import com.stripe.model.AccountCollection;
 import com.stripe.model.AccountLink;
 import com.stripe.model.Charge;
 import com.stripe.model.Customer;
+import com.stripe.model.CustomerCollection;
 import com.stripe.model.LoginLink;
 import com.stripe.model.PaymentIntent;
 import com.stripe.model.Refund;
@@ -168,4 +170,20 @@ public class StripeService {
     public Charge getCharge(String chargeId) {
         return stripeUtils.retrieveCharge(chargeId);
     }
+
+    public void deleteAllConnectedAccounts() {
+        AccountCollection accounts = stripeUtils.getAllConnectedAccounts();
+        accounts.getData().stream()
+                .map(Account::getId)
+                .forEach(stripeUtils::deleteAccount);
+    }
+
+    public void deleteAllCustomers() {
+        CustomerCollection customers = stripeUtils.getAllCustomers();
+        customers.getData().stream()
+                .map(Customer::getId)
+                .forEach(stripeUtils::deleteCustomer);
+    }
 }
+
+

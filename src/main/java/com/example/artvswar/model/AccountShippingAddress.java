@@ -22,7 +22,6 @@ public class AccountShippingAddress {
     private String addressLine2;
     @Column(nullable = false)
     private String city;
-    @Column(nullable = false)
     private String state;
     @Column(nullable = false)
     private String country;

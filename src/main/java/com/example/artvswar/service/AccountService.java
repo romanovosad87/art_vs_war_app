@@ -34,5 +34,5 @@ public interface AccountService {
 
     void changeUnsubscribeEmailStatus(String accountSubject, boolean unsubscribe);
 
-    void delete(Long id, Jwt jwt);
+    void delete(String cognitoSubject, Jwt jwt);
 }

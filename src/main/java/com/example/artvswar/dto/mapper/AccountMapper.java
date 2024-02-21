@@ -5,6 +5,7 @@ import com.example.artvswar.dto.request.account.AccountShippingRequestDto;
 import com.example.artvswar.dto.response.account.AccountResponseDto;
 import com.example.artvswar.dto.response.account.AccountShippingResponseDto;
 import com.example.artvswar.model.Account;
+import com.example.artvswar.model.AccountEmailData;
 import com.example.artvswar.model.AccountShippingAddress;
 import com.neovisionaries.i18n.CountryCode;
 import org.springframework.stereotype.Component;
@@ -19,17 +20,20 @@ public class AccountMapper {
         account.setCognitoUsername(cognitoUsername);
         account.setFirstName(dto.getFirstName().trim());
         account.setLastName(dto.getLastName().trim());
-        account.setEmail(dto.getEmail().trim());
         account.setPhone(dto.getPhone().trim());
         account.setStripeCustomerId(stripeCustomerId);
+        AccountEmailData accountEmailData = new AccountEmailData();
+        accountEmailData.setEmail(dto.getEmail().trim());
+        account.addAccountEmailData(accountEmailData);
         return account;
     }
 
     public Account updateAccountModel(AccountCreateUpdateRequestDto dto, Account account) {
-        account.setFirstName(dto.getFirstName());
-        account.setLastName(dto.getLastName());
-        account.setEmail(dto.getEmail());
-        account.setPhone(dto.getPhone());
+        account.setFirstName(dto.getFirstName().trim());
+        account.setLastName(dto.getLastName().trim());
+        account.setPhone(dto.getPhone().trim());
+        AccountEmailData accountEmailData = account.getAccountEmailData();
+        accountEmailData.setEmail(dto.getEmail().trim());
         return account;
     }
 
@@ -40,7 +44,7 @@ public class AccountMapper {
                 account.getCognitoUsername(),
                 account.getFirstName(),
                 account.getLastName(),
-                account.getEmail(),
+                account.getAccountEmailData().getEmail(),
                 account.getPhone());
     }
 

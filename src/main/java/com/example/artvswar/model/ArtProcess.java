@@ -18,7 +18,7 @@ import javax.persistence.Table;
 @Getter
 @Setter
 @Entity
-@Table(name = "art_process")
+@Table(name = "art_processes")
 public class ArtProcess {
 
     @Id

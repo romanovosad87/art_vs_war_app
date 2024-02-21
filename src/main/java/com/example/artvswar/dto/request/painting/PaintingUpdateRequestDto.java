@@ -23,8 +23,8 @@ public class PaintingUpdateRequestDto {
     @NotBlank(message = "title field is required", groups = FirstOrder.class)
     @Size(min = 1, max = 40,
             message = "title must be between 1 and 40 characters", groups = SecondOrder.class)
-    @Pattern(regexp = "[\\p{IsLatin}\\s\\w'!/-]+", message = "title except only Latin, digits, "
-            + "space, ', !, / and -", groups = ThirdOrder.class)
+    @Pattern(regexp = "[\\p{IsLatin}\\w\\s\\p{P}\\p{S}]+", message = "title except only Latin",
+            groups = ThirdOrder.class)
     private String title;
 
     @NotNull(message = "price field is required", groups = FirstOrder.class)

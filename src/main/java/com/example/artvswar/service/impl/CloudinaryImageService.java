@@ -3,12 +3,11 @@ package com.example.artvswar.service.impl;
 import com.cloudinary.api.ApiResponse;
 import com.example.artvswar.dto.response.image.PendingRejectImageResponse;
 import com.example.artvswar.dto.response.image.SignatureResponse;
-import com.example.artvswar.dto.response.painingimage.PaintingImageResponseDto;
 import com.example.artvswar.exception.AppEntityNotFoundException;
 import com.example.artvswar.model.PaintingImage;
 import com.example.artvswar.model.RoomView;
 import com.example.artvswar.repository.paintingimage.PaintingImageRepository;
-import com.example.artvswar.service.EmailService;
+import com.example.artvswar.service.EmailInternalService;
 import com.example.artvswar.service.ImageService;
 import com.example.artvswar.util.image.CloudinaryClient;
 import com.example.artvswar.util.image.roomView.RoomViewManager;
@@ -20,14 +19,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -51,7 +48,7 @@ public class CloudinaryImageService {
     private final ImageService imageService;
     private final PaintingImageRepository paintingImageRepository;
     private final RoomViewManager roomViewManager;
-    private final EmailService emailService;
+    private final EmailInternalService emailInternalService;
 
     public SignatureResponse getSignature(Map<String, Object> params) {
         return cloudinaryClient.getSignature(params);
@@ -109,7 +106,7 @@ public class CloudinaryImageService {
         String publicId = object.getString(PUBLIC_ID);
         if (moderationKind.equals("aws_rek") && moderationStatus.equals("rejected")) {
             String moderationResponse = object.getString("moderation_response");
-            emailService.sendImageRejectionMail(publicId, moderationResponse);
+            emailInternalService.sendImageRejectionMail(publicId, moderationResponse);
         }
 
         if (moderationKind.equals("manual")) {
@@ -120,11 +117,5 @@ public class CloudinaryImageService {
 
     public ApiResponse getAssetDetails(String publicId) {
         return cloudinaryClient.getDetailsByPublicId(publicId);
-    }
-
-    private List<PaintingImageResponseDto> parseObject(List<Object[]> response) {
-        return response.stream()
-                .map(obj -> new PaintingImageResponseDto((BigInteger)obj[0], (Double) obj[1], (String) obj[2]))
-                .collect(Collectors.toList());
     }
 }

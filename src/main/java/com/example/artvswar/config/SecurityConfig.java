@@ -14,16 +14,19 @@ import org.springframework.web.accept.HeaderContentNegotiationStrategy;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
 @EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfig {
+    private final List<String> allowedOrigins = new ArrayList<>(List.of("https://artvswar.gallery",
+            "https://develop.artvswar.gallery"));
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf().disable()
-                .cors()
+                .cors().configurationSource(corsConfigurationSource())
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()

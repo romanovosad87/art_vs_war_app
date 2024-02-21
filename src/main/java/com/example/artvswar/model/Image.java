@@ -22,7 +22,7 @@ import javax.persistence.Table;
 @Entity
 @ToString
 @Table(name = "images",
-        indexes = {@Index(name = "moderation_status", columnList = "moderationStatus")})
+        indexes = {@Index(name = "IDX_moderation_status", columnList = "moderationStatus")})
 public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

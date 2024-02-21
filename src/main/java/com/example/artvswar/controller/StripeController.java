@@ -43,6 +43,18 @@ public class StripeController {
         return stripeService.deleteAccount(accountId);
     }
 
+    @DeleteMapping("/delete/all/connectedAccounts")
+    public String deleteAllConnectedAccount() {
+        stripeService.deleteAllConnectedAccounts();
+        return "Accounts deleted";
+    }
+
+    @DeleteMapping("/delete/all/customers")
+    public String deleteAllCustomers() {
+        stripeService.deleteAllCustomers();
+        return "Cusomers deleted";
+    }
+
     @PreAuthorize("hasRole('AUTHOR')")
     @GetMapping("/dashboard")
     public String getLoginLinkToDashboard(@AuthenticationPrincipal Jwt jwt) {

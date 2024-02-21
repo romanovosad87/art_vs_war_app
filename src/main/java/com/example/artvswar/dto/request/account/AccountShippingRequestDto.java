@@ -31,9 +31,6 @@ public class AccountShippingRequestDto {
     @Size(min = 1, max = 40,
             message = "city must be between 1 and 40 characters", groups = SecondOrder.class)
     private String city;
-
-    @Size(min = 1, max = 50,
-            message = "state must be between 1 and 50 characters", groups = SecondOrder.class)
     private String state;
     @NotBlank(message = "country field is required", groups = FirstOrder.class)
     @Size(min = 1, max = 56,
