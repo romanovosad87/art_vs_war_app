@@ -35,10 +35,9 @@ public class AdminServiceImpl implements AdminService {
     private Admin mapToAdmin(Account account, String email) {
         Admin admin = new Admin();
         admin.setAccount(account);
-        admin.setId(account.getId());
         admin.setEmail(email);
         admin.setFullName(account.getFirstName() + " " + account.getLastName());
-        admin.setCognitoUsername(admin.getCognitoUsername());
+        admin.setCognitoUsername(account.getCognitoUsername());
         admin.setCognitoSubject(account.getCognitoSubject());
         return admin;
     }

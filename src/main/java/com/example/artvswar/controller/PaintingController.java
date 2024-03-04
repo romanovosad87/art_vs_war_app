@@ -71,7 +71,7 @@ public class PaintingController {
     @GetMapping("/author/{authorPrettyId}")
     public ResponseEntity<Page<PaintingShortResponseDto>> getAllByAuthorPrettyId(
             @PathVariable String authorPrettyId,
-            @PageableDefault(size = 4) Pageable pageable) {
+            @PageableDefault(size = ALL_PAINTINGS_SIZE) Pageable pageable) {
         Page<PaintingShortResponseDto> allPaintings = paintingService
                 .findAllByAuthorPrettyId(authorPrettyId, pageable);
         return new ResponseEntity<>(allPaintings, HttpStatus.OK);

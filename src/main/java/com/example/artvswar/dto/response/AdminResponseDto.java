@@ -10,8 +10,5 @@ public class AdminResponseDto {
 
     private String cognitoUsername;
     private String fullName;
-
-    private String prettyId;
-
     private String email;
 }
