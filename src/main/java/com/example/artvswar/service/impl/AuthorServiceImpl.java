@@ -59,9 +59,9 @@ public class AuthorServiceImpl implements AuthorService {
         author.setPrettyId(createPrettyId(dto.getFullName()));
         Account account = accountService.getAccountByCognitoSubject(cognitoSubject);
         author.setAccount(account);
-        Author savedUser = authorRepository.save(author);
+        Author savedAuthor = authorRepository.save(author);
         awsCognitoClient.addUserToGroup(cognitoUsername, ROLE_AUTHOR);
-        AuthorProfileResponseDto responseDto = authorMapper.toDto(savedUser);
+        AuthorProfileResponseDto responseDto = authorMapper.toDto(savedAuthor);
         return transformWithStylesAndModerationStatus(responseDto);
     }
 

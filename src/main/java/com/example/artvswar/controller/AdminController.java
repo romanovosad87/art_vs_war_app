@@ -21,8 +21,9 @@ public class AdminController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/create")
-    public ResponseEntity<Admin> createAdmin(@RequestBody AdminRequestDto dto) {
+    public ResponseEntity<Long> createAdmin(@RequestBody AdminRequestDto dto) {
         Admin admin = adminService.save(dto.getCognitoSubject());
-        return new ResponseEntity<>(admin, HttpStatus.CREATED);
+        Long id = admin.getId();
+        return new ResponseEntity<>(id, HttpStatus.CREATED);
     }
 }

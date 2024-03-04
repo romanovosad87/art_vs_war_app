@@ -103,7 +103,7 @@ public class StripeService {
      *
      * The method retrieves orders delivered a day before that do not have a
      * transfer initiated and processes them. For each eligible order, it calculates
-     * the transfer amount for the author (40% of the painting price) and initiates
+     * the transfer amount for the author (50% of the painting price) and initiates
      * a separate transfer using Stripe API. The transfer details are then updated
      * in the order object, including the transferred amount and income for the order.
      *
@@ -122,8 +122,8 @@ public class StripeService {
                 StripeProfile stripeProfile = painting.getAuthor().getStripeProfile();
                 if (stripeProfile != null) {
                     String stripeAccountId = stripeProfile.getAccountId();
-                    // Author amount is 40 % from the painting price (Stripe except long multiplied by 100)
-                    long amount = painting.getPrice().multiply(BigDecimal.valueOf(0.4 * 100)).longValue();
+                    // Author amount is 50 % from the painting price (Stripe except long multiplied by 100)
+                    long amount = painting.getPrice().multiply(BigDecimal.valueOf(0.5 * 100)).longValue();
                     String chargeId = order.getChargeId();
                     Transfer transfer = stripeUtils.createSeparateTransfer(chargeId, stripeAccountId, amount);
                     if (transfer != null) {
