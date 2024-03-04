@@ -19,5 +19,7 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
+    - name: Make mvnw executable
+      run: chmod +x mvnw
     - name: Build and Run Tests
       run: ./mvnw clean package
