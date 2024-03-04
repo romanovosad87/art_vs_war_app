@@ -3,7 +3,6 @@ package com.example.artvswar.model;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.hibernate.annotations.ResultCheckStyle;
 import org.hibernate.annotations.SQLDelete;
 import javax.persistence.Column;
@@ -17,7 +16,6 @@ import javax.persistence.Table;
 @Entity
 @Getter
 @Setter
-@ToString
 @EqualsAndHashCode(callSuper = true)
 @SQLDelete(sql = "UPDATE admins SET is_deleted = true where id = ?",
         check = ResultCheckStyle.COUNT)
