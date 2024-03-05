@@ -4,7 +4,6 @@ import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProvider;
 import com.amazonaws.services.cognitoidp.model.AdminAddUserToGroupRequest;
 import com.amazonaws.services.cognitoidp.model.AdminInitiateAuthRequest;
 import com.amazonaws.services.cognitoidp.model.AdminInitiateAuthResult;
-import com.amazonaws.services.cognitoidp.model.AdminUserGlobalSignOutRequest;
 import com.amazonaws.services.cognitoidp.model.AuthFlowType;
 import com.amazonaws.services.cognitoidp.model.AuthenticationResultType;
 import com.amazonaws.services.cognitoidp.model.DeleteUserRequest;
@@ -62,13 +61,5 @@ public class AwsCognitoClient {
                     String.format("Can't find user with sub: '%s' in AWS Cognito userpool",
                             cognitoSubject), e);
         }
-    }
-
-    public void signOutUser(String username) {
-        AdminUserGlobalSignOutRequest signOutRequest = new AdminUserGlobalSignOutRequest()
-                .withUserPoolId(userPoolId)
-                .withUsername(username);
-
-
     }
 }

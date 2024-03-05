@@ -1,16 +1,19 @@
 package com.example.artvswar.controller;
 
 import com.example.artvswar.util.AwsCognitoClient;
+import com.example.artvswar.util.AwsSESClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
 public class IndexController {
     private final AwsCognitoClient awsCognitoClient;
+    private final AwsSESClient awsSESClient;
 
     @GetMapping("/")
     public String hello() {
@@ -23,11 +26,15 @@ public class IndexController {
         return "ok";
     }
 
-    @GetMapping("/signOut")
-    public String signOut(@AuthenticationPrincipal Jwt jwt) {
-        String username = jwt.getClaimAsString("username");
-        System.out.println(username);
-        awsCognitoClient.signOutUser(username);
-        return "ok";
+
+    @GetMapping("/ses/{email}")
+    public void sesClient(@PathVariable String email) {
+        awsSESClient.createEmailIdentity(email);
+    }
+
+
+    @GetMapping("/ses/status/{email}")
+    public String verificationStatus(@PathVariable String email) {
+        return awsSESClient.getIdentityVerification(email);
     }
 }
