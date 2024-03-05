@@ -1,0 +1,49 @@
+name: CD to AWS Beanstalk
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          
+      - name: Build with Maven
+        run: mvn -B package -DskipTests
+      
+      - name: Upload Maven Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Artvswar_Artifacts
+          path: target/art-vs-war-0.0.1-SNAPSHOT.jar
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: Artvswar_Artifacts
+
+      - name: Deploy to EB
+        uses: einaregilsson/beanstalk-deploy@v21
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          application_name: art-vs-war
+          environment_name: art-env
+          version_label: ${{github.run_number}}
+          region: ${{env.AWS_REGION}}
+          deployment_package: art-vs-war-0.0.1-SNAPSHOT.jar
