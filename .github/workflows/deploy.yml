@@ -45,5 +45,5 @@ jobs:
           application_name: art-vs-war
           environment_name: art-env
           version_label: ${{github.run_number}}
-          region: ${{env.AWS_REGION}}
+          region: eu-west-3
           deployment_package: art-vs-war-0.0.1-SNAPSHOT.jar
