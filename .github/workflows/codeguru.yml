@@ -1,4 +1,4 @@
-name: CodeGuru Security Example
+name: CodeGuru Security
 on:
   push:
     branches:
@@ -44,3 +44,18 @@ jobs:
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: codeguru-security-results.sarif.json
+          
+      - name: Run Workflow Java CI with Maven upon success
+        uses: actions/github-script@v5
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { data: { status } } = await github.actions.createWorkflowDispatch({
+              owner: 'romanovosad87',
+              repo: 'art_vs_war_app',
+              workflow_id: 'maven.yaml',
+            });
+
+            if (status !== 204) {
+              throw new Error(`Failed to trigger Workflow Java CI with Maven: ${status}`);
+            }
