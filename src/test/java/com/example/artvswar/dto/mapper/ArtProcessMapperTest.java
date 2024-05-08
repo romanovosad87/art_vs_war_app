@@ -168,11 +168,13 @@ class ArtProcessMapperTest {
     @DisplayName("toModel Update - Throws CloudinaryCredentialException when public ID matches but signature is invalid")
     @Order(50)
     public void testToUpdateModel_PublicIdMatchSignatureInvalid() {
+        // Arrange
         updateImageDto.setPublicId(IMAGE_PUBLIC_ID);
         updateImageDto.setSignature(SIGNATURE_INVALID);
         Mockito.when(cloudinaryClient.verifySignature(
                 IMAGE_PUBLIC_ID, VERSION, SIGNATURE_INVALID)).thenReturn(false);
 
+        // Act & Assert
         assertThrows(CloudinaryCredentialException.class,
                 () -> artProcessMapper.toModel(updateRequestDto, artProcess),
                 "Should throw CloudinaryCredentialException when the public ID matches but the signature verification fails.");
@@ -182,10 +184,14 @@ class ArtProcessMapperTest {
     @DisplayName("toModel Update - Successfully updates ArtProcess")
     @Order(60)
     public void testToUpdateModel_Success() {
+        // Arrange
         updateImageDto.setPublicId(IMAGE_PUBLIC_ID_NEW);
         updateImageDto.setSignature(SIGNATURE);
+
+        // Act
         ArtProcess updatedArtProcess = artProcessMapper.toModel(updateRequestDto, artProcess);
 
+        // Assert
         assertNotNull(updatedArtProcess, "ArtProcess should not be null after update.");
         assertEquals(UPDATED_DESCRIPTION, updatedArtProcess.getDescription(),
                 "Expected description to be updated.");

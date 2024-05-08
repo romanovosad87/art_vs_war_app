@@ -72,8 +72,10 @@ public class AdditionalImageMapperTest {
     @DisplayName("toDto - Converts AdditionalImage to AdditionalImageResponseDto")
     @Order(10)
     public void testToDto_Success() {
+        // Act
         AdditionalImageResponseDto dto = additionalImageMapper.toDto(additionalImage);
 
+        // Assert
         assertNotNull(dto, "The DTO should not be null.");
         assertEquals(ID, dto.getId(), "Expected ID to match.");
         assertEquals(IMAGE_PUBLIC_ID, dto.getImageId(), "Expected image public ID to match.");
@@ -86,6 +88,7 @@ public class AdditionalImageMapperTest {
     @DisplayName("toModel - Throws CloudinaryCredentialException when invalid signature")
     @Order(20)
     public void testToModel_InvalidSignature() {
+        // Act & Assert
         assertThrows(CloudinaryCredentialException.class, () -> {
             additionalImageMapper.toModel(imageDto, ID);
         }, "Should throw CloudinaryCredentialException due to invalid signature.");
@@ -95,15 +98,15 @@ public class AdditionalImageMapperTest {
     @DisplayName("toModel - Successfully converts ImageCreateRequestDto to AdditionalImage")
     @Order(30)
     public void testToModel_Success() {
-        // Mock the behavior of cloudinaryClient to always return true for any signature checks
+        // Arrange
         when(cloudinaryClient.verifySignature(anyString(), anyString(), anyString())).thenReturn(true);
-
-        // Mock other dependencies as required
         when(paintingService.getReference(ID)).thenReturn(new Painting());  // Ensure this returns a valid object
         when(imageTransformation.paintingImageEagerTransformation(anyString())).thenReturn(IMAGE_URL);
 
+        // Act
         AdditionalImage result = additionalImageMapper.toModel(imageDto, ID);
 
+        // Assert
         assertNotNull(result, "The model should not be null.");
         assertNotNull(result.getPainting(), "Painting reference should not be null.");
         assertEquals(IMAGE_PUBLIC_ID, result.getImage().getPublicId(), "Expected public ID to match.");
