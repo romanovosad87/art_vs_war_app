@@ -13,14 +13,27 @@ import org.springframework.stereotype.Component;
 @Component
 public class AccountMapper {
 
-    public Account toModel(AccountCreateUpdateRequestDto dto, String cognitoSubject,
-                           String cognitoUsername, String stripeCustomerId) {
-        Account account = new Account();
-        account.setCognitoSubject(cognitoSubject);
-        account.setCognitoUsername(cognitoUsername);
+    private void checkNotNull(Object... args) {
+        for (Object arg : args) {
+            if (arg == null) {
+                throw new IllegalArgumentException("Failed to process: parameters should not be null");
+            }
+        }
+    }
+
+    private void trimAndSetPersonalInfo(Account account, AccountCreateUpdateRequestDto dto) {
         account.setFirstName(dto.getFirstName().trim());
         account.setLastName(dto.getLastName().trim());
         account.setPhone(dto.getPhone().trim());
+    }
+
+    public Account toModel(AccountCreateUpdateRequestDto dto, String cognitoSubject,
+                           String cognitoUsername, String stripeCustomerId) {
+        checkNotNull(dto, cognitoSubject, cognitoUsername, stripeCustomerId);
+        Account account = new Account();
+        account.setCognitoSubject(cognitoSubject);
+        account.setCognitoUsername(cognitoUsername);
+        trimAndSetPersonalInfo(account, dto);
         account.setStripeCustomerId(stripeCustomerId);
         AccountEmailData accountEmailData = new AccountEmailData();
         accountEmailData.setEmail(dto.getEmail().trim());
@@ -29,15 +42,15 @@ public class AccountMapper {
     }
 
     public Account updateAccountModel(AccountCreateUpdateRequestDto dto, Account account) {
-        account.setFirstName(dto.getFirstName().trim());
-        account.setLastName(dto.getLastName().trim());
-        account.setPhone(dto.getPhone().trim());
+        checkNotNull(dto, account);
+        trimAndSetPersonalInfo(account, dto);
         AccountEmailData accountEmailData = account.getAccountEmailData();
         accountEmailData.setEmail(dto.getEmail().trim());
         return account;
     }
 
     public AccountResponseDto toDto(Account account) {
+        checkNotNull(account);
         return new AccountResponseDto(
                 account.getId(),
                 account.getCognitoSubject(),
@@ -49,6 +62,7 @@ public class AccountMapper {
     }
 
     public AccountShippingAddress toAccountShippingModel(AccountShippingRequestDto dto) {
+        checkNotNull(dto);
         AccountShippingAddress address = new AccountShippingAddress();
         address.setFirstName(dto.getFirstName());
         address.setLastName(dto.getLastName());
@@ -64,6 +78,7 @@ public class AccountMapper {
     }
 
     public AccountShippingResponseDto toAccountShippingDto(AccountShippingAddress address) {
+        checkNotNull(address);
         return new AccountShippingResponseDto(
                 address.getFirstName(),
                 address.getLastName(),
