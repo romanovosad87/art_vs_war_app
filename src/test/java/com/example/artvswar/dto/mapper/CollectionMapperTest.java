@@ -56,7 +56,8 @@ class CollectionMapperTest {
         // Assert
         assertNotNull(result, "The result should not be null");
         assertEquals(TITLE, result.getTitle(), "The title should match the expected value");
-        assertEquals(DESCRIPTION, result.getDescription(), "The description should match the expected value");
+        assertEquals(DESCRIPTION, result.getDescription(),
+                "The description should match the expected value");
     }
 
     @Test
@@ -73,8 +74,10 @@ class CollectionMapperTest {
 
         // Assert
         assertNotNull(updatedModel, "The updated model should not be null");
-        assertEquals(UPDATED_TITLE, updatedModel.getTitle(), "The updated title should match the expected value");
-        assertEquals(UPDATED_DESCRIPTION, updatedModel.getDescription(), "The updated description should match the expected value");
+        assertEquals(UPDATED_TITLE, updatedModel.getTitle(),
+                "The updated title should match the expected value");
+        assertEquals(UPDATED_DESCRIPTION, updatedModel.getDescription(),
+                "The updated description should match the expected value");
     }
 
     @Test
@@ -86,11 +89,17 @@ class CollectionMapperTest {
 
         // Assert
         assertNotNull(dto, "The DTO should not be null");
-        assertEquals(collection.getId(), dto.getId(), "DTO's id should match the Collection's id");
-        assertEquals(collection.getPrettyId(), dto.getPrettyId(), "DTO's pretty id should match the Collection's pretty id");
-        assertEquals(TITLE, dto.getTitle(), "DTO's title should match the Collection's title");
-        assertEquals(DESCRIPTION, dto.getDescription(), "DTO's description should match the Collection's description");
-        assertEquals("John Doe", dto.getAuthorFullName(), "DTO's author full name should match");
-        assertEquals("auth-001", dto.getAuthorPrettyId(), "DTO's author pretty id should match");
+        assertEquals(collection.getId(), dto.getId(),
+                "DTO's id should match the Collection's id");
+        assertEquals(collection.getPrettyId(), dto.getPrettyId(),
+                "DTO's pretty id should match the Collection's pretty id");
+        assertEquals(TITLE, dto.getTitle(),
+                "DTO's title should match the Collection's title");
+        assertEquals(DESCRIPTION, dto.getDescription(),
+                "DTO's description should match the Collection's description");
+        assertEquals("John Doe", dto.getAuthorFullName(),
+                "DTO's author full name should match");
+        assertEquals("auth-001", dto.getAuthorPrettyId(),
+                "DTO's author pretty id should match");
     }
 }

@@ -102,13 +102,20 @@ public class AuthorShippingAddressMapperTest {
 
         // Assert
         assertNotNull(updatedModel, "Updated model should not be null");
-        assertEquals(UPDATED_ADDRESS_LINE1, updatedModel.getAddressLine1(), "Updated address line 1 should match");
-        assertEquals(UPDATED_ADDRESS_LINE2, updatedModel.getAddressLine2(), "Updated address line 2 should match");
-        assertEquals(UPDATED_CITY, updatedModel.getCity(), "Updated city should match");
-        assertEquals(UPDATED_STATE, updatedModel.getState(), "Updated state should match");
-        assertEquals(UPDATED_COUNTRY, updatedModel.getCountry(), "Updated country should match");
-        assertEquals(UPDATED_POSTAL_CODE, updatedModel.getPostalCode(), "Updated postal code should match");
-        assertEquals(UPDATED_PHONE, updatedModel.getPhone(), "Updated phone should match");
+        assertEquals(UPDATED_ADDRESS_LINE1, updatedModel.getAddressLine1(),
+                "Updated address line 1 should match");
+        assertEquals(UPDATED_ADDRESS_LINE2, updatedModel.getAddressLine2(),
+                "Updated address line 2 should match");
+        assertEquals(UPDATED_CITY, updatedModel.getCity(),
+                "Updated city should match");
+        assertEquals(UPDATED_STATE, updatedModel.getState(),
+                "Updated state should match");
+        assertEquals(UPDATED_COUNTRY, updatedModel.getCountry(),
+                "Updated country should match");
+        assertEquals(UPDATED_POSTAL_CODE, updatedModel.getPostalCode(),
+                "Updated postal code should match");
+        assertEquals(UPDATED_PHONE, updatedModel.getPhone(),
+                "Updated phone should match");
     }
 
     @Test
