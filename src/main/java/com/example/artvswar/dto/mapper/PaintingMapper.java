@@ -1,5 +1,6 @@
 package com.example.artvswar.dto.mapper;
 
+import com.example.artvswar.dto.request.image.FullImageUpdateRequestDto;
 import com.example.artvswar.dto.request.painting.PaintingCreateRequestDto;
 import com.example.artvswar.dto.request.painting.PaintingUpdateRequestDto;
 import com.example.artvswar.dto.response.author.AuthorForPaintingResponseDto;
@@ -9,6 +10,7 @@ import com.example.artvswar.dto.response.painting.PaintingProfileResponseDto;
 import com.example.artvswar.dto.response.painting.PaintingProfileResponseDto.IdValuePair;
 import com.example.artvswar.dto.response.painting.PaintingResponseDto;
 import com.example.artvswar.model.AdditionalImage;
+import com.example.artvswar.model.Author;
 import com.example.artvswar.model.Collection;
 import com.example.artvswar.model.Medium;
 import com.example.artvswar.model.Painting;
@@ -26,8 +28,10 @@ import com.example.artvswar.util.image.CloudinaryClient;
 import com.example.artvswar.util.image.roomView.RoomViewManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -58,6 +62,17 @@ public class PaintingMapper {
         dto.setPaymentStatus(painting.getPaymentStatus());
         dto.setAddedToDatabase(painting.getEntityCreatedAt());
 
+        AuthorForPaintingResponseDto authorDto = new AuthorForPaintingResponseDto();
+
+        Author author = painting.getAuthor();
+        if (author != null) {
+            authorDto.setId(author.getCognitoSubject());
+            authorDto.setPrettyId(author.getPrettyId());
+            authorDto.setFullName(author.getFullName());
+            authorDto.setCountry(author.getCountry());
+        }
+        dto.setAuthor(authorDto);
+
         CollectionInPaintingResponseDto collectionDto = new CollectionInPaintingResponseDto();
         Collection collection = painting.getCollection().orElseGet(Collection::new);
         collectionDto.setId(collection.getId());
@@ -66,12 +81,6 @@ public class PaintingMapper {
 
         dto.setCollection(collectionDto);
 
-        AuthorForPaintingResponseDto authorDto = new AuthorForPaintingResponseDto();
-        authorDto.setId(painting.getAuthor().getCognitoSubject());
-        authorDto.setPrettyId(painting.getAuthor().getPrettyId());
-        authorDto.setFullName(painting.getAuthor().getFullName());
-        authorDto.setCountry(painting.getAuthor().getCountry());
-        dto.setAuthor(authorDto);
 
         List<String> styles = painting.getStyles().stream()
                 .map(Style::getName)
@@ -117,6 +126,9 @@ public class PaintingMapper {
         dto.setPaymentStatus(painting.getPaymentStatus());
         dto.setAddedToDatabase(painting.getEntityCreatedAt());
 
+        AuthorForPaintingResponseDto authorDto = getAuthorForPaintingResponseDto(painting);
+        dto.setAuthor(authorDto);
+
         CollectionInPaintingResponseDto collectionDto = new CollectionInPaintingResponseDto();
         Collection collection = painting.getCollection().orElseGet(Collection::new);
         collectionDto.setId(collection.getId());
@@ -124,13 +136,6 @@ public class PaintingMapper {
         collectionDto.setTitle(collection.getTitle());
 
         dto.setCollection(collectionDto);
-
-        AuthorForPaintingResponseDto authorDto = new AuthorForPaintingResponseDto();
-        authorDto.setId(painting.getAuthor().getCognitoSubject());
-        authorDto.setPrettyId(painting.getAuthor().getPrettyId());
-        authorDto.setFullName(painting.getAuthor().getFullName());
-        authorDto.setCountry(painting.getAuthor().getCountry());
-        dto.setAuthor(authorDto);
 
         List<IdValuePair> styles = painting.getStyles().stream()
                 .map(ent -> new IdValuePair(ent.getId(), ent.getName()))
@@ -161,38 +166,42 @@ public class PaintingMapper {
         return dto;
     }
 
-
     @Transactional
     public Painting toPaintingModel(PaintingCreateRequestDto dto) {
-        Painting painting = new Painting();
-        painting.setTitle(dto.getTitle().trim());
-        painting.setPrice(dto.getPrice());
-        painting.setYearOfCreation(dto.getYearOfCreation());
-        painting.setWeight(dto.getWeight());
-        painting.setWidth(dto.getWidth());
-        painting.setHeight(dto.getHeight());
-        painting.setDepth(dto.getDepth());
-        painting.setDescription(dto.getDescription().trim());
-        painting.setPaymentStatus(PaymentStatus.AVAILABLE);
+        Painting painting = populatePaintingFromDto(dto);
+
         PaintingImage paintingImage = paintingImageMapper.toImageModel(dto.getImage());
+
+    // Check if paintingImage is null before using it
+    if (paintingImage != null && paintingImage.getImage() != null) {
         long start = System.currentTimeMillis();
         List<RoomView> viewRooms = roomViewManager.getViewRooms(paintingImage.getImage().getPublicId(),
                 dto.getWidth(), dto.getHeight());
         long end = System.currentTimeMillis();
-        long duration = end - start;   // measure parallel stream
-        log.info("Mock rooms creation lasted " + duration + " µ");
+        long duration = end - start;  // measure time taken to get room views
+
+        // Log the duration of room views creation
+        log.info("Room views creation lasted " + duration + " ms");
+
         paintingImage.getRoomViews().addAll(viewRooms);
         painting.addPaintingImage(paintingImage);
+    } else {
+        log.warn("Painting image or image data is null, cannot create room views.");
+    }
 
-        dto.getStyleIds().forEach(
-                styleId -> painting.addStyle(styleService.getReferenceById(styleId)));
-        dto.getMediumIds().forEach(
-                mediumId -> painting.addMedium(mediumService.getReferenceById(mediumId)));
-        dto.getSupportIds().forEach(
-                supportId -> painting.addSupport(supportService.getReferenceById(supportId)));
-        dto.getSubjectIds().forEach(
-                subjectId -> painting.addSubject(subjectService.getReferenceById(subjectId))
-        );
+        // Add styles, mediums, supports, and subjects
+        if (dto.getStyleIds() != null) {
+            dto.getStyleIds().forEach(styleId -> painting.addStyle(styleService.getReferenceById(styleId)));
+        }
+        if (dto.getMediumIds() != null) {
+            dto.getMediumIds().forEach(mediumId -> painting.addMedium(mediumService.getReferenceById(mediumId)));
+        }
+        if (dto.getSupportIds() != null) {
+            dto.getSupportIds().forEach(supportId -> painting.addSupport(supportService.getReferenceById(supportId)));
+        }
+        if (dto.getSubjectIds() != null) {
+            dto.getSubjectIds().forEach(subjectId -> painting.addSubject(subjectService.getReferenceById(subjectId)));
+        }
 
         return painting;
     }
@@ -209,37 +218,45 @@ public class PaintingMapper {
         Double dbWidth = paintingFromDB.getWidth();
         Double dbHeight = paintingFromDB.getHeight();
 
-        boolean isNewImageNotDownloaded = dto.getImage().getPublicId()
-                .equals(paintingFromDB.getPaintingImage().getImage().getPublicId());
+        FullImageUpdateRequestDto imageDto = dto.getImage();
+        boolean isNewImageNotDownloaded = imageDto != null && imageDto.getPublicId() != null &&
+                imageDto.getPublicId().equals(paintingFromDB.getPaintingImage().getImage().getPublicId());
 
-        if ((!widthDto.equals(dbWidth) || !heightDto.equals(dbHeight))
-        && isNewImageNotDownloaded) {
+        boolean isWidthChanged = (widthDto != null && !widthDto.equals(dbWidth));
+        boolean isHeightChanged = (heightDto != null && !heightDto.equals(dbHeight));
+
+        if ((isWidthChanged || isHeightChanged) && isNewImageNotDownloaded) {
             createMockRoomsSameImage(dto, paintingFromDB);
         }
 
         paintingFromDB.setWeight(dto.getWeight());
-        paintingFromDB.setWidth(widthDto);
-        paintingFromDB.setHeight(heightDto);
+        paintingFromDB.setWidth(widthDto != null ? widthDto : dbWidth);
+        paintingFromDB.setHeight(heightDto != null ? heightDto : dbHeight);
         paintingFromDB.setDepth(dto.getDepth());
         paintingFromDB.setDescription(dto.getDescription());
 
+        // Clear existing associations and safely add new ones
         paintingFromDB.getStyles().clear();
+        if (dto.getStyleIds() != null) {
+            dto.getStyleIds().forEach(styleId -> paintingFromDB.addStyle(styleService.getReferenceById(styleId)));
+        }
+
         paintingFromDB.getMediums().clear();
+        if (dto.getMediumIds() != null) {
+            dto.getMediumIds().forEach(mediumId -> paintingFromDB.addMedium(mediumService.getReferenceById(mediumId)));
+        }
+
         paintingFromDB.getSupports().clear();
+        if (dto.getSupportIds() != null) {
+            dto.getSupportIds().forEach(supportId -> paintingFromDB.addSupport(supportService.getReferenceById(supportId)));
+        }
+
         paintingFromDB.getSubjects().clear();
+        if (dto.getSubjectIds() != null) {
+            dto.getSubjectIds().forEach(subjectId -> paintingFromDB.addSubject(subjectService.getReferenceById(subjectId)));
+        }
 
-        dto.getStyleIds().forEach(
-                styleId -> paintingFromDB.addStyle(styleService.getReferenceById(styleId)));
-        dto.getMediumIds().forEach(
-                mediumId -> paintingFromDB.addMedium(mediumService.getReferenceById(mediumId)));
-        dto.getSupportIds().forEach(
-                supportId -> paintingFromDB.addSupport(supportService.getReferenceById(supportId)));
-        dto.getSubjectIds().forEach(
-                subjectId -> paintingFromDB.addSubject(subjectService.getReferenceById(subjectId))
-        );
-
-
-        if (!isNewImageNotDownloaded) {
+        if (imageDto != null && !isNewImageNotDownloaded) {
             PaintingImage paintingImageFromDB = paintingFromDB.getPaintingImage();
             String publicId = paintingImageFromDB.getImage().getPublicId();
 
@@ -271,5 +288,41 @@ public class PaintingMapper {
         roomViews.addAll(viewRooms);
 
         paintingFromDB.addPaintingImage(paintingImageFromDB);
+    }
+
+    private static @NotNull AuthorForPaintingResponseDto getAuthorForPaintingResponseDto(Painting painting) {
+        AuthorForPaintingResponseDto authorDto = new AuthorForPaintingResponseDto();
+        Author author = painting.getAuthor();
+        if (author != null) {
+            authorDto.setId(author.getCognitoSubject());
+            authorDto.setPrettyId(author.getPrettyId());
+            authorDto.setFullName(author.getFullName());
+            authorDto.setCountry(author.getCountry());
+        } else {
+            // Optionally set default values or leave as null
+            authorDto.setId(null);
+            authorDto.setPrettyId(null);
+            authorDto.setFullName("Unknown Artist");
+            authorDto.setCountry("Unknown");
+        }
+        return authorDto;
+    }
+
+    private static @NotNull Painting populatePaintingFromDto(PaintingCreateRequestDto dto) {
+        Painting painting = new Painting();
+        painting.setTitle(dto.getTitle() != null ? dto.getTitle().trim() : "");
+        painting.setPrice(dto.getPrice());
+        painting.setYearOfCreation(dto.getYearOfCreation());
+        painting.setWeight(dto.getWeight());
+        painting.setWidth(dto.getWidth());
+        painting.setHeight(dto.getHeight());
+        painting.setDepth(dto.getDepth());
+
+        // Safely handle potentially null description
+        String description = dto.getDescription();
+        painting.setDescription(description != null ? description.trim() : "");
+
+        painting.setPaymentStatus(PaymentStatus.AVAILABLE);
+        return painting;
     }
 }
