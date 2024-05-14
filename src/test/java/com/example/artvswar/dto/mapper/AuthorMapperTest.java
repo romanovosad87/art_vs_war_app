@@ -121,7 +121,7 @@ class AuthorMapperTest {
     @Test
     @DisplayName("toAuthorModel - Successfully creates Author model from DTO")
     @Order(10)
-    public void testToAuthorModel_Success() {
+    void testToAuthorModel_Success() {
         // Act
         Author result = authorMapper.toAuthorModel(createRequestDto);
 
@@ -147,7 +147,7 @@ class AuthorMapperTest {
     @Test
     @DisplayName("toAuthorModel - Throws CloudinaryCredentialException when signature is invalid")
     @Order(20)
-    public void testToAuthorModel_InvalidSignature() {
+    void testToAuthorModel_InvalidSignature() {
         // Arrange
         when(cloudinaryClient.verifySignature(PUBLIC_ID, VERSION, SIGNATURE)).thenReturn(false);
 
@@ -160,7 +160,7 @@ class AuthorMapperTest {
     @Test
     @DisplayName("updateAuthorModel - Successfully updates Author model")
     @Order(30)
-    public void testUpdateAuthorModel_Success() {
+    void testUpdateAuthorModel_Success() {
         // Act
         Author updatedAuthor = authorMapper.updateAuthorModel(updateRequestDto, existingAuthor);
 
@@ -182,7 +182,7 @@ class AuthorMapperTest {
     @Test
     @DisplayName("toDto - Successfully transforms Author to DTO")
     @Order(40)
-    public void testToDto_Success() {
+    void testToDto_Success() {
         // Act
         AuthorProfileResponseDto dto = authorMapper.toDto(existingAuthor);
 
@@ -207,7 +207,7 @@ class AuthorMapperTest {
     @Test
     @DisplayName("updateAuthorModel - Successfully updates Author image when public ID changes and signature is valid")
     @Order(50)
-    public void testUpdateAuthorModel_ImageUpdateSuccess() {
+    void testUpdateAuthorModel_ImageUpdateSuccess() {
         // Arrange
         when(cloudinaryClient.verifySignature(PUBLIC_ID_UPDATED, VERSION, SIGNATURE)).thenReturn(true);
         when(imageTransformation.photoImageEagerTransformation(PUBLIC_ID_UPDATED)).thenReturn(IMAGE_URL_UPDATED);
@@ -227,7 +227,7 @@ class AuthorMapperTest {
     @Test
     @DisplayName("updateAuthorModel - Throws CloudinaryCredentialException when public ID changes and signature is invalid")
     @Order(60)
-    public void testUpdateAuthorModel_InvalidSignatureThrowsException() {
+    void testUpdateAuthorModel_InvalidSignatureThrowsException() {
         // Arrange
         ImageUpdateRequestDto imageDto = new ImageUpdateRequestDto();
         imageDto.setPublicId(PUBLIC_ID_UPDATED);

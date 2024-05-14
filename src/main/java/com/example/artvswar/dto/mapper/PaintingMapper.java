@@ -9,6 +9,7 @@ import com.example.artvswar.dto.response.image.PaintingImageResponseDto;
 import com.example.artvswar.dto.response.painting.PaintingProfileResponseDto;
 import com.example.artvswar.dto.response.painting.PaintingProfileResponseDto.IdValuePair;
 import com.example.artvswar.dto.response.painting.PaintingResponseDto;
+import com.example.artvswar.exception.AppEntityNotFoundException;
 import com.example.artvswar.model.AdditionalImage;
 import com.example.artvswar.model.Author;
 import com.example.artvswar.model.Collection;
@@ -39,6 +40,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Log4j2
 public class PaintingMapper {
+
     private final PaintingImageMapper paintingImageMapper;
     private final RoomViewManager roomViewManager;
     private final StyleService styleService;
@@ -299,11 +301,7 @@ public class PaintingMapper {
             authorDto.setFullName(author.getFullName());
             authorDto.setCountry(author.getCountry());
         } else {
-            // Optionally set default values or leave as null
-            authorDto.setId(null);
-            authorDto.setPrettyId(null);
-            authorDto.setFullName("Unknown Artist");
-            authorDto.setCountry("Unknown");
+            throw new AppEntityNotFoundException(String.format("Can't find author for the painting id: %s", painting.getId()));
         }
         return authorDto;
     }

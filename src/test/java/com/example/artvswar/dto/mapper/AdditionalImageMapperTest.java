@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class AdditionalImageMapperTest {
+class AdditionalImageMapperTest {
 
     @Autowired
     private AdditionalImageMapper additionalImageMapper;
@@ -49,7 +49,7 @@ public class AdditionalImageMapperTest {
     private static final String IMAGE_URL = "http://example.com/image.jpg";
     private static final String VERSION = "v1";
     private static final String SIGNATURE = "v1";
-    private static final String MODERATION_STATUS = "APPROVED";
+    private static final String MODERATION_STATUS = ModerationStatus.APPROVED.name();
 
     @BeforeEach
     public void setUp() {
@@ -71,7 +71,7 @@ public class AdditionalImageMapperTest {
     @Test
     @DisplayName("toDto - Converts AdditionalImage to AdditionalImageResponseDto")
     @Order(10)
-    public void testToDto_Success() {
+    void testToDto_Success() {
         // Act
         AdditionalImageResponseDto dto = additionalImageMapper.toDto(additionalImage);
 
@@ -87,7 +87,7 @@ public class AdditionalImageMapperTest {
     @Test
     @DisplayName("toModel - Throws CloudinaryCredentialException when invalid signature")
     @Order(20)
-    public void testToModel_InvalidSignature() {
+    void testToModel_InvalidSignature() {
         // Act & Assert
         assertThrows(CloudinaryCredentialException.class, () -> {
             additionalImageMapper.toModel(imageDto, ID);
@@ -97,7 +97,7 @@ public class AdditionalImageMapperTest {
     @Test
     @DisplayName("toModel - Successfully converts ImageCreateRequestDto to AdditionalImage")
     @Order(30)
-    public void testToModel_Success() {
+    void testToModel_Success() {
         // Arrange
         when(cloudinaryClient.verifySignature(anyString(), anyString(), anyString())).thenReturn(true);
         when(paintingService.getReference(ID)).thenReturn(new Painting());  // Ensure this returns a valid object

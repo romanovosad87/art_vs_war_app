@@ -35,7 +35,7 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @TestMethodOrder(OrderAnnotation.class)
-public class PaintingImageMapperTest {
+class PaintingImageMapperTest {
 
     @InjectMocks
     private PaintingImageMapper paintingImageMapper;
@@ -52,7 +52,7 @@ public class PaintingImageMapperTest {
     private static final String SIGNATURE = "validSignature";
     private static final String SIGNATURE_INVALID = "invalidSignature";
     private static final String VERSION = "1";
-    private static final String MODERATION_STATUS_APPROVED = "APPROVED";
+    private static final String MODERATION_STATUS_APPROVED = ModerationStatus.APPROVED.name();
 
     private FullImageCreateRequestDto createRequestDto;
     private FullImageUpdateRequestDto updateRequestDto;
@@ -98,7 +98,7 @@ public class PaintingImageMapperTest {
     @Test
     @Order(10)
     @DisplayName("toImageResponseDto - Successfully transforms to DTO")
-    public void testToImageResponseDto_Success() {
+    void testToImageResponseDto_Success() {
         // Act
         PaintingImageResponseDto dto = paintingImageMapper.toImageResponseDto(existingPaintingImage, additionalImages);
 
@@ -115,7 +115,7 @@ public class PaintingImageMapperTest {
     @Test
     @Order(11)
     @DisplayName("toImageResponseDto - Handles PENDING Moderation Status")
-    public void testToImageResponseDto_Pending() {
+    void testToImageResponseDto_Pending() {
         // Arrange
         existingPaintingImage.getImage().setModerationStatus(ModerationStatus.PENDING);
 
@@ -132,7 +132,7 @@ public class PaintingImageMapperTest {
     @Test
     @Order(12)
     @DisplayName("toImageResponseDto - Handles REJECTED Moderation Status")
-    public void testToImageResponseDto_Rejected() {
+    void testToImageResponseDto_Rejected() {
         // Arrange
         existingPaintingImage.getImage().setModerationStatus(ModerationStatus.REJECTED);
 
@@ -149,7 +149,7 @@ public class PaintingImageMapperTest {
     @Test
     @Order(20)
     @DisplayName("toImageModel - Successfully creates image model from DTO with valid signature")
-    public void testToImageModel_Success() {
+    void testToImageModel_Success() {
         // Act
         PaintingImage result = paintingImageMapper.toImageModel(createRequestDto);
 
@@ -168,7 +168,7 @@ public class PaintingImageMapperTest {
     @Test
     @Order(30)
     @DisplayName("toImageModel - Throws CloudinaryCredentialException when signature is invalid")
-    public void testToImageModel_InvalidSignature() {
+    void testToImageModel_InvalidSignature() {
         // Arrange
         when(cloudinaryClient.verifySignature(PUBLIC_ID, VERSION, SIGNATURE_INVALID)).thenReturn(false);
         createRequestDto.setSignature(SIGNATURE_INVALID);
@@ -185,7 +185,7 @@ public class PaintingImageMapperTest {
     @Test
     @Order(31)
     @DisplayName("toImageModel with Update DTO - Successfully updates image model from DTO with valid signature")
-    public void testToImageModelWithUpdate_Success() {
+    void testToImageModelWithUpdate_Success() {
         // Arrange
         when(cloudinaryClient.verifySignature(PUBLIC_ID_UPDATED, VERSION, SIGNATURE)).thenReturn(true);
         when(imageTransformation.paintingImageEagerTransformation(PUBLIC_ID_UPDATED)).thenReturn("http://example.com/updated.jpg");
@@ -206,7 +206,7 @@ public class PaintingImageMapperTest {
     @Test
     @Order(32)
     @DisplayName("toImageModel with Update DTO - Throws CloudinaryCredentialException when signature is invalid")
-    public void testToImageModelWithUpdate_InvalidSignature() {
+    void testToImageModelWithUpdate_InvalidSignature() {
         // Arrange
         when(cloudinaryClient.verifySignature(PUBLIC_ID_UPDATED, VERSION, SIGNATURE_INVALID)).thenReturn(false);
         updateRequestDto.setSignature(SIGNATURE_INVALID);
@@ -221,7 +221,7 @@ public class PaintingImageMapperTest {
     @Test
     @Order(40)
     @DisplayName("toImageModelSameImage - Updates model without changing image details")
-    public void testToImageModelSameImage() {
+    void testToImageModelSameImage() {
         // Act
         PaintingImage result = paintingImageMapper.toImageModelSameImage(updateRequestDto, existingPaintingImage);
 

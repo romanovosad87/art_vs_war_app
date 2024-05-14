@@ -52,7 +52,7 @@ class OrderMapperTest {
 
     @Test
     @DisplayName("toModel - Successfully creates Order model from Session")
-    public void testToModel_Success() {
+    void testToModel_Success() {
         // Act
         Order order = orderMapper.toModel(session, TIME_OF_EVENT);
 

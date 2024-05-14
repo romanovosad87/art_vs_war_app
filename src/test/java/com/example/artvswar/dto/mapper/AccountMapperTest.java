@@ -79,7 +79,7 @@ class AccountMapperTest {
     @Test
     @DisplayName("toModel - Throw IllegalArgumentException for null parameters on creation")
     @Order(10)
-    public void testToModel_CheckNullParameters() {
+    void testToModel_CheckNullParameters() {
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> accountMapper.toModel(null, COGNITO_SUBJECT, COGNITO_USERNAME,
                         STRIPE_CUSTOMER_ID),
@@ -98,7 +98,7 @@ class AccountMapperTest {
     @Test
     @DisplayName("toModel - Successfully create Account")
     @Order(20)
-    public void testToModel_Success() {
+    void testToModel_Success() {
         // Act
         account = accountMapper.toModel(dto, COGNITO_SUBJECT, COGNITO_USERNAME, STRIPE_CUSTOMER_ID);
 
@@ -116,7 +116,7 @@ class AccountMapperTest {
     @Test
     @DisplayName("updateAccountModel - Throw IllegalArgumentException for null parameters on creation")
     @Order(25)
-    public void tesUpdateAccountModel_CheckNullParameters() {
+    void tesUpdateAccountModel_CheckNullParameters() {
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> accountMapper.updateAccountModel(null, account),
                 "Should throw IllegalArgumentException when the DTO is null.");
@@ -128,7 +128,7 @@ class AccountMapperTest {
     @Test
     @DisplayName("updateAccountModel - Successfully update Account Model")
     @Order(30)
-    public void testUpdateAccountModel_Success() {
+    void testUpdateAccountModel_Success() {
         // Arrange
         dto.setFirstName(UPDATED_FIRST_NAME);
         dto.setLastName(UPDATED_LAST_NAME);
@@ -149,7 +149,7 @@ class AccountMapperTest {
     @Test
     @DisplayName("toDto - Throw IllegalArgumentException for null parameters on creation")
     @Order(35)
-    public void tesToDto_CheckNullParameters() {
+    void tesToDto_CheckNullParameters() {
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> accountMapper.toDto(null),
                 "Should throw IllegalArgumentException when the ACCOUNT is null.");
@@ -158,7 +158,7 @@ class AccountMapperTest {
     @Test
     @DisplayName("toDto - Convert Account to AccountResponseDto successfully")
     @Order(40)
-    public void testToDto_Success() {
+    void testToDto_Success() {
         // Act
         AccountResponseDto accountDto = accountMapper.toDto(account);
 
@@ -172,7 +172,7 @@ class AccountMapperTest {
     @Test
     @DisplayName("toAccountShippingModel - Throw IllegalArgumentException for null parameters on creation")
     @Order(45)
-    public void tesToAccountShippingModel_CheckNullParameters() {
+    void tesToAccountShippingModel_CheckNullParameters() {
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> accountMapper.toAccountShippingModel(null),
                 "Should throw IllegalArgumentException when the AccountShippingRequestDto is null.");
@@ -181,7 +181,7 @@ class AccountMapperTest {
     @Test
     @DisplayName("toAccountShippingModel - Successfully create AccountShippingAddress")
     @Order(50)
-    public void testToAccountShippingModel_Success() {
+    void testToAccountShippingModel_Success() {
         // Act
         AccountShippingAddress address = accountMapper.toAccountShippingModel(shippingDto);
 
@@ -201,7 +201,7 @@ class AccountMapperTest {
     @Test
     @DisplayName("toAccountShippingDto - Throw IllegalArgumentException for null parameters on creation")
     @Order(55)
-    public void tesToAccountShippingDto_CheckNullParameters() {
+    void tesToAccountShippingDto_CheckNullParameters() {
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> accountMapper.toAccountShippingDto(null),
                 "Should throw IllegalArgumentException when the AccountShippingAddress is null.");
@@ -210,7 +210,7 @@ class AccountMapperTest {
     @Test
     @DisplayName("Convert AccountShippingAddress to AccountShippingResponseDto successfully")
     @Order(60)
-    public void testToAccountShippingDto_Success() {
+    void testToAccountShippingDto_Success() {
         // Act
         AccountShippingResponseDto accountShippingDto = accountMapper.toAccountShippingDto(address);
 

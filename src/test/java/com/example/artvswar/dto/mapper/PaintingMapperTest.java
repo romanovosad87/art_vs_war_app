@@ -5,6 +5,8 @@ import com.example.artvswar.dto.request.painting.PaintingUpdateRequestDto;
 import com.example.artvswar.dto.response.image.PaintingImageResponseDto;
 import com.example.artvswar.dto.response.painting.PaintingProfileResponseDto;
 import com.example.artvswar.dto.response.painting.PaintingResponseDto;
+import com.example.artvswar.exception.AppEntityNotFoundException;
+import com.example.artvswar.model.Author;
 import com.example.artvswar.model.Painting;
 import com.example.artvswar.model.Style;
 import com.example.artvswar.service.MediumService;
@@ -30,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class PaintingMapperTest {
+class PaintingMapperTest {
 
     @Autowired
     private PaintingMapper paintingMapper;
@@ -57,21 +59,33 @@ public class PaintingMapperTest {
     private CloudinaryClient cloudinaryClient;
 
     private Painting painting;
+    private Author author;
 
     private static final Long PAINTING_ID = 1L;
     private static final String PAINTING_TITLE = "Starry Night";
     private static final String PAINTING_DESCRIPTION = "A famous starry night painting.";
     private static final int PAINTING_YEAR = 1889;
     private static final BigDecimal PAINTING_PRICE = new BigDecimal("100000.00");
+    private static final Long AUTHOR_ID = 1L;
+    private static final String AUTHOR_FULL_NAME = "Van Gogh";
+    private static final String AUTHOR_PRETTY_ID = "van-gogh";
+    private static final String AUTHOR_COUNTRY = "Netherlands";
 
     @BeforeEach
     public void setUp() {
+        author = new Author();
+        author.setId(AUTHOR_ID);
+        author.setFullName(AUTHOR_FULL_NAME);
+        author.setPrettyId(AUTHOR_PRETTY_ID);
+        author.setCountry(AUTHOR_COUNTRY);
+
         painting = new Painting();
         painting.setId(PAINTING_ID);
         painting.setTitle(PAINTING_TITLE);
         painting.setDescription(PAINTING_DESCRIPTION);
         painting.setYearOfCreation(PAINTING_YEAR);
         painting.setPrice(PAINTING_PRICE);
+        painting.setAuthor(author);
 
         PaintingResponseDto responseDto = new PaintingResponseDto();
         responseDto.setId(painting.getId());
@@ -84,7 +98,7 @@ public class PaintingMapperTest {
     @Test
     @Order(10)
     @DisplayName("toPaintingResponseDto - Successfully converts Painting to PaintingResponseDto")
-    public void testToPaintingResponseDto_Success() {
+    void testToPaintingResponseDto_Success() {
         // Arrange
         when(paintingImageMapper.toImageResponseDto(any(), any())).thenReturn(new PaintingImageResponseDto());
 
@@ -103,7 +117,7 @@ public class PaintingMapperTest {
     @Test
     @Order(11)
     @DisplayName("toPaintingResponseDto - Handles null Author gracefully")
-    public void testToPaintingResponseDto_NullAuthor() {
+    void testToPaintingResponseDto_NullAuthor() {
         // Arrange
         painting.setAuthor(null); // Explicitly setting the author to null
 
@@ -121,7 +135,7 @@ public class PaintingMapperTest {
     @Test
     @Order(20)
     @DisplayName("toPaintingProfileResponseDto - Successfully converts Painting to PaintingProfileResponseDto")
-    public void testToPaintingProfileResponseDto_Success() {
+    void testToPaintingProfileResponseDto_Success() {
         // Arrange
         when(paintingImageMapper.toImageResponseDto(any(), any())).thenReturn(new PaintingImageResponseDto());
 
@@ -139,26 +153,20 @@ public class PaintingMapperTest {
 
     @Test
     @Order(21)
-    @DisplayName("toPaintingProfileResponseDto - Handles null Author gracefully")
-    public void testToPaintingProfileResponseDto_NullAuthor() {
+    @DisplayName("toPaintingProfileResponseDto - throw exception if Author is null")
+    void testToPaintingProfileResponseDto_NullAuthor() {
         // Arrange
-        painting.setAuthor(null); // Set the author to null to test null safety
-
-        // Act
-        PaintingProfileResponseDto dto = paintingMapper.toPaintingProfileResponseDto(painting);
+        painting.setAuthor(null); // Set the author to null
 
         // Assert
-        assertNotNull(dto, "The DTO should not be null");
-        assertNull(dto.getAuthor().getId(), "Author ID should be null if not set to a default");
-        assertNull(dto.getAuthor().getPrettyId(), "Author Pretty ID should be null if not set to a default");
-        assertEquals("Unknown Artist", dto.getAuthor().getFullName(), "Should handle unknown artist gracefully");
-        assertEquals("Unknown", dto.getAuthor().getCountry(), "Should handle unknown country gracefully");
+        assertThrows(AppEntityNotFoundException.class, () -> paintingMapper.toPaintingProfileResponseDto(painting),
+                "Should throw exception if painting don't have an author");
     }
 
     @Test
     @Order(30)
     @DisplayName("toPaintingModel - Successfully converts PaintingCreateRequestDto to Painting model")
-    public void testToPaintingModel_Success() {
+    void testToPaintingModel_Success() {
         // Arrange
         PaintingCreateRequestDto createDto = new PaintingCreateRequestDto();
         createDto.setTitle("New Painting");
@@ -178,7 +186,7 @@ public class PaintingMapperTest {
     @Test
     @Order(40)
     @DisplayName("updatePaintingModel - Successfully updates existing Painting model from PaintingUpdateRequestDto")
-    public void testUpdatePaintingModel_Success() {
+    void testUpdatePaintingModel_Success() {
         // Arrange
         PaintingUpdateRequestDto updateDto = new PaintingUpdateRequestDto();
         updateDto.setTitle("Updated Painting");
@@ -198,7 +206,7 @@ public class PaintingMapperTest {
     @Test
     @Order(41)
     @DisplayName("updatePaintingModel - Handles null image DTO gracefully")
-    public void testUpdatePaintingModel_NullImageDto() {
+    void testUpdatePaintingModel_NullImageDto() {
         // Arrange
         Painting paintingFromDB = new Painting(); // set up a dummy painting
         PaintingUpdateRequestDto updateDto = new PaintingUpdateRequestDto();
@@ -215,7 +223,7 @@ public class PaintingMapperTest {
     @Test
     @Order(42)
     @DisplayName("updatePaintingModel - Handles null width and height gracefully")
-    public void testUpdatePaintingModel_NullWidthHeight() {
+    void testUpdatePaintingModel_NullWidthHeight() {
         // Arrange
         Painting paintingFromDB = new Painting(); // Initialize with some default values
         paintingFromDB.setWidth(100.0);
@@ -236,7 +244,7 @@ public class PaintingMapperTest {
 
     @Test
     @DisplayName("updatePaintingModel - Handles null style IDs gracefully")
-    public void testUpdatePaintingModel_NullStyleIds() {
+    void testUpdatePaintingModel_NullStyleIds() {
         // Arrange
         Painting paintingFromDB = new Painting(); // Setup initial painting with styles
         paintingFromDB.addStyle(new Style());

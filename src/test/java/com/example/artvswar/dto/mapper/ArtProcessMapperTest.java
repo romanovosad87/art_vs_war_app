@@ -112,7 +112,7 @@ class ArtProcessMapperTest {
     @Test
     @DisplayName("toDto - Successfully transforms ArtProcess to DTO")
     @Order(10)
-    public void testToDto_Success() {
+    void testToDto_Success() {
         // Act
         ArtProcessResponseDto dto = artProcessMapper.toDto(artProcess);
 
@@ -126,7 +126,7 @@ class ArtProcessMapperTest {
     @Test
     @DisplayName("toModel - Throws CloudinaryCredentialException when signature is invalid")
     @Order(20)
-    public void testToModel_InvalidSignature() {
+    void testToModel_InvalidSignature() {
         // Arrange
         when(cloudinaryClient.verifySignature(anyString(), anyString(), anyString())).thenReturn(false);
 
@@ -137,7 +137,7 @@ class ArtProcessMapperTest {
     @Test
     @DisplayName("toDto - Uses fallback when ModerationStatus is not APPROVED")
     @Order(30)
-    public void testToDto_NotApprovedModerationStatus() {
+    void testToDto_NotApprovedModerationStatus() {
         // Arrange
         artProcess.getArtProcessImage().getImage().setModerationStatus(MODERATION_STATUS_REJECTED);
 
@@ -154,7 +154,7 @@ class ArtProcessMapperTest {
     @Test
     @DisplayName("toModel - Successfully creates ArtProcess from DTO")
     @Order(40)
-    public void testToModel_Success() {
+    void testToModel_Success() {
         // Act
         ArtProcess result = artProcessMapper.toModel(createRequestDto);
 
@@ -167,7 +167,7 @@ class ArtProcessMapperTest {
     @Test
     @DisplayName("toModel Update - Throws CloudinaryCredentialException when public ID matches but signature is invalid")
     @Order(50)
-    public void testToUpdateModel_PublicIdMatchSignatureInvalid() {
+    void testToUpdateModel_PublicIdMatchSignatureInvalid() {
         // Arrange
         updateImageDto.setPublicId(IMAGE_PUBLIC_ID);
         updateImageDto.setSignature(SIGNATURE_INVALID);
@@ -183,7 +183,7 @@ class ArtProcessMapperTest {
     @Test
     @DisplayName("toModel Update - Successfully updates ArtProcess")
     @Order(60)
-    public void testToUpdateModel_Success() {
+    void testToUpdateModel_Success() {
         // Arrange
         updateImageDto.setPublicId(IMAGE_PUBLIC_ID_NEW);
         updateImageDto.setSignature(SIGNATURE);

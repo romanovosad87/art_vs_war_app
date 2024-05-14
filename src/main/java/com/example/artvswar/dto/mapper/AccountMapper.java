@@ -13,20 +13,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class AccountMapper {
 
-    private void checkNotNull(Object... args) {
-        for (Object arg : args) {
-            if (arg == null) {
-                throw new IllegalArgumentException("Failed to process: parameters should not be null");
-            }
-        }
-    }
-
-    private void trimAndSetPersonalInfo(Account account, AccountCreateUpdateRequestDto dto) {
-        account.setFirstName(dto.getFirstName().trim());
-        account.setLastName(dto.getLastName().trim());
-        account.setPhone(dto.getPhone().trim());
-    }
-
     public Account toModel(AccountCreateUpdateRequestDto dto, String cognitoSubject,
                            String cognitoUsername, String stripeCustomerId) {
         checkNotNull(dto, cognitoSubject, cognitoUsername, stripeCustomerId);
@@ -90,5 +76,19 @@ public class AccountMapper {
                 address.getCountry(),
                 address.getCountryCode(),
                 address.getPostalCode());
+    }
+
+    private void checkNotNull(Object... args) {
+        for (Object arg : args) {
+            if (arg == null) {
+                throw new IllegalArgumentException("Failed to process: parameters should not be null");
+            }
+        }
+    }
+
+    private void trimAndSetPersonalInfo(Account account, AccountCreateUpdateRequestDto dto) {
+        account.setFirstName(dto.getFirstName().trim());
+        account.setLastName(dto.getLastName().trim());
+        account.setPhone(dto.getPhone().trim());
     }
 }

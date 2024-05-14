@@ -49,7 +49,7 @@ class CollectionMapperTest {
     @Test
     @Order(10)
     @DisplayName("toModel - Successfully creates Collection model from DTO")
-    public void testToModel_Success() {
+    void testToModel_Success() {
         // Act
         Collection result = collectionMapper.toModel(createUpdateDto);
 
@@ -63,7 +63,7 @@ class CollectionMapperTest {
     @Test
     @Order(20)
     @DisplayName("toModelUpdate - Successfully updates Collection model from DTO")
-    public void testToModelUpdate_Success() {
+    void testToModelUpdate_Success() {
         // Arrange
         CollectionCreateUpdateRequestDto updateDto = new CollectionCreateUpdateRequestDto();
         updateDto.setTitle(UPDATED_TITLE);
@@ -83,7 +83,7 @@ class CollectionMapperTest {
     @Test
     @Order(30)
     @DisplayName("toDto - Successfully transforms Collection to DTO")
-    public void testToDto_Success() {
+    void testToDto_Success() {
         // Act
         CollectionShortResponseDto dto = collectionMapper.toDto(collection);
 

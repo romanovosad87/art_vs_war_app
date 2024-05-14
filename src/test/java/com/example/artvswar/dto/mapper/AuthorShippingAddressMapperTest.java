@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class AuthorShippingAddressMapperTest {
+class AuthorShippingAddressMapperTest {
 
     @InjectMocks
     private AuthorShippingAddressMapper authorShippingAddressMapper;
@@ -67,7 +67,7 @@ public class AuthorShippingAddressMapperTest {
     @Test
     @Order(10)
     @DisplayName("toModel - Successfully creates model from DTO")
-    public void testToModel_Success() {
+    void testToModel_Success() {
         // Act
         AuthorShippingAddress model = authorShippingAddressMapper.toModel(requestDto);
 
@@ -86,7 +86,7 @@ public class AuthorShippingAddressMapperTest {
     @Test
     @Order(20)
     @DisplayName("toModelUpdate - Successfully updates model from DTO")
-    public void testToModelUpdate_Success() {
+    void testToModelUpdate_Success() {
         // Arrange
         AuthorShippingAddressRequestDto updateDto = new AuthorShippingAddressRequestDto();
         updateDto.setAddressLine1(UPDATED_ADDRESS_LINE1);
@@ -121,7 +121,7 @@ public class AuthorShippingAddressMapperTest {
     @Test
     @Order(30)
     @DisplayName("toDto - Successfully transforms model to DTO")
-    public void testToDto_Success() {
+    void testToDto_Success() {
         // Act
         ShippingAddressResponseDto dto = authorShippingAddressMapper.toDto(existingAddress);
 
