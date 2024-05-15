@@ -23,7 +23,8 @@ jobs:
     - name: Make mvnw executable
       run: chmod +x mvnw
     - name: Build and Run Tests
-      with:
+      run: ./mvnw clean package
+      env:
         aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      run: ./mvnw clean package
+
