@@ -2,12 +2,14 @@ package com.example.artvswar.dto.mapper;
 
 import com.example.artvswar.model.Order;
 import com.stripe.model.checkout.Session;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -17,14 +19,14 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-
+@org.junit.jupiter.api.Order(360)
 @SpringBootTest
 class OrderMapperTest {
 
-    @InjectMocks
+    @Autowired
     private OrderMapper orderMapper;
 
-    @Mock
+    @MockBean
     private Session session;
 
     private Session.ShippingCost shippingCost;
@@ -48,6 +50,11 @@ class OrderMapperTest {
         when(session.getShippingCost()).thenReturn(shippingCost);
 
         when(session.getPaymentIntent()).thenReturn(PAYMENT_INTENT_ID);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        Mockito.reset(session);
     }
 
     @Test

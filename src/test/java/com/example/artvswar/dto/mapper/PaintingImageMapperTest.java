@@ -12,15 +12,17 @@ import com.example.artvswar.util.ModerationMockImage;
 import com.example.artvswar.util.RatioHelper;
 import com.example.artvswar.util.image.CloudinaryClient;
 import com.example.artvswar.util.image.ImageTransformation;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,18 +35,19 @@ import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
+@Order(370)
 @SpringBootTest
 @TestMethodOrder(OrderAnnotation.class)
 class PaintingImageMapperTest {
 
-    @InjectMocks
+    @Autowired
     private PaintingImageMapper paintingImageMapper;
 
-    @Mock
+    @MockBean
     private RatioHelper ratioHelper;
-    @Mock
+    @MockBean
     private CloudinaryClient cloudinaryClient;
-    @Mock
+    @MockBean
     private ImageTransformation imageTransformation;
 
     private static final String PUBLIC_ID = "publicId123";
@@ -93,6 +96,11 @@ class PaintingImageMapperTest {
         when(cloudinaryClient.verifySignature(anyString(), anyString(), anyString())).thenReturn(true);
         when(imageTransformation.paintingImageEagerTransformation(anyString()))
                 .thenReturn("https://example.com/transformed.jpg");
+    }
+
+    @AfterEach
+    public void tearDown() {
+        Mockito.reset(ratioHelper, cloudinaryClient, imageTransformation);
     }
 
     @Test
