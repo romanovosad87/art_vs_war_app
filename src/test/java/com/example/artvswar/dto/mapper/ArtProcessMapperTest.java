@@ -13,6 +13,7 @@ import com.example.artvswar.model.enummodel.ModerationStatus;
 import com.example.artvswar.util.ModerationMockImage;
 import com.example.artvswar.util.image.CloudinaryClient;
 import com.example.artvswar.util.image.ImageTransformation;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
@@ -30,6 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
+@Order(320)
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ArtProcessMapperTest {
@@ -107,6 +109,11 @@ class ArtProcessMapperTest {
         updateRequestDto.setImage(updateImageDto);
 
         when(cloudinaryClient.verifySignature(anyString(), anyString(), anyString())).thenReturn(true);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        Mockito.reset(cloudinaryClient, imageTransformation);
     }
 
     @Test

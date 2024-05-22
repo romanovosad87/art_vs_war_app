@@ -10,12 +10,14 @@ import com.example.artvswar.model.enummodel.ModerationStatus;
 import com.example.artvswar.service.PaintingService;
 import com.example.artvswar.util.image.CloudinaryClient;
 import com.example.artvswar.util.image.ImageTransformation;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -24,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
+@Order(310)
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class AdditionalImageMapperTest {
@@ -66,6 +69,11 @@ class AdditionalImageMapperTest {
         imageDto.setVersion(VERSION);
         imageDto.setSignature(SIGNATURE);
         imageDto.setModerationStatus(MODERATION_STATUS);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        Mockito.reset(cloudinaryClient, paintingService, imageTransformation);
     }
 
     @Test

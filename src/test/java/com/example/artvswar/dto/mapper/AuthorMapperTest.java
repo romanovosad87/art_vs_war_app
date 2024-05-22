@@ -12,21 +12,27 @@ import com.example.artvswar.model.Image;
 import com.example.artvswar.model.enummodel.ModerationStatus;
 import com.example.artvswar.util.image.CloudinaryClient;
 import com.example.artvswar.util.image.ImageTransformation;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@Order(330)
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class AuthorMapperTest {
@@ -116,6 +122,11 @@ class AuthorMapperTest {
         when(imageTransformation.photoImageEagerTransformation(PUBLIC_ID))
                 .thenReturn(IMAGE_URL_UPDATED);
         when(cloudinaryClient.verifySignature(anyString(), anyString(), anyString())).thenReturn(true);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        Mockito.reset(cloudinaryClient, imageTransformation);
     }
 
     @Test

@@ -2,9 +2,10 @@ package com.example.artvswar.dto.response.account;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
+@AllArgsConstructor @NoArgsConstructor
 public class AccountShippingResponseDto {
     private String firstName;
     private String lastName;

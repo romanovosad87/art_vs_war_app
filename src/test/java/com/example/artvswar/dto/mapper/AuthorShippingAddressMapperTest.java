@@ -9,17 +9,18 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.mockito.InjectMocks;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+@Order(340)
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class AuthorShippingAddressMapperTest {
 
-    @InjectMocks
+    @Autowired
     private AuthorShippingAddressMapper authorShippingAddressMapper;
 
     private AuthorShippingAddressRequestDto requestDto;

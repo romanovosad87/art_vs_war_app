@@ -9,27 +9,29 @@ import com.example.artvswar.exception.AppEntityNotFoundException;
 import com.example.artvswar.model.Author;
 import com.example.artvswar.model.Painting;
 import com.example.artvswar.model.Style;
-import com.example.artvswar.service.MediumService;
-import com.example.artvswar.service.StyleService;
-import com.example.artvswar.service.SubjectService;
-import com.example.artvswar.service.SupportService;
-import com.example.artvswar.util.image.CloudinaryClient;
-import com.example.artvswar.util.image.roomView.RoomViewManager;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.junit.jupiter.api.MethodOrderer;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.math.BigDecimal;
 
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.when;
 
+@Order(380)
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class PaintingMapperTest {
@@ -39,24 +41,6 @@ class PaintingMapperTest {
 
     @MockBean
     private PaintingImageMapper paintingImageMapper;
-
-    @MockBean
-    private RoomViewManager roomViewManager;
-
-    @MockBean
-    private StyleService styleService;
-
-    @MockBean
-    private MediumService mediumService;
-
-    @MockBean
-    private SupportService supportService;
-
-    @MockBean
-    private SubjectService subjectService;
-
-    @MockBean
-    private CloudinaryClient cloudinaryClient;
 
     private Painting painting;
     private Author author;
@@ -93,6 +77,11 @@ class PaintingMapperTest {
         responseDto.setDescription(painting.getDescription());
         responseDto.setYearOfCreation(painting.getYearOfCreation());
         responseDto.setPrice(painting.getPrice());
+    }
+
+    @AfterEach
+    public void tearDown() {
+        Mockito.reset(paintingImageMapper);
     }
 
     @Test
