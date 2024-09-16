@@ -105,7 +105,7 @@ public class AccountServiceImpl implements AccountService {
         List<AccountShippingAddress> shippingAddresses = account.getShippingAddresses();
 
         dtos.stream()
-                .map(accountMapper::toAccountShippingModel)
+                .map(accountMapper::toAccountShippingAddressModel)
                 .filter(address -> !shippingAddresses.contains(address))
                 .forEach(shippingAddresses::add);
 

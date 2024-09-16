@@ -48,7 +48,7 @@ public class AccountMapper {
                 account.getPhone());
     }
 
-    public AccountShippingAddress toAccountShippingModel(AccountShippingRequestDto dto) {
+    public AccountShippingAddress toAccountShippingAddressModel(AccountShippingRequestDto dto) {
         AccountShippingAddress address = new AccountShippingAddress();
         address.setFirstName(dto.getFirstName());
         address.setLastName(dto.getLastName());

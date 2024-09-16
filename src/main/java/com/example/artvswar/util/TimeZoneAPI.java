@@ -47,5 +47,4 @@ public class TimeZoneAPI {
                 .map(resp -> resp.get(GMT_OFFSET).asInt())
                 .orElse(0);
     }
-
 }
