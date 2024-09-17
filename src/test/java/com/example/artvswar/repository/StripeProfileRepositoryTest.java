@@ -63,6 +63,4 @@ class StripeProfileRepositoryTest extends GenericRepositoryContainer {
         // then
         assertThat(stripeAccountId).isNull();
     }
-
-
 }
