@@ -1,9 +1,9 @@
 package com.example.artvswar.service;
 
 import com.example.artvswar.dto.request.account.AccountCreateUpdateRequestDto;
-import com.example.artvswar.dto.request.account.AccountShippingRequestDto;
+import com.example.artvswar.dto.request.account.AccountShippingAddressRequestDto;
 import com.example.artvswar.dto.response.account.AccountResponseDto;
-import com.example.artvswar.dto.response.account.AccountShippingResponseDto;
+import com.example.artvswar.dto.response.account.AccountShippingAddressResponseDto;
 import com.example.artvswar.model.Account;
 import org.springframework.security.oauth2.jwt.Jwt;
 import java.util.List;
@@ -25,10 +25,10 @@ public interface AccountService {
 
     Account getAccountByStripeCustomerId(String stripeCustomerId);
 
-    List<AccountShippingResponseDto> saveAccountShippingAddresses(List<AccountShippingRequestDto> dto,
-                                                                  String cognitoSubject);
+    List<AccountShippingAddressResponseDto> saveAccountShippingAddresses(List<AccountShippingAddressRequestDto> dto,
+                                                                         String cognitoSubject);
 
-    List<AccountShippingResponseDto> getAccountShippingAddresses(String cognitoSubject);
+    List<AccountShippingAddressResponseDto> getAccountShippingAddresses(String cognitoSubject);
 
     String getCognitoSubjectByStripeId(String stripeCustomerId);
 

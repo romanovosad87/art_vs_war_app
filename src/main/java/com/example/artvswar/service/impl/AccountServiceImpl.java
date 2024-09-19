@@ -2,9 +2,9 @@ package com.example.artvswar.service.impl;
 
 import com.example.artvswar.dto.mapper.AccountMapper;
 import com.example.artvswar.dto.request.account.AccountCreateUpdateRequestDto;
-import com.example.artvswar.dto.request.account.AccountShippingRequestDto;
+import com.example.artvswar.dto.request.account.AccountShippingAddressRequestDto;
 import com.example.artvswar.dto.response.account.AccountResponseDto;
-import com.example.artvswar.dto.response.account.AccountShippingResponseDto;
+import com.example.artvswar.dto.response.account.AccountShippingAddressResponseDto;
 import com.example.artvswar.exception.AppEntityNotFoundException;
 import com.example.artvswar.model.Account;
 import com.example.artvswar.model.AccountEmailData;
@@ -95,8 +95,8 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public List<AccountShippingResponseDto> saveAccountShippingAddresses(
-            List<AccountShippingRequestDto> dtos,
+    public List<AccountShippingAddressResponseDto> saveAccountShippingAddresses(
+            List<AccountShippingAddressRequestDto> dtos,
             String cognitoSubject) {
         Account account = accountRepository.findByCognitoSubject(Account.class, cognitoSubject)
                 .orElseThrow(() -> new AppEntityNotFoundException(
@@ -119,18 +119,18 @@ public class AccountServiceImpl implements AccountService {
         account.setOffset(offset);
 
         return shippingAddresses.stream()
-                .map(accountMapper::toAccountShippingDto)
+                .map(accountMapper::toAccountShippingAddressDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<AccountShippingResponseDto> getAccountShippingAddresses(String cognitoSubject) {
+    public List<AccountShippingAddressResponseDto> getAccountShippingAddresses(String cognitoSubject) {
         Account account = accountRepository.findByCognitoSubject(Account.class, cognitoSubject)
                 .orElseThrow(() -> new AppEntityNotFoundException(
                         String.format("Can't find account by Cognito Subject : %s", cognitoSubject)));
         return account.getShippingAddresses()
                 .stream()
-                .map(accountMapper::toAccountShippingDto)
+                .map(accountMapper::toAccountShippingAddressDto)
                 .collect(Collectors.toList());
     }
 

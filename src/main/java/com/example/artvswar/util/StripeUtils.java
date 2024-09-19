@@ -1,6 +1,6 @@
 package com.example.artvswar.util;
 
-import com.example.artvswar.dto.request.account.AccountShippingRequestDto;
+import com.example.artvswar.dto.request.account.AccountShippingAddressRequestDto;
 import com.example.artvswar.dto.request.shipping.ShippingRateRequestDto;
 import com.example.artvswar.dto.request.stripe.StripeCheckoutSessionRequestDto;
 import com.example.artvswar.exception.PaintingNotAvailableException;
@@ -264,7 +264,7 @@ public class StripeUtils {
         }
     }
 
-    public Customer updateCustomerShipping(String customerId, AccountShippingRequestDto dto) {
+    public Customer updateCustomerShipping(String customerId, AccountShippingAddressRequestDto dto) {
         try {
             Customer customer = retrieveCustomer(customerId);
 
