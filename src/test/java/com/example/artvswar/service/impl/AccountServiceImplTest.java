@@ -1,10 +1,14 @@
 package com.example.artvswar.service.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
+
 import java.util.List;
 import java.util.Optional;
 import com.example.artvswar.dto.mapper.AccountMapper;
 import com.example.artvswar.dto.request.account.AccountShippingAddressRequestDto;
-//import com.example.artvswar.dto.request.account.AccountShippingRequestDto;
 import com.example.artvswar.dto.response.account.AccountResponseDto;
 import com.example.artvswar.dto.response.account.AccountShippingAddressResponseDto;
 import com.example.artvswar.exception.AppEntityNotFoundException;
@@ -16,22 +20,14 @@ import com.example.artvswar.service.ShoppingCartService;
 import com.example.artvswar.util.AwsCognitoClient;
 import com.example.artvswar.util.TimeZoneAPI;
 import com.neovisionaries.i18n.CountryCode;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
-
 import com.example.artvswar.dto.request.account.AccountCreateUpdateRequestDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.stubbing.Answer;
+import reactor.core.publisher.Mono;
 
 @ExtendWith(MockitoExtension.class)
 class AccountServiceImplTest {
@@ -230,7 +226,7 @@ class AccountServiceImplTest {
                 .thenReturn(Optional.of(account));
         when(accountMapper.toAccountShippingAddressModel(requestDto))
                 .thenReturn(accountShippingAddress);
-        when(timeZoneAPI.getOffset(requestDto.getCity(), requestDto.getCountry())).thenReturn(0);
+        when(timeZoneAPI.getOffset(requestDto.getCity(), requestDto.getCountry())).thenReturn(Mono.just(0));
         when(accountMapper.toAccountShippingAddressDto(accountShippingAddress))
                 .thenReturn(accountShippingAddressResponseDto);
 

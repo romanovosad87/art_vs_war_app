@@ -20,6 +20,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Mono;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -113,7 +114,8 @@ public class AccountServiceImpl implements AccountService {
 
         int offset = Optional.ofNullable(address).stream()
                 .map(addr -> timeZoneAPI.getOffset(addr.getCity(), addr.getCountry()))
-                .findFirst()
+                .findAny()
+                .map(Mono::block)
                 .orElse(0);
 
         account.setOffset(offset);

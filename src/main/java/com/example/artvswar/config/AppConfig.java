@@ -1,10 +1,9 @@
 package com.example.artvswar.config;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -36,7 +35,7 @@ public class AppConfig {
     }
 
     @Bean
-    public RestTemplate getRestTemplate() {
-        return new RestTemplateBuilder().build();
+    public WebClient buildWebClient() {
+        return WebClient.builder().build();
     }
 }
