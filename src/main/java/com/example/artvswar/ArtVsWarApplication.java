@@ -1,7 +1,6 @@
 package com.example.artvswar;
 
 import com.example.artvswar.service.EmailExternalService;
-import com.example.artvswar.service.impl.EmailExternalServiceImpl;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
