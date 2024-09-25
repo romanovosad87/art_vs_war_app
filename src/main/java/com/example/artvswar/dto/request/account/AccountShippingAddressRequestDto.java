@@ -9,8 +9,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 @Data
-@GroupSequence({AccountShippingRequestDto.class, FirstOrder.class, SecondOrder.class, ThirdOrder.class})
-public class AccountShippingRequestDto {
+@GroupSequence({AccountShippingAddressRequestDto.class, FirstOrder.class, SecondOrder.class, ThirdOrder.class})
+public class AccountShippingAddressRequestDto {
     @NotBlank(message = "first name field is required", groups = FirstOrder.class)
     private String firstName;
     @NotBlank(message = "last name field is required", groups = FirstOrder.class)

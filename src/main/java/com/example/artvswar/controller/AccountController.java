@@ -2,9 +2,9 @@ package com.example.artvswar.controller;
 
 import com.example.artvswar.dto.request.account.AccountChangeUnsubscribeRequestDto;
 import com.example.artvswar.dto.request.account.AccountCreateUpdateRequestDto;
-import com.example.artvswar.dto.request.account.AccountShippingRequestDto;
+import com.example.artvswar.dto.request.account.AccountShippingAddressRequestDto;
 import com.example.artvswar.dto.response.account.AccountResponseDto;
-import com.example.artvswar.dto.response.account.AccountShippingResponseDto;
+import com.example.artvswar.dto.response.account.AccountShippingAddressResponseDto;
 import com.example.artvswar.service.AccountService;
 import com.example.artvswar.service.stripe.StripeService;
 import com.stripe.model.Customer;
@@ -64,25 +64,25 @@ public class AccountController {
 
     @PreAuthorize("hasRole('CUSTOMER')")
     @PostMapping("/addresses")
-    public ResponseEntity<List<AccountShippingResponseDto>> createShippingAddress(
-            @RequestBody @Valid List<AccountShippingRequestDto> dtos,
+    public ResponseEntity<List<AccountShippingAddressResponseDto>> createShippingAddress(
+            @RequestBody @Valid List<AccountShippingAddressRequestDto> dtos,
             @AuthenticationPrincipal Jwt jwt) {
         String subject = jwt.getClaimAsString(SUBJECT);
-        List<AccountShippingResponseDto> responseDtoList = accountService.saveAccountShippingAddresses(dtos, subject);
-        AccountShippingResponseDto accountShippingResponseDto = responseDtoList.get(responseDtoList.size() - 1);
-        return new ResponseEntity<>(List.of(accountShippingResponseDto), HttpStatus.CREATED);
+        List<AccountShippingAddressResponseDto> responseDtoList = accountService.saveAccountShippingAddresses(dtos, subject);
+        AccountShippingAddressResponseDto accountShippingAddressResponseDto = responseDtoList.get(responseDtoList.size() - 1);
+        return new ResponseEntity<>(List.of(accountShippingAddressResponseDto), HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasRole('CUSTOMER')")
     @GetMapping("/addresses")
-    public ResponseEntity<List<AccountShippingResponseDto>> getShippingAddresses(
+    public ResponseEntity<List<AccountShippingAddressResponseDto>> getShippingAddresses(
             @AuthenticationPrincipal Jwt jwt) {
         String subject = jwt.getClaimAsString(SUBJECT);
-        List<AccountShippingResponseDto> responseDtoList = accountService.getAccountShippingAddresses(subject);
+        List<AccountShippingAddressResponseDto> responseDtoList = accountService.getAccountShippingAddresses(subject);
         if (!responseDtoList.isEmpty()) {
-            AccountShippingResponseDto accountShippingResponseDto = responseDtoList.get(responseDtoList.size() - 1);
+            AccountShippingAddressResponseDto accountShippingAddressResponseDto = responseDtoList.get(responseDtoList.size() - 1);
             responseDtoList.clear();
-            responseDtoList.add(accountShippingResponseDto);
+            responseDtoList.add(accountShippingAddressResponseDto);
         }
 
         return new ResponseEntity<>(responseDtoList, HttpStatus.OK);

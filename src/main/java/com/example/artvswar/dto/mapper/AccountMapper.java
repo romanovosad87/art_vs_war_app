@@ -1,9 +1,9 @@
 package com.example.artvswar.dto.mapper;
 
 import com.example.artvswar.dto.request.account.AccountCreateUpdateRequestDto;
-import com.example.artvswar.dto.request.account.AccountShippingRequestDto;
+import com.example.artvswar.dto.request.account.AccountShippingAddressRequestDto;
 import com.example.artvswar.dto.response.account.AccountResponseDto;
-import com.example.artvswar.dto.response.account.AccountShippingResponseDto;
+import com.example.artvswar.dto.response.account.AccountShippingAddressResponseDto;
 import com.example.artvswar.model.Account;
 import com.example.artvswar.model.AccountEmailData;
 import com.example.artvswar.model.AccountShippingAddress;
@@ -48,7 +48,7 @@ public class AccountMapper {
                 account.getPhone());
     }
 
-    public AccountShippingAddress toAccountShippingAddressModel(AccountShippingRequestDto dto) {
+    public AccountShippingAddress toAccountShippingAddressModel(AccountShippingAddressRequestDto dto) {
         AccountShippingAddress address = new AccountShippingAddress();
         address.setFirstName(dto.getFirstName());
         address.setLastName(dto.getLastName());
@@ -63,8 +63,8 @@ public class AccountMapper {
         return address;
     }
 
-    public AccountShippingResponseDto toAccountShippingDto(AccountShippingAddress address) {
-        return new AccountShippingResponseDto(
+    public AccountShippingAddressResponseDto toAccountShippingAddressDto(AccountShippingAddress address) {
+        return new AccountShippingAddressResponseDto(
                 address.getFirstName(),
                 address.getLastName(),
                 address.getPhone(),
