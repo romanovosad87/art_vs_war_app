@@ -52,3 +52,28 @@ public class TimeZoneAPI {
                 .bodyToMono(JsonNode.class);
     }
 }
+/*
+        ///////////////////////////////////////////////////////
+        ////////// ONLY FOR ALTERNATIVE VISION ////////////////
+        ////////// subject to deletion ////////////////////////
+        ///////////////////////////////////////////////////////
+        try {
+            JsonNode response = restClient.get()
+                .uri(uri)
+                .retrieve()
+                .body(JsonNode.class);
+
+            return Optional.ofNullable(response)
+                .map(resp -> resp.get(GMT_OFFSET).asInt())
+                .orElse(0);
+
+        } catch (Exception ex) {
+            String preparedForLoggingUri = uri.toString().replaceAll(REGEX, HIDDEN_API_KEY);
+            log.error("Can't process request: %s, exception message: [%s]"
+                    .formatted(preparedForLoggingUri, ex.getMessage()));
+            return 0;
+        }
+        /////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////
+ */
