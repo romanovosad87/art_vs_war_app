@@ -25,24 +25,22 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable()
-                .cors().configurationSource(corsConfigurationSource())
-                .and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .authorizeRequests(authorize ->
-                        authorize.antMatchers(HttpMethod.POST, "/paintings").authenticated()
-                                .antMatchers(HttpMethod.PUT, "/paintings/**").authenticated()
-                                .antMatchers(HttpMethod.POST, "/authors").authenticated()
-                                .antMatchers(HttpMethod.PUT, "/authors").authenticated()
-                                .antMatchers(HttpMethod.GET, "/stripe/onboarding").authenticated()
-                                .antMatchers(HttpMethod.POST, "/account").authenticated()
-                                .antMatchers(HttpMethod.POST, "/authors/checkInputAndGet").authenticated()
-                                .antMatchers(HttpMethod.GET, "/cart").authenticated()
-                                .antMatchers(HttpMethod.GET, "/orders").authenticated())
-                .oauth2ResourceServer()
-                .jwt()
-                .jwtAuthenticationConverter(jwtAuthenticationConverter());
+        http
+                .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(HttpMethod.POST, "/paintings").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/paintings/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/authors").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/authors").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/stripe/onboarding").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/account").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/authors/checkInputAndGet").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/cart").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/orders").authenticated())
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
 
         http.setSharedObject(ContentNegotiationStrategy.class, new HeaderContentNegotiationStrategy());
 

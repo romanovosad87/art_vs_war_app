@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -28,8 +29,7 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
-            MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status,
-            WebRequest request) {
+            MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         List<ErrorFieldResponse> errors = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
@@ -39,7 +39,8 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
         AllErrorFieldResponse response = new AllErrorFieldResponse();
         response.setTimestamp(new Date());
         response.setStatus(status.value());
-        response.setError(status.getReasonPhrase());
+        // todo test this "status.toString()"
+        response.setError(status.toString());
         response.setFieldErrorCount(ex.getFieldErrorCount());
         response.setErrors(errors);
         return new ResponseEntity<>(response, headers, status);
@@ -67,6 +68,4 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
             CloudinaryCredentialException ex) {
         return errorResponseCreator.createResponse(ex, HttpStatus.NOT_ACCEPTABLE);
     }
-
-
 }

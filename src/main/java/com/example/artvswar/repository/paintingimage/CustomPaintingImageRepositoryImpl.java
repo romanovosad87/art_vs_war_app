@@ -6,8 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.hibernate.jpa.QueryHints;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 
 @Repository
 @RequiredArgsConstructor
@@ -22,7 +22,8 @@ public class CustomPaintingImageRepositoryImpl
             paintingImage = entityManager.createQuery("select distinct pi from PaintingImage pi "
                                     + "join fetch pi.roomViews join fetch pi.image where pi.id = ?1",
                             PaintingImage.class)
-                    .setHint(QueryHints.HINT_PASS_DISTINCT_THROUGH, false)
+                    //todo fix it, offer an alternative
+//                    .setHint(QueryHints.HINT_PASS_DISTINCT_THROUGH, false)
                     .setParameter(1, id)
                     .getSingleResult();
 
