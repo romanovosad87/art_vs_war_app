@@ -30,7 +30,7 @@ public abstract class User {
     @Column(nullable = false)
     private String email;
 
-    @Column(nullable = false, columnDefinition = "TINYINT default false")
+    @Column(nullable = false, columnDefinition = "TINYINT(1) default false")
     private boolean isDeleted;
 
     @CreationTimestamp

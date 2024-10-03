@@ -67,7 +67,7 @@ public class Author extends User {
     @Cascade({CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})
     private AuthorShippingAddress authorShippingAddress;
 
-    @Column(columnDefinition = "TINYINT not null default false")
+    @Column(columnDefinition = "TINYINT(1) not null default false")
     private boolean unsubscribedEmail;
 
     public void addPainting(Painting painting) {

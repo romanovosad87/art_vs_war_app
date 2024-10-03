@@ -33,7 +33,7 @@ public class Image {
     @Column(columnDefinition = "VARCHAR(500)", nullable = false, unique = true)
     private String url;
 
-    @Column(columnDefinition = "TINYINT NOT NULL DEFAULT 0")
+    @Column(columnDefinition = "TINYINT(1) NOT NULL DEFAULT 0")
     private ModerationStatus moderationStatus;
 
     @CreationTimestamp

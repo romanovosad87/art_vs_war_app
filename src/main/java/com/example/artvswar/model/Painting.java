@@ -132,7 +132,7 @@ public class Painting {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @Column(columnDefinition = "TINYINT NOT NULL DEFAULT 0")
+    @Column(columnDefinition = "TINYINT(1) NOT NULL DEFAULT 0")
     private PaymentStatus paymentStatus;
 
     @OneToMany(mappedBy = "painting")

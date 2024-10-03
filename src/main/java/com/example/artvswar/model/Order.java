@@ -72,7 +72,7 @@ public class Order {
 
     private LocalDateTime completedAt;
 
-    @Column(columnDefinition = "TINYINT not null default false")
+    @Column(columnDefinition = "TINYINT(1) not null default false")
     private boolean isDelivered;
     private LocalDateTime deliveredAt;
 

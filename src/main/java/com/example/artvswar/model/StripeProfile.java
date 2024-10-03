@@ -26,7 +26,7 @@ public class StripeProfile {
     private Long id;
     @Column(unique = true, updatable = false, nullable = false)
     private String accountId;
-    @Column(columnDefinition = "TINYINT NOT NULL default false")
+    @Column(columnDefinition = "TINYINT(1) NOT NULL default false")
     private boolean isDetailsSubmitted;
 
     @OneToOne(fetch = FetchType.LAZY)

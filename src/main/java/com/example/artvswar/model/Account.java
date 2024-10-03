@@ -68,7 +68,7 @@ public class Account {
     @Cascade(value = {CascadeType.PERSIST})
     private AccountEmailData accountEmailData;
 
-    @Column(nullable = false, columnDefinition = "TINYINT default false")
+    @Column(nullable = false, columnDefinition = "TINYINT(1) default false")
     private boolean isDeleted;
 
     @CreationTimestamp
