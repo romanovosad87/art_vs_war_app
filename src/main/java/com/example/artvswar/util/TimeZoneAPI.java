@@ -20,6 +20,7 @@ public class TimeZoneAPI {
     private static final String REGEX = "(api_key=)([a-zA-Z0-9]+)";
     public static final String HIDDEN_API_KEY = "api_key=*****";
 
+    // todo change WebClient on RestClient
     private final WebClient webClient;
 
     @Value("${time.zone.api.url}")
