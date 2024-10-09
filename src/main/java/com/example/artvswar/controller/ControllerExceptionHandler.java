@@ -39,7 +39,6 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
         AllErrorFieldResponse response = new AllErrorFieldResponse();
         response.setTimestamp(new Date());
         response.setStatus(status.value());
-        // todo test this "status.toString()"
         response.setError(status.toString());
         response.setFieldErrorCount(ex.getFieldErrorCount());
         response.setErrors(errors);

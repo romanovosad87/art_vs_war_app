@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -33,11 +32,6 @@ public class AppConfig {
                        .maxAge(maxAge);
             }
         };
-    }
-
-    @Bean
-    public WebClient buildWebClient() {
-        return WebClient.builder().build();
     }
 
     @Bean

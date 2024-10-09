@@ -1,14 +1,14 @@
 package com.example.artvswar.util;
 
+import java.net.URI;
+import java.util.Optional;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
-import reactor.core.publisher.Mono;
-import java.net.URI;
 
 @Component
 @RequiredArgsConstructor
@@ -20,8 +20,7 @@ public class TimeZoneAPI {
     private static final String REGEX = "(api_key=)([a-zA-Z0-9]+)";
     public static final String HIDDEN_API_KEY = "api_key=*****";
 
-    // todo change WebClient on RestClient
-    private final WebClient webClient;
+    private final RestClient restClient;
 
     @Value("${time.zone.api.url}")
     private String timeZoneUrl;
@@ -29,52 +28,36 @@ public class TimeZoneAPI {
     @Value("${time.zone.api.key}")
     private String timeZoneApiKey;
 
-    public Mono<Integer> getOffset(String city, String country) {
-        URI uri = UriComponentsBuilder.fromHttpUrl(timeZoneUrl)
+    public Integer getOffset(String city, String country) {
+        URI uri = getUri(city, country);
+        try {
+            return Optional.ofNullable(getJsonNodeResponse(uri))
+                    .map(resp -> resp.get(GMT_OFFSET).asInt())
+                    .orElse(0);
+        } catch (Exception e) {
+            logError(uri, e);
+            return 0;
+        }
+    }
+
+    private JsonNode getJsonNodeResponse(URI uri) {
+        return restClient.get()
+                .uri(uri)
+                .retrieve()
+                .body(JsonNode.class);
+    }
+
+    private URI getUri(String city, String country) {
+        return UriComponentsBuilder.fromHttpUrl(timeZoneUrl)
                 .queryParam(PARAM_API_KEY, timeZoneApiKey)
                 .queryParam(PARAM_LOCATION, city + ", " + country)
                 .build()
                 .toUri();
-
-        return getJsonNodeResponse(uri.toString())
-                .map(response -> response.get(GMT_OFFSET).asInt())
-                .doOnError(ex -> {
-                    String preparedForLoggingUri = uri.toString().replaceAll(REGEX, HIDDEN_API_KEY);
-                    log.error("Can't process request: %s, exception message: [%s]"
-                            .formatted(preparedForLoggingUri, ex.getMessage()));
-                })
-                .onErrorReturn(0);
     }
 
-    private Mono<JsonNode> getJsonNodeResponse(String url) {
-        return webClient.get()
-                .uri(url)
-                .retrieve()
-                .bodyToMono(JsonNode.class);
+    private void logError(URI uri, Throwable ex) {
+        String preparedForLoggingUri = uri.toString().replaceAll(REGEX, HIDDEN_API_KEY);
+        log.error("Can't process request: %s, exception message: [%s]"
+                .formatted(preparedForLoggingUri, ex.getMessage()));;
     }
 }
-/*
-        ///////////////////////////////////////////////////////
-        ////////// ONLY FOR ALTERNATIVE VISION ////////////////
-        ////////// subject to deletion ////////////////////////
-        ///////////////////////////////////////////////////////
-        try {
-            JsonNode response = restClient.get()
-                .uri(uri)
-                .retrieve()
-                .body(JsonNode.class);
-
-            return Optional.ofNullable(response)
-                .map(resp -> resp.get(GMT_OFFSET).asInt())
-                .orElse(0);
-
-        } catch (Exception ex) {
-            String preparedForLoggingUri = uri.toString().replaceAll(REGEX, HIDDEN_API_KEY);
-            log.error("Can't process request: %s, exception message: [%s]"
-                    .formatted(preparedForLoggingUri, ex.getMessage()));
-            return 0;
-        }
-        /////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////////
- */
