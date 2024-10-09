@@ -2,7 +2,7 @@ package com.example.artvswar.dto.request.collection;
 
 import lombok.Data;
 import java.util.List;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 @Data
 public class CollectionAddRemovePaintingsRequestDto {

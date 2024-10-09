@@ -4,9 +4,9 @@ import com.example.artvswar.lib.FirstOrder;
 import com.example.artvswar.lib.SecondOrder;
 import com.example.artvswar.lib.ThirdOrder;
 import lombok.Data;
-import javax.validation.GroupSequence;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+import jakarta.validation.GroupSequence;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 @Data
 @GroupSequence({AccountShippingAddressRequestDto.class, FirstOrder.class, SecondOrder.class, ThirdOrder.class})

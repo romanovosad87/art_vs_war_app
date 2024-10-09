@@ -1,5 +1,6 @@
 package com.example.artvswar.service.impl;
 
+import java.util.List;
 import com.example.artvswar.dto.mapper.AccountMapper;
 import com.example.artvswar.dto.request.account.AccountCreateUpdateRequestDto;
 import com.example.artvswar.dto.request.account.AccountShippingAddressRequestDto;
@@ -20,10 +21,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import reactor.core.publisher.Mono;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(onConstructor_ = {@Lazy})
 @Service
@@ -112,17 +109,11 @@ public class AccountServiceImpl implements AccountService {
 
         AccountShippingAddress address = shippingAddresses.get(shippingAddresses.size() - 1);
 
-        int offset = Optional.ofNullable(address).stream()
-                .map(addr -> timeZoneAPI.getOffset(addr.getCity(), addr.getCountry()))
-                .findAny()
-                .map(Mono::block)
-                .orElse(0);
-
-        account.setOffset(offset);
+        account.setOffset(timeZoneAPI.getOffset(address.getCity(), address.getCountry()));
 
         return shippingAddresses.stream()
                 .map(accountMapper::toAccountShippingAddressDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -133,7 +124,7 @@ public class AccountServiceImpl implements AccountService {
         return account.getShippingAddresses()
                 .stream()
                 .map(accountMapper::toAccountShippingAddressDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

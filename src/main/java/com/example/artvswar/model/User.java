@@ -7,9 +7,9 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.Column;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
 
 @EqualsAndHashCode(of = "cognitoSubject")
 @Getter
@@ -30,7 +30,7 @@ public abstract class User {
     @Column(nullable = false)
     private String email;
 
-    @Column(nullable = false, columnDefinition = "TINYINT default false")
+    @Column(nullable = false, columnDefinition = "TINYINT(1) default false")
     private boolean isDeleted;
 
     @CreationTimestamp

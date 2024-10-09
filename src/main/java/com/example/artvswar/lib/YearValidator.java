@@ -1,8 +1,8 @@
 package com.example.artvswar.lib;
 
 import java.time.LocalDateTime;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 public class YearValidator implements ConstraintValidator<Year, Integer> {
 

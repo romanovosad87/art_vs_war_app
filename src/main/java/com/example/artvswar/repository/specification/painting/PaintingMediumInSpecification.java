@@ -5,9 +5,9 @@ import com.example.artvswar.model.Style;
 import com.example.artvswar.repository.specification.SpecificationProvider;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 
 @Component
 public class PaintingMediumInSpecification implements SpecificationProvider<Painting> {

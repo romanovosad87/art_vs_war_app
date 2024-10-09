@@ -226,7 +226,7 @@ class AccountServiceImplTest {
                 .thenReturn(Optional.of(account));
         when(accountMapper.toAccountShippingAddressModel(requestDto))
                 .thenReturn(accountShippingAddress);
-        when(timeZoneAPI.getOffset(requestDto.getCity(), requestDto.getCountry())).thenReturn(Mono.just(0));
+        when(timeZoneAPI.getOffset(requestDto.getCity(), requestDto.getCountry())).thenReturn(0);
         when(accountMapper.toAccountShippingAddressDto(accountShippingAddress))
                 .thenReturn(accountShippingAddressResponseDto);
 
