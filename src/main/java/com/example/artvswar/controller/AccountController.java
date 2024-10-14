@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.ArrayList;
 import java.util.List;
 import jakarta.validation.Valid;
 
@@ -79,13 +80,13 @@ public class AccountController {
             @AuthenticationPrincipal Jwt jwt) {
         String subject = jwt.getClaimAsString(SUBJECT);
         List<AccountShippingAddressResponseDto> responseDtoList = accountService.getAccountShippingAddresses(subject);
+        List<AccountShippingAddressResponseDto> newResponseDtoList = new ArrayList<>();
         if (!responseDtoList.isEmpty()) {
             AccountShippingAddressResponseDto accountShippingAddressResponseDto = responseDtoList.get(responseDtoList.size() - 1);
-            responseDtoList.clear();
-            responseDtoList.add(accountShippingAddressResponseDto);
+            newResponseDtoList.add(accountShippingAddressResponseDto);
         }
 
-        return new ResponseEntity<>(responseDtoList, HttpStatus.OK);
+        return new ResponseEntity<>(newResponseDtoList, HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('CUSTOMER')")
