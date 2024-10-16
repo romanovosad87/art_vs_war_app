@@ -103,43 +103,46 @@ public class CustomAuthorRepositoryImpl
                                 return authorsAllStylesDto;
                 })
                 .distinct()
-                .collect(Collectors.toList());
+                .toList();
 
 
-        cb = entityManager.getCriteriaBuilder();
-        query = cb.createTupleQuery();
-        author = query.from(Author.class);
+        // Second query for styles
+        CriteriaQuery<Tuple> styleQuery = cb.createTupleQuery();  // Create a new query instance for styles
+        author = styleQuery.from(Author.class);
         paintings = author.join(PAINTINGS);
         Join<Painting, Style> styles = paintings.join(STYLES);
-        query.multiselect(author.get(COGNITO_SUBJECT).alias(AUTHOR_COGNITO_SUBJECT),
+
+        // Create a new idPredicate for styles
+        CriteriaBuilder.In<String> styleIdPredicate = cb.in(author.get(COGNITO_SUBJECT));
+        authorsCognitoSubjects.forEach(styleIdPredicate::value);  // Reuse the subjects for style filtering
+
+        styleQuery.multiselect(author.get(COGNITO_SUBJECT).alias(AUTHOR_COGNITO_SUBJECT),
                         paintings.get(ID).alias(PAINTING_ID),
                         styles.get(ID).alias(STYLE_ID),
                         styles.get(NAME).alias(STYLE_NAME))
-                .where(idPredicate);
+                .where(styleIdPredicate);
 
-        Stream<Tuple> styleStream = entityManager.createQuery(query)
-                .getResultStream();
+        // Execute second query
+        entityManager.createQuery(styleQuery)
+                .getResultStream()
+                .map(tuple -> {
+                    String cognitoSubject = tuple.get(AUTHOR_COGNITO_SUBJECT, String.class);
+                    Long paintingId = tuple.get(PAINTING_ID, Long.class);
+                    Long styleId = tuple.get(STYLE_ID, Long.class);
+                    String styleName = tuple.get(STYLE_NAME, String.class);
 
-        styleStream.map(tuple ->
-                        allAuthorsDtoMap.computeIfPresent(tuple.get(AUTHOR_COGNITO_SUBJECT, String.class),
-                                (id, dto) -> {
-                                    Map<Long, PaintingForAllAuthorsDto> longPaintingsMap = dto.getLongPaintingsMap();
-                                    longPaintingsMap.computeIfPresent(tuple.get(PAINTING_ID, Long.class),
-                                            (paintingId, paintingDto) -> {
-                                                paintingDto.getStyles().add(new StyleResponseDto(tuple.get(STYLE_ID, Long.class),
-                                                        tuple.get(STYLE_NAME, String.class)));
-                                                return paintingDto;
-                                            });
-                                    Set<String> stylesName = dto.getStyles();
-                                    dto.getLongPaintingsMap().values()
-                                            .stream()
-                                            .flatMap(paintingDto -> paintingDto.getStyles().stream())
-                                            .map(StyleResponseDto::getName)
-                                            .forEach(stylesName::add);
-                                    return dto;
-                                }))
-                .distinct()
-                .collect(Collectors.toList());
+                    return allAuthorsDtoMap.computeIfPresent(cognitoSubject, (id, dto) -> {
+                        Map<Long, PaintingForAllAuthorsDto> longPaintingsMap = dto.getLongPaintingsMap();
+                        PaintingForAllAuthorsDto paintingDto = longPaintingsMap.get(paintingId);
+
+                        if (paintingDto != null) {
+                            paintingDto.getStyles().add(new StyleResponseDto(styleId, styleName));
+                            dto.getStyles().add(styleName);
+                        }
+                        return dto;
+                    });
+                })
+                .toList();  // Collecting to force stream evaluation
 
         return allAuthorsDtoMap.values().stream()
                 .collect(Collectors.toMap(AuthorsAllStylesDto::getCognitoSubject,
@@ -203,7 +206,7 @@ public class CustomAuthorRepositoryImpl
                                 tuple.get(AUTHOR_ABOUT_ME, String.class),
                                 tuple.get(IMAGE_PUBLIC_ID, String.class),
                                 tuple.get(IMAGE_URL, String.class))))
-                .collect(Collectors.toList());
+                .toList();
 
         cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
