@@ -1,8 +1,8 @@
 package com.example.artvswar.util.enumconverter;
 
 import com.example.artvswar.model.enummodel.ModerationStatus;
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 
 @Converter(autoApply = true)
 public class ModerationStatusConverter implements AttributeConverter<ModerationStatus, Integer> {

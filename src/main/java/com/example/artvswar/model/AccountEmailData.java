@@ -1,16 +1,16 @@
 package com.example.artvswar.model;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.MapsId;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.Index;
-import javax.persistence.JoinColumn;
-import javax.persistence.MapsId;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
 
 @Entity
 @Getter
@@ -23,11 +23,11 @@ public class AccountEmailData {
     Long id;
     @Column(nullable = false)
     private String email;
-    @Column(columnDefinition = "TINYINT not null default false")
+    @Column(columnDefinition = "TINYINT(1) not null default false")
     private boolean unsubscribed;
-    @Column(columnDefinition = "TINYINT not null default false")
+    @Column(columnDefinition = "TINYINT(1) not null default false")
     private boolean complaint;
-    @Column(columnDefinition = "TINYINT not null default false")
+    @Column(columnDefinition = "TINYINT(1) not null default false")
     private boolean bounce;
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
