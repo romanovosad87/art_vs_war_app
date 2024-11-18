@@ -646,7 +646,8 @@ public class CustomPaintingRepositoryImpl
                 + "where p.paintingImage.image.moderationStatus = 20 "
                 + "and p.author.isDeleted = false "
                 + "and p.author.stripeProfile.isDetailsSubmitted = true "
-                + "and p.author.authorShippingAddress.id != null", Long.class).getSingleResult();
+                + "and p.author.authorShippingAddress.id != 0",
+                Long.class).getSingleResult();
         paintingsQuantity = paintingsQuantity == null ? 0L : paintingsQuantity;
 
         Long authorsQuantity = entityManager.createQuery("select count(a.id) "
@@ -654,7 +655,7 @@ public class CustomPaintingRepositoryImpl
                         + "where a.isDeleted = false "
                         + "and a.authorPhoto.image.moderationStatus = 20 "
                         + "and a.stripeProfile.isDetailsSubmitted = true "
-                        + "and a.authorShippingAddress.id != null",
+                        + "and a.authorShippingAddress.id != 0",
                 Long.class).getSingleResult();
         authorsQuantity = authorsQuantity == null ? 0L : authorsQuantity;
 
